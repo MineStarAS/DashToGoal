@@ -45,26 +45,26 @@ public class PlayerMove : MonoBehaviour
     
     private void f_pMove()
     {
-        Vector3 moveDirection = Vector3.zero; // 플레이어 이동 방향
+        //Vector3 moveDirection = Vector3.zero; // 플레이어 이동 방향
 
         float fspeed = 0.0f;
         if (Input.GetKey(KeyCode.RightArrow)) 
         {
-            moveDirection = Vector3.right;
-            //fspeed = m_fspeed;
+            //moveDirection = Vector3.right;
+            fspeed = m_fspeed;
             m_Spr.flipX = false;
         }
         else if (Input.GetKey(KeyCode.LeftArrow))
         {
-            moveDirection = Vector3.left;
-            //fspeed = -m_fspeed;
+            //moveDirection = Vector3.left;
+            fspeed = -m_fspeed;
             m_Spr.flipX = true;
         }
 
-        //m_rRigid.velocity = new Vector2(fspeed, m_rRigid.velocity.y);
+        m_rRigid.velocity = new Vector2(fspeed, m_rRigid.velocity.y);
 
         // 새로운 위치 = 현재 위치 + 이동방향 * 속도
-        transform.position += moveDirection * m_fspeed * Time.deltaTime;
+        //transform.position += moveDirection * m_fspeed * Time.deltaTime;
     }
 
     private void f_pJump()
