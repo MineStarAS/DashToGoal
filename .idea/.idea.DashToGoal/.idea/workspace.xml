@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c4198b61-9a34-4ffa-ba73-b5cf4c09590a" name="Changes" comment="" />
+    <list default="true" id="c4198b61-9a34-4ffa-ba73-b5cf4c09590a" name="Changes" comment="#" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -43,6 +43,7 @@
         <entry key="$PROJECT_DIR$" value="MineStar" />
       </map>
     </option>
+    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -107,7 +108,7 @@
       <workItem from="1661910825237" duration="88000" />
       <workItem from="1661910926290" duration="1000" />
       <workItem from="1661910946791" duration="1000" />
-      <workItem from="1661921597909" duration="2295000" />
+      <workItem from="1661921597909" duration="2621000" />
     </task>
     <task id="LOCAL-00001" summary="# Player_Dummy Image add">
       <created>1661923941018</created>
@@ -116,7 +117,14 @@
       <option name="project" value="LOCAL" />
       <updated>1661923941018</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="#">
+      <created>1661924841390</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1661924841390</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -141,7 +149,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="master" />
+                        <option value="MineStar" />
                       </list>
                     </value>
                   </entry>
@@ -156,6 +164,7 @@
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
     <MESSAGE value="# Player_Dummy Image add" />
-    <option name="LAST_COMMIT_MESSAGE" value="# Player_Dummy Image add" />
+    <MESSAGE value="#" />
+    <option name="LAST_COMMIT_MESSAGE" value="#" />
   </component>
 </project>
