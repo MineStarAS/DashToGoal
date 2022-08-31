@@ -82,7 +82,7 @@ public class PlayerMove : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         // 무한 점프 막기
-        if(other.gameObject.layer == 6 && m_rRigid.velocity.y < 0)
+        if (other.gameObject.layer == 6 && m_rRigid.velocity.y < 0)
         {
             m_isLandign = true;
         }
