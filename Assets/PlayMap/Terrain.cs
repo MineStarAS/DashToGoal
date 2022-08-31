@@ -1,6 +1,4 @@
-﻿using JetBrains.Annotations;
-
-namespace PlayMap
+﻿namespace PlayMap
 {
     public enum Terrain
     {
