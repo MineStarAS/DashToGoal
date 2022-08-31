@@ -1,6 +1,17 @@
+<<<<<<< HEAD
+﻿# Default ignored files
+/shelf/
+/workspace.xml
+# Rider ignored files
+/contentModel.xml
+/projectSettingsUpdater.xml
+/modules.xml
+/.idea.DashToGoal.iml
+=======
 # Default ignored files
 /shelf/
 /workspace.xml
+>>>>>>> d909c9f (#)
 # Editor-based HTTP Client requests
 /httpRequests/
 # Datasource local storage ignored files
