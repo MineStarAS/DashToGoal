@@ -1,6 +1,6 @@
 namespace src.kr.kro.minestar.player.effect
 {
-    public enum Effect
+    public enum EffectEnum
     {
         
         
@@ -9,5 +9,9 @@ namespace src.kr.kro.minestar.player.effect
         점프감소,
         혼란,
         
+    }
+    
+    public abstract class Effect {
+    
     }
 }
