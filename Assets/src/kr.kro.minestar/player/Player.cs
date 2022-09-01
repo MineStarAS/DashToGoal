@@ -1,69 +1,70 @@
 using System;
 using src.kr.kro.minestar.player.skill;
 
-namespace src.kr.kro.minestar.player;
-
-public class Player
+namespace src.kr.kro.minestar.player
 {
-    public readonly PlayerCharacter playerCharacter;
-    public readonly PassiveSkill passiveSkill;
-    public readonly ActiveSkill activeskill1;
-    public readonly ActiveSkill activeskill2;
-
-    public Player(PlayerCharacter playerCharacter)
+    public class Player
     {
-        this.playerCharacter = playerCharacter;
-        passiveSkill = PlayerCharacterFunction.PassiveSkill(playerCharacter);
-        activeskill1 = PlayerCharacterFunction.ActiveSkill1(playerCharacter);
-        activeskill2 = PlayerCharacterFunction.ActiveSkill2(playerCharacter);
-    }
-}
+        public readonly PlayerCharacter playerCharacter;
+        public readonly PassiveSkill passiveSkill;
+        public readonly ActiveSkill activeskill1;
+        public readonly ActiveSkill activeskill2;
 
-public enum PlayerCharacter
-{
-    MineStar,
-    SonJunHo
-}
-
-public static class PlayerCharacterFunction
-{
-    public static string Name(PlayerCharacter playerCharacter)
-    {
-        return playerCharacter switch
+        public Player(PlayerCharacter playerCharacter)
         {
-            PlayerCharacter.MineStar => "마인스타",
-            PlayerCharacter.SonJunHo => "손준호",
-            _ => throw new ArgumentOutOfRangeException(nameof(playerCharacter), playerCharacter, null)
-        };
+            this.playerCharacter = playerCharacter;
+            passiveSkill = PlayerCharacterFunction.PassiveSkill(playerCharacter);
+            activeskill1 = PlayerCharacterFunction.ActiveSkill1(playerCharacter);
+            activeskill2 = PlayerCharacterFunction.ActiveSkill2(playerCharacter);
+        }
     }
 
-    public static PassiveSkill PassiveSkill(PlayerCharacter playerCharacter)
+    public enum PlayerCharacter
     {
-        return playerCharacter switch
-        {
-            PlayerCharacter.MineStar => "마인스타",
-            PlayerCharacter.SonJunHo => "손준호",
-            _ => throw new ArgumentOutOfRangeException(nameof(playerCharacter), playerCharacter, null)
-        };
+        MineStar,
+        SonJunHo
     }
 
-    public static ActiveSkill ActiveSkill1(PlayerCharacter playerCharacter)
+    public static class PlayerCharacterFunction
     {
-        return playerCharacter switch
+        public static string Name(PlayerCharacter playerCharacter)
         {
-            PlayerCharacter.MineStar => "마인스타",
-            PlayerCharacter.SonJunHo => "손준호",
-            _ => throw new ArgumentOutOfRangeException(nameof(playerCharacter), playerCharacter, null)
-        };
-    }
+            return playerCharacter switch
+            {
+                PlayerCharacter.MineStar => "마인스타",
+                PlayerCharacter.SonJunHo => "손준호",
+                _ => throw new ArgumentOutOfRangeException(nameof(playerCharacter), playerCharacter, null)
+            };
+        }
 
-    public static ActiveSkill ActiveSkill2(PlayerCharacter playerCharacter)
-    {
-        return playerCharacter switch
+        public static PassiveSkill PassiveSkill(PlayerCharacter playerCharacter)
         {
-            PlayerCharacter.MineStar => "마인스타",
-            PlayerCharacter.SonJunHo => "손준호",
-            _ => throw new ArgumentOutOfRangeException(nameof(playerCharacter), playerCharacter, null)
-        };
+            return playerCharacter switch
+            {
+                PlayerCharacter.MineStar => "마인스타",
+                PlayerCharacter.SonJunHo => "손준호",
+                _ => throw new ArgumentOutOfRangeException(nameof(playerCharacter), playerCharacter, null)
+            };
+        }
+
+        public static ActiveSkill ActiveSkill1(PlayerCharacter playerCharacter)
+        {
+            return playerCharacter switch
+            {
+                PlayerCharacter.MineStar => "마인스타",
+                PlayerCharacter.SonJunHo => "손준호",
+                _ => throw new ArgumentOutOfRangeException(nameof(playerCharacter), playerCharacter, null)
+            };
+        }
+
+        public static ActiveSkill ActiveSkill2(PlayerCharacter playerCharacter)
+        {
+            return playerCharacter switch
+            {
+                PlayerCharacter.MineStar => "마인스타",
+                PlayerCharacter.SonJunHo => "손준호",
+                _ => throw new ArgumentOutOfRangeException(nameof(playerCharacter), playerCharacter, null)
+            };
+        }
     }
 }

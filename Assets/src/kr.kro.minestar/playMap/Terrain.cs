@@ -1,10 +1,11 @@
-﻿namespace src.kr.kro.minestar.playMap;
-
-public enum Terrain
+﻿namespace src.kr.kro.minestar.playMap
 {
-    Plains,
-    Forest,
-    Beach,
-    Snowy,
-    Desert
+    public enum Terrain
+    {
+        Plains,
+        Forest,
+        Beach,
+        Snowy,
+        Desert
+    }
 }
