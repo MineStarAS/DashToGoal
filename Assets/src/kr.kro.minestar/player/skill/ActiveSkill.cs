@@ -1,6 +1,6 @@
-namespace src.kr.kro.minestar.player.skill;
-
-public class ActiveSkill: Skill
+namespace src.kr.kro.minestar.player.skill
 {
-    
+    public class ActiveSkill : Skill
+    {
+    }
 }
