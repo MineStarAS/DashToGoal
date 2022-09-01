@@ -1,22 +1,24 @@
-namespace src.kr.kro.minestar.player.skill.type;
-
-public abstract class CoolTimeTypeSkill
+namespace src.kr.kro.minestar.player.skill.type
 {
-    private readonly float startCoolTime;
-
-    public readonly float defaultCoolTime;
-
-    private float _coolTime;
-
-    protected CoolTimeTypeSkill(float startCoolTime, float defaultCoolTime)
+    public abstract class CoolTimeTypeSkill
     {
-        if (startCoolTime < 0)
+        private readonly float startCoolTime;
+
+        public readonly float defaultCoolTime;
+
+        private float _coolTime;
+
+        protected CoolTimeTypeSkill(float startCoolTime, float defaultCoolTime)
         {
-            this.startCoolTime = 0F;
-        }
-        else
-        {
+            if (startCoolTime < 0)
+            {
+                this.startCoolTime = 0F;
+            }
+            else
+            {
             
+            }
         }
     }
 }
+
