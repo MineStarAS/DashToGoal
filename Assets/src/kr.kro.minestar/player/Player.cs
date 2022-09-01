@@ -5,17 +5,19 @@ namespace src.kr.kro.minestar.player
 {
     public class Player
     {
-        public readonly PlayerCharacter playerCharacter;
-        public readonly PassiveSkill passiveSkill;
-        public readonly ActiveSkill activeskill1;
-        public readonly ActiveSkill activeskill2;
+        private readonly PlayerCharacter _playerCharacter;
+        private readonly PassiveSkill _passiveSkill;
+        private readonly ActiveSkill _activeskill1;
+        private readonly ActiveSkill _activeskill2;
+        
+        private readonly 
 
         public Player(PlayerCharacter playerCharacter)
         {
-            this.playerCharacter = playerCharacter;
-            passiveSkill = PlayerCharacterFunction.PassiveSkill(playerCharacter);
-            activeskill1 = PlayerCharacterFunction.ActiveSkill1(playerCharacter);
-            activeskill2 = PlayerCharacterFunction.ActiveSkill2(playerCharacter);
+            _playerCharacter = playerCharacter;
+            _passiveSkill = PlayerCharacterFunction.PassiveSkill(playerCharacter);
+            _activeskill1 = PlayerCharacterFunction.ActiveSkill1(playerCharacter);
+            _activeskill2 = PlayerCharacterFunction.ActiveSkill2(playerCharacter);
         }
     }
 
@@ -41,8 +43,8 @@ namespace src.kr.kro.minestar.player
         {
             return playerCharacter switch
             {
-                PlayerCharacter.MineStar => "마인스타",
-                PlayerCharacter.SonJunHo => "손준호",
+                // PlayerCharacter.MineStar => "마인스타",
+                // PlayerCharacter.SonJunHo => "손준호",
                 _ => throw new ArgumentOutOfRangeException(nameof(playerCharacter), playerCharacter, null)
             };
         }
@@ -51,8 +53,8 @@ namespace src.kr.kro.minestar.player
         {
             return playerCharacter switch
             {
-                PlayerCharacter.MineStar => "마인스타",
-                PlayerCharacter.SonJunHo => "손준호",
+                // PlayerCharacter.MineStar => "마인스타",
+                // PlayerCharacter.SonJunHo => "손준호",
                 _ => throw new ArgumentOutOfRangeException(nameof(playerCharacter), playerCharacter, null)
             };
         }
@@ -61,8 +63,8 @@ namespace src.kr.kro.minestar.player
         {
             return playerCharacter switch
             {
-                PlayerCharacter.MineStar => "마인스타",
-                PlayerCharacter.SonJunHo => "손준호",
+                // PlayerCharacter.MineStar => "마인스타",
+                // PlayerCharacter.SonJunHo => "손준호",
                 _ => throw new ArgumentOutOfRangeException(nameof(playerCharacter), playerCharacter, null)
             };
         }

@@ -1,8 +1,7 @@
 namespace src.kr.kro.minestar.player.skill
 {
-    public class PassiveSkill: Skill
+    public abstract class PassiveSkill : Skill
     {
         
     }
 }
-
