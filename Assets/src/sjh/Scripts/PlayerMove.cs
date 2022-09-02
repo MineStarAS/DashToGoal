@@ -1,27 +1,33 @@
+using UnityEditor;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace src.sjh.Scripts
 {
     public class PlayerMove : MonoBehaviour
     {
         /// ##### Default Field #####
-        private const byte DefaultAirJumpAmount = 1;
+        private const byte DefaultAirJumpAmount = 1; // 기본 점프 가능 횟수 1 = 1단, 2 = 2단 점프 가능
+        private bool m_isLanding = false; // 땅에 닿았는가
 
         /// ##### Field #####
-        [SerializeField] private float moveForce;
-
-        [SerializeField] private float jumpForce;
-
-        [SerializeField] private byte airJumpAmount; // 공중점프 가능 횟수
+        [SerializeField] private float moveForce;    // 플레이어 이동 힘
+        [SerializeField] private float jumpForce;    // 플레이어 점프 힘
+        [SerializeField] private byte airJumpAmount; // 공중 점프 가능 횟수
+        [SerializeField] private float gizmoSize;
 
         private Rigidbody2D _body; // 플레이어 물리
-        private SpriteRenderer _spriteRenderer;
+        private SpriteRenderer _spriteRenderer; // 스프라이트 정보
+        private Transform target; // 감지된 물체
+
 
         /// ##### Unity Functions #####
         private void Start() // 변수 초기화
         {
+            m_isLanding = false;
             moveForce = 6.0f;
             jumpForce = 13.0f;
+            gizmoSize = 5.0f;
 
             airJumpAmount = DefaultAirJumpAmount;
 
@@ -30,13 +36,10 @@ namespace src.sjh.Scripts
         }
 
         private void Update()
-        {
-            if (!IsAir()) airJumpAmount = DefaultAirJumpAmount;
-            
-            if (Input.GetKeyDown(KeyCode.Space)) _DoJump(); // 점프
-
-            if (Input.GetKey(KeyCode.RightArrow) ||
-                Input.GetKey(KeyCode.LeftArrow)) _DoMove(); // 좌우 이동
+        {  
+            _DoJump(); // 점프
+            _DoMove(); // 좌우 이동
+            _DoDitect(); // 범위내 오브젝트 감지
         }
 
         private void FixedUpdate()
@@ -45,45 +48,70 @@ namespace src.sjh.Scripts
             Debug.DrawRay(_body.position, Vector3.down, new Color(0, 1, 0));
             var rayHit = Physics2D.Raycast(_body.position, Vector3.down, 1, LayerMask.GetMask("Platform"));
             var rayHitCollider = rayHit.collider;
-            if (rayHitCollider != null) Debug.Log(rayHitCollider.tag);
+            //if (rayHitCollider != null) Debug.Log(rayHitCollider.tag);
+            if(_body.velocity.y < -10.0f && !m_isLanding)
+            {
+                _body.drag = 1.5f;
+            }
         }
 
         /// ##### Movement Functions #####
         private void _DoMove()
         {
-            //Vector3 moveDirection = Vector3.zero; // 플레이어 이동 방향
-
             var fSpeed = 0.0f;
             if (Input.GetKey(KeyCode.RightArrow))
             {
-                //moveDirection = Vector3.right;
                 fSpeed = moveForce;
                 _spriteRenderer.flipX = false;
             }
             else if (Input.GetKey(KeyCode.LeftArrow))
             {
-                //moveDirection = Vector3.left;
                 fSpeed = -moveForce;
                 _spriteRenderer.flipX = true;
             }
 
             _body.velocity = new Vector2(fSpeed, _body.velocity.y);
-
-            // 새로운 위치 = 현재 위치 + 이동방향 * 속도
-            //transform.position += moveDirection * m_fspeed * Time.deltaTime;
         }
 
         private void _DoJump()
         {
-            if (!IsAir())
+            if (airJumpAmount < 0) return;
+            // 점프 횟수 추가
+            if (Input.GetKeyDown(KeyCode.Space) & airJumpAmount != 0)
             {
-                if (airJumpAmount <= 0) return;
                 airJumpAmount--;
+
+                _body.velocity = Vector2.zero;
+                var jumpVelocity = new Vector2(0, jumpForce); // 점프 속력
+                _body.AddForce(jumpVelocity, ForceMode2D.Impulse);
+                m_isLanding = false;
             }
 
-            _body.velocity = Vector2.zero;
-            var jumpVelocity = new Vector2(0, jumpForce); // 점프 속력
-            _body.AddForce(jumpVelocity, ForceMode2D.Impulse);
+        }
+
+        private void _DoDitect() // 플레이어 혹은 물체 감지 - 나중에 스킬로 옮기면됨
+        {
+            if (Input.GetKeyDown(KeyCode.V))
+            {
+                Collider2D[] cols = Physics2D.OverlapCircleAll(transform.position, gizmoSize);
+                if (cols.Length > 0)
+                {
+
+                    for (int i = 0; i < cols.Length; i++)
+                    {
+                        if (cols[i].tag == "Enemy")
+                        {
+                            Debug.Log("Physics Enemy : Target found");
+                            target = cols[i].gameObject.transform;
+                        }
+                    }
+                }
+                else
+                {
+                    Debug.Log("Physics Enemy : Target lost");
+                    target = null;
+                }
+            }
         }
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -91,15 +119,16 @@ namespace src.sjh.Scripts
             // 무한 점프 막기
             if (other.gameObject.layer == 6 && _body.velocity.y < 0)
             {
-                // m_isLandign = true;
+                m_isLanding = true;
+                airJumpAmount = DefaultAirJumpAmount;
+                _body.drag = 0;
             }
         }
 
-        /// ##### Check Functions #####
-        bool IsAir()
+        private void OnDrawGizmos() // 감지 거리 그리기
         {
-            var y = _body.velocity.y;
-            return -0.1 <= y && y <= 0.1;
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(transform.position, gizmoSize);
         }
     }
 }
