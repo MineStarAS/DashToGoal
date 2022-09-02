@@ -1,17 +1,59 @@
+using System.Timers;
+
 namespace src.kr.kro.minestar.player.effect
 {
-    public enum EffectEnum
+    public enum EffectType
     {
-        
-        
-        기절,
-        감속,
-        점프감소,
-        혼란,
-        
+        ///Beneficial Effect
+        FastMovement, // 증속
+        BonusJump, // 추가 공중 점프
+        SuperJump, // 점프력 증가
+
+        ///Harmful Effect
+        SlowMovement, // 감속
+        JumpFatigue, // 점프감소
+        Bondage, // 속박
+        Disorder, // 혼란, 좌우 반전
     }
-    
-    public abstract class Effect {
-    
+
+    public enum ValueCalculator
+    {
+        Add, // 덧셈
+        Multi, // 곱셈
+        NotOp, // 연산자가 아님
+    }
+
+    public abstract class Effect
+    {
+        /// ##### Field #####
+        private Player _player;
+        private EffectType _effectType;
+        private ValueCalculator _valueCalculator;
+
+        private float _calculatorValue;
+
+        /// ##### Getter #####
+        public Player GetPlayer() => _player;
+        
+        public EffectType GetEffectType() => _effectType;
+
+        public ValueCalculator GetValueCalculator() => _valueCalculator;
+        
+        public float GetCalculatorValue() => _calculatorValue;
+
+        /// ##### Setter #####
+        public void SetPlayer(Player player) => _player = player;
+        
+        protected void SetEffectType(EffectType effectType) => _effectType = effectType;
+
+        public void SetValueCalculator(ValueCalculator valueCalculator) => _valueCalculator = valueCalculator;
+        
+        public void SetCalculatorValue(float value) => _calculatorValue = value;
+    }
+
+    public abstract class TimerEffect : Effect
+    {
+        private float _time;
+        private Timer _timer; //async
     }
 }
