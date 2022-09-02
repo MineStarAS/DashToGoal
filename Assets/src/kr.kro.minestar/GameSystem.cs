@@ -5,6 +5,6 @@ namespace src.kr.kro.minestar
 {
     public static class GameSystem
     {
-        public static HashSet<Player> Players = new HashSet<Player>();
+        public static HashSet<Player> Players = new ();
     }
 }
