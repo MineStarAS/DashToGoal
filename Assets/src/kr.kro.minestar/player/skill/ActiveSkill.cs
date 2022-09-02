@@ -45,7 +45,7 @@ namespace src.kr.kro.minestar.player.skill
         private int _chargingAmount; // 1회 충전량
         private int _chargedAmount; // 현재 충전량
 
-        private Type _chargeEvent; // 충전 트리거 이벤트
+        private Type _detectEvent; // 충전 트리거 이벤트
 
         /// ##### Getter #####
         public float GetStartChargeAmount() => _startChargeAmount;
@@ -56,6 +56,8 @@ namespace src.kr.kro.minestar.player.skill
         
         public float GetChargingAmount() => _chargingAmount;
 
+        protected Type GetDetectEvent() => _detectEvent;
+
         /// ##### Setter #####
         protected void SetStartChargeAmount(int value) => _startChargeAmount = value;
 
@@ -65,7 +67,7 @@ namespace src.kr.kro.minestar.player.skill
         
         protected void SetChargingAmount(int value) => _chargingAmount = value;
 
-        protected void SetChargeEvent<T>() => _chargeEvent = typeof(T);
+        protected void SetDetectEvent<T>() => _detectEvent = typeof(T);
         
 
         /// ##### Functions #####
@@ -76,7 +78,7 @@ namespace src.kr.kro.minestar.player.skill
 
         public void DoCharge(GameEvent gameEvent)
         {
-            if (_chargeEvent != gameEvent.GetType()) return;
+            if (_detectEvent != gameEvent.GetType()) return;
 
             if (_chargedAmount + _chargingAmount >= _maxChargeAmount) _chargedAmount = _maxChargeAmount;
             else _chargedAmount += _chargingAmount;
@@ -84,7 +86,7 @@ namespace src.kr.kro.minestar.player.skill
 
         public void DoCharge(GameEvent gameEvent, int chargeValue)
         {
-            if (_chargeEvent != gameEvent.GetType()) return;
+            if (_detectEvent != gameEvent.GetType()) return;
 
             if (_chargedAmount + chargeValue >= _maxChargeAmount) _chargedAmount = _maxChargeAmount;
             else _chargedAmount += chargeValue;
@@ -108,7 +110,7 @@ namespace src.kr.kro.minestar.player.skill
             SetMaxChargeAmount(20);
             SetUseChargeAmount(5);
             SetChargingAmount(1);
-            SetChargeEvent<PlayerJumpEvent>();
+            SetDetectEvent<PlayerJumpEvent>();
         }
 
 

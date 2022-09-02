@@ -15,22 +15,15 @@ namespace src.kr.kro.minestar.player
         
         /// ##### Field #####
         private readonly PlayerCharacter _playerCharacter;
-        
-        private readonly PassiveSkill _passiveSkill;
-        private readonly ActiveSkill _activeSkill1;
-        private readonly ActiveSkill _activeSkill2;
 
         private int _airJumpAmount;
         private readonly List<Effect> _effects; 
         [CanBeNull] private string _item;
 
         /// ##### Constructor #####
-        public Player(PlayerCharacter playerCharacter)
+        public Player(PlayerCharacterEnum playerCharacterEnum)
         {
-            _playerCharacter = playerCharacter;
-            _passiveSkill = PlayerCharacterFunction.PassiveSkill(playerCharacter);
-            _activeSkill1 = PlayerCharacterFunction.ActiveSkill1(playerCharacter);
-            _activeSkill2 = PlayerCharacterFunction.ActiveSkill2(playerCharacter);
+            _playerCharacter = PlayerCharacter.FromEnum(playerCharacterEnum);
 
             _airJumpAmount = 1;
             _effects = new List<Effect>();
@@ -106,9 +99,52 @@ namespace src.kr.kro.minestar.player
             }
             return value;
         }
-        
+
         /// ##### Functions #####
-        
+        public int LandingAirJumpAmountCharge()
+        {
+            var value = 1;
+            
+            // Add Calculate
+            foreach (var effect in _effects.Where(effect => effect.GetValueCalculator() == ValueCalculator.Add))
+            {
+                switch (effect.GetEffectType())
+                {
+                    case EffectType.BonusJump:
+                        value = Calculate(value, effect);
+                        continue;
+                    case EffectType.FastMovement:
+                    case EffectType.SlowMovement:
+                    case EffectType.Bondage:
+                    case EffectType.SuperJump:
+                    case EffectType.JumpFatigue:
+                    case EffectType.Disorder:
+                    default:
+                        continue;
+                }
+            }
+            
+            // Multi Calculate
+            foreach (var effect in _effects.Where(effect => effect.GetValueCalculator() == ValueCalculator.Multi))
+            {
+                switch (effect.GetEffectType())
+                {
+                    case EffectType.BonusJump:
+                        value = Calculate(value, effect);
+                        continue;
+                    case EffectType.FastMovement:
+                    case EffectType.SlowMovement:
+                    case EffectType.Bondage:
+                    case EffectType.SuperJump:
+                    case EffectType.JumpFatigue:
+                    case EffectType.Disorder:
+                    default:
+                        continue;
+                }
+            }
+            _airJumpAmount = value;
+            return value;
+        }
 
         /// ##### Calculate Functions #####
         private static float Calculate(float value, Effect effect)
@@ -128,55 +164,6 @@ namespace src.kr.kro.minestar.player
                 ValueCalculator.Add => value + Convert.ToByte(effect.GetCalculatorValue()),
                 ValueCalculator.Multi => value * Convert.ToByte(effect.GetCalculatorValue()),
                 _ => value
-            };
-        }
-    }
-
-    public enum PlayerCharacter
-    {
-        MineStar,
-        SonJunHo
-    }
-
-    public static class PlayerCharacterFunction
-    {
-        public static string Name(PlayerCharacter playerCharacter)
-        {
-            return playerCharacter switch
-            {
-                PlayerCharacter.MineStar => "마인스타",
-                PlayerCharacter.SonJunHo => "손준호",
-                _ => throw new ArgumentOutOfRangeException(nameof(playerCharacter), playerCharacter, null)
-            };
-        }
-
-        public static PassiveSkill PassiveSkill(PlayerCharacter playerCharacter)
-        {
-            return playerCharacter switch
-            {
-                // PlayerCharacter.MineStar => "마인스타",
-                // PlayerCharacter.SonJunHo => "손준호",
-                _ => throw new ArgumentOutOfRangeException(nameof(playerCharacter), playerCharacter, null)
-            };
-        }
-
-        public static ActiveSkill ActiveSkill1(PlayerCharacter playerCharacter)
-        {
-            return playerCharacter switch
-            {
-                // PlayerCharacter.MineStar => "마인스타",
-                // PlayerCharacter.SonJunHo => "손준호",
-                _ => throw new ArgumentOutOfRangeException(nameof(playerCharacter), playerCharacter, null)
-            };
-        }
-
-        public static ActiveSkill ActiveSkill2(PlayerCharacter playerCharacter)
-        {
-            return playerCharacter switch
-            {
-                // PlayerCharacter.MineStar => "마인스타",
-                // PlayerCharacter.SonJunHo => "손준호",
-                _ => throw new ArgumentOutOfRangeException(nameof(playerCharacter), playerCharacter, null)
             };
         }
     }

@@ -51,9 +51,14 @@ namespace src.kr.kro.minestar.player.effect
         public void SetCalculatorValue(float value) => _calculatorValue = value;
     }
 
-    public abstract class TimerEffect : Effect
+    public class TimerEffect : Effect
     {
         private float _time;
         private Timer _timer; //async
+
+        public TimerEffect ()
+        {
+            
+        }
     }
 }
