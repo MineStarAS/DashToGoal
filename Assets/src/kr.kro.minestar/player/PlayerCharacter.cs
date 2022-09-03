@@ -36,11 +36,11 @@ namespace src.kr.kro.minestar.player
         public ActiveSkill GetActiveSkill2() => _activeSkill2;
 
         /// ##### Setter #####
-        public void SetPassiveSkill(PassiveSkill passiveSkill) => _passiveSkill = passiveSkill;
+        protected void SetPassiveSkill(PassiveSkill passiveSkill) => _passiveSkill = passiveSkill;
 
-        public void SetActiveSkill1(ActiveSkill activeSkill) => _activeSkill1 = activeSkill;
+        protected void SetActiveSkill1(ActiveSkill activeSkill) => _activeSkill1 = activeSkill;
 
-        public void SetActiveSkill2(ActiveSkill activeSkill) => _activeSkill2 = activeSkill;
+        protected void SetActiveSkill2(ActiveSkill activeSkill) => _activeSkill2 = activeSkill;
     }
 
     public class MineStar : PlayerCharacter
