@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using src.kr.kro.minestar.player.effect;
-using src.kr.kro.minestar.player.skill;
 
 namespace src.kr.kro.minestar.player
 {
@@ -11,18 +10,22 @@ namespace src.kr.kro.minestar.player
     {
         /// ##### Constant Field #####
         private const float MoveForce = 6.0f;
+
         private const float JumpForce = 13.0f;
-        
+
         /// ##### Field #####
+        private readonly GameSystem _gameSystem;
+
         private readonly PlayerCharacter _playerCharacter;
 
         private int _airJumpAmount;
-        private readonly List<Effect> _effects; 
+        private readonly List<Effect> _effects;
         [CanBeNull] private string _item;
 
         /// ##### Constructor #####
-        public Player(PlayerCharacterEnum playerCharacterEnum)
+        public Player(GameSystem gameSystem, PlayerCharacterEnum playerCharacterEnum)
         {
+            _gameSystem = gameSystem;
             _playerCharacter = PlayerCharacter.FromEnum(playerCharacterEnum);
 
             _airJumpAmount = 1;
@@ -30,10 +33,13 @@ namespace src.kr.kro.minestar.player
         }
 
         /// ##### Get Functions #####
+        public PlayerCharacter GetPlayerCharacter() => _playerCharacter;
+        public List<Effect> GetEffects => _effects;
+
         public float GetMoveForce()
         {
             var value = MoveForce;
-            
+
             // Add Calculate
             foreach (var effect in _effects.Where(effect => effect.GetValueCalculator() == ValueCalculator.Add))
             {
@@ -53,7 +59,7 @@ namespace src.kr.kro.minestar.player
                         continue;
                 }
             }
-            
+
             // Multi Calculate
             foreach (var effect in _effects.Where(effect => effect.GetValueCalculator() == ValueCalculator.Multi))
             {
@@ -73,9 +79,10 @@ namespace src.kr.kro.minestar.player
                         continue;
                 }
             }
+
             return value;
         }
-        
+
         public float GetJumpForce()
         {
             var value = JumpForce;
@@ -97,14 +104,26 @@ namespace src.kr.kro.minestar.player
                         continue;
                 }
             }
+
             return value;
+        }
+
+        ///##### Effect Functions #####
+        public void AddEffect(Effect effect)
+        {
+            _effects.Add(effect);
+        }
+        
+        public void RemoveEffect(Effect effect)
+        {
+            _effects.Remove(effect);
         }
 
         /// ##### Functions #####
         public int LandingAirJumpAmountCharge()
         {
             var value = 1;
-            
+
             // Add Calculate
             foreach (var effect in _effects.Where(effect => effect.GetValueCalculator() == ValueCalculator.Add))
             {
@@ -123,7 +142,7 @@ namespace src.kr.kro.minestar.player
                         continue;
                 }
             }
-            
+
             // Multi Calculate
             foreach (var effect in _effects.Where(effect => effect.GetValueCalculator() == ValueCalculator.Multi))
             {
@@ -142,6 +161,7 @@ namespace src.kr.kro.minestar.player
                         continue;
                 }
             }
+
             _airJumpAmount = value;
             return value;
         }
@@ -156,7 +176,7 @@ namespace src.kr.kro.minestar.player
                 _ => value
             };
         }
-        
+
         private static int Calculate(int value, Effect effect)
         {
             return effect.GetValueCalculator() switch
