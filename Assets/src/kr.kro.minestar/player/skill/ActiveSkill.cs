@@ -51,24 +51,24 @@ namespace src.kr.kro.minestar.player.skill
         public float GetStartChargeAmount() => _startChargeAmount;
 
         public float GetMaxChargeAmount() => _maxChargeAmount;
-        
+
         public float GetUseChargeAmount() => _useChargeAmount;
-        
+
         public float GetChargingAmount() => _chargingAmount;
 
-        protected Type GetDetectEvent() => _detectEvent;
+        public Type GetDetectEvent() => _detectEvent;
 
         /// ##### Setter #####
         protected void SetStartChargeAmount(int value) => _startChargeAmount = value;
 
         protected void SetMaxChargeAmount(int value) => _maxChargeAmount = value;
-        
+
         protected void SetUseChargeAmount(int value) => _useChargeAmount = value;
-        
+
         protected void SetChargingAmount(int value) => _chargingAmount = value;
 
         protected void SetDetectEvent<T>() => _detectEvent = typeof(T);
-        
+
 
         /// ##### Functions #####
         protected ChargeActiveSkill()
