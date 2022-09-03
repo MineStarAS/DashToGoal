@@ -42,13 +42,17 @@ namespace src.kr.kro.minestar.player.effect
         public float GetCalculatorValue() => _calculatorValue;
 
         /// ##### Setter #####
-        public void SetPlayer(Player player) => _player = player;
+        protected void SetPlayer(Player player) => _player = player;
         
         protected void SetEffectType(EffectType effectType) => _effectType = effectType;
 
-        public void SetValueCalculator(ValueCalculator valueCalculator) => _valueCalculator = valueCalculator;
+        protected void SetValueCalculator(ValueCalculator valueCalculator) => _valueCalculator = valueCalculator;
         
-        public void SetCalculatorValue(float value) => _calculatorValue = value;
+        protected void SetCalculatorValue(float value) => _calculatorValue = value;
+
+        /// ##### Functions #####
+        protected void AddEffect() => _player.AddEffect(this);
+        
     }
 
     public class TimerEffect : Effect
