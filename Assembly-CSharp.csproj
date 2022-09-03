@@ -41,16 +41,6 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
-     <Compile Include="Assets\src\kr.kro.minestar\gameEvent\GameEventOperator.cs" />
-     <Compile Include="Assets\src\kr.kro.minestar\gameEvent\player\PlayerEvent.cs" />
-     <Compile Include="Assets\src\kr.kro.minestar\GameSystem.cs" />
-     <Compile Include="Assets\src\kr.kro.minestar\gameEvent\GameEvent.cs" />
-     <Compile Include="Assets\src\kr.kro.minestar\player\skill\ActiveSkill.cs" />
-     <Compile Include="Assets\src\kr.kro.minestar\player\skill\PassiveSkill.cs" />
-     <Compile Include="Assets\src\kr.kro.minestar\player\skill\type\CoolTimeTypeSkill.cs" />
-     <Compile Include="Assets\src\kr.kro.minestar\playMap\Terrain.cs" />
-     <Compile Include="Assets\src\sjh\Scripts\PlayerMove.cs" />
-     <Compile Include="Assets\src\sjh\Scripts\ForeverChaseCameraH.cs" />
      <Reference Include="UnityEngine">
      <HintPath>C:\Program Files\Unity\Hub\Editor\2021.3.8f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
      </Reference>
@@ -813,6 +803,17 @@
      <Reference Include="Unity.VisualScripting.State">
      <HintPath>C:\Users\MineStar\RiderProjects\DashToGoal\Library\ScriptAssemblies\Unity.VisualScripting.State.dll</HintPath>
      </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Assets\src\kr.kro.minestar\gameEvent\GameEvent.cs" />
+    <Compile Include="Assets\src\kr.kro.minestar\gameEvent\PlayerEvent.cs" />
+    <Compile Include="Assets\src\kr.kro.minestar\GameSystem.cs" />
+    <Compile Include="Assets\src\kr.kro.minestar\player\effect\Effect.cs" />
+    <Compile Include="Assets\src\kr.kro.minestar\player\Player.cs" />
+    <Compile Include="Assets\src\kr.kro.minestar\player\PlayerCharacter.cs" />
+    <Compile Include="Assets\src\kr.kro.minestar\player\skill\ActiveSkill.cs" />
+    <Compile Include="Assets\src\kr.kro.minestar\player\skill\PassiveSkill.cs" />
+    <Compile Include="Assets\src\kr.kro.minestar\player\skill\Skill.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
