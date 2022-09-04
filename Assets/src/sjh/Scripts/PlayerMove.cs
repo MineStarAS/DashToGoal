@@ -51,7 +51,7 @@ namespace src.sjh.Scripts
             //if (rayHitCollider != null) Debug.Log(rayHitCollider.tag);
             if(_body.velocity.y < -10.0f && !m_isLanding)
             {
-                _body.drag = 1.5f;
+                _body.drag = 2.0f;
             }
         }
 
@@ -117,7 +117,7 @@ namespace src.sjh.Scripts
         private void OnTriggerEnter2D(Collider2D other)
         {
             // 무한 점프 막기
-            if (other.gameObject.layer == 6 && _body.velocity.y < 0)
+            if (other.gameObject.layer == 6 && _body.velocity.y <= 0)
             {
                 m_isLanding = true;
                 airJumpAmount = DefaultAirJumpAmount;
