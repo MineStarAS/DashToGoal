@@ -14,7 +14,7 @@ namespace src.kr.kro.minestar.player.skill
         /// ##### Getter #####
         public Effect[] GetEffects() => _effects.ToArray();
 
-        protected Type GetDetectEvent() => _detectEvent;
+        public Type GetDetectEvent() => _detectEvent;
 
         /// ##### Setter #####
         public void SetEffects(Effect[] effects) => _effects = effects;
