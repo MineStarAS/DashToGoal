@@ -7,15 +7,15 @@ namespace src.sjh.Scripts
     public class PlayerMove : MonoBehaviour
     {
         /// ##### Default Field #####
-        private const byte DefaultAirJumpAmount = 1; // 기본 점프 가능 횟수 1 = 1단, 2 = 2단 점프 가능
+        [SerializeField] private const byte DefaultAirJumpAmount = 2; // 기본 점프 가능 횟수 1 = 1단, 2 = 2단 점프 가능
         private bool m_isLanding = false; // 땅에 닿았는가
 
         /// ##### Field #####
         [SerializeField] private float moveForce;    // 플레이어 이동 힘
         [SerializeField] private float jumpForce;    // 플레이어 점프 힘
-        [SerializeField] private byte airJumpAmount; // 공중 점프 가능 횟수
         [SerializeField] private float gizmoSize;
 
+        private byte airJumpAmount; // 공중 점프 가능 횟수
         private Rigidbody2D _body; // 플레이어 물리
         private SpriteRenderer _spriteRenderer; // 스프라이트 정보
         private Transform target; // 감지된 물체
@@ -51,7 +51,7 @@ namespace src.sjh.Scripts
             //if (rayHitCollider != null) Debug.Log(rayHitCollider.tag);
             if(_body.velocity.y < -10.0f && !m_isLanding)
             {
-                _body.drag = 1.5f;
+                _body.drag = 2.0f;
             }
         }
 
@@ -117,7 +117,7 @@ namespace src.sjh.Scripts
         private void OnTriggerEnter2D(Collider2D other)
         {
             // 무한 점프 막기
-            if (other.gameObject.layer == 6 && _body.velocity.y < 0)
+            if (other.gameObject.layer == 6 && _body.velocity.y <= 0)
             {
                 m_isLanding = true;
                 airJumpAmount = DefaultAirJumpAmount;

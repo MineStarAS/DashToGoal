@@ -14,7 +14,7 @@ namespace src.kr.kro.minestar.gameEvent
 
         public static void PlayerSkillOperation(Player player)
         {
-            player
+            //player
         }
     }
 }
