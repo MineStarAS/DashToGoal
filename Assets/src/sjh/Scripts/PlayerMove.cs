@@ -7,15 +7,15 @@ namespace src.sjh.Scripts
     public class PlayerMove : MonoBehaviour
     {
         /// ##### Default Field #####
-        private const byte DefaultAirJumpAmount = 1; // 기본 점프 가능 횟수 1 = 1단, 2 = 2단 점프 가능
+        [SerializeField] private const byte DefaultAirJumpAmount = 2; // 기본 점프 가능 횟수 1 = 1단, 2 = 2단 점프 가능
         private bool m_isLanding = false; // 땅에 닿았는가
 
         /// ##### Field #####
         [SerializeField] private float moveForce;    // 플레이어 이동 힘
         [SerializeField] private float jumpForce;    // 플레이어 점프 힘
-        [SerializeField] private byte airJumpAmount; // 공중 점프 가능 횟수
         [SerializeField] private float gizmoSize;
 
+        private byte airJumpAmount; // 공중 점프 가능 횟수
         private Rigidbody2D _body; // 플레이어 물리
         private SpriteRenderer _spriteRenderer; // 스프라이트 정보
         private Transform target; // 감지된 물체

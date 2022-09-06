@@ -66,10 +66,10 @@
     <Compile Include="Assets\src\kr.kro.minestar\gameEvent\PlayerEvent.cs" />
     <Compile Include="Assets\src\kr.kro.minestar\gameEvent\GameEvent.cs" />
     <Compile Include="Assets\src\kr.kro.minestar\playMap\Terrain.cs" />
+    <Compile Include="Assets\Sprite\sjh\script\UIManager.cs" />
     <Compile Include="Assets\src\kr.kro.minestar\player\effect\Effect.cs" />
     <Compile Include="Assets\src\kr.kro.minestar\player\skill\PassiveSkill.cs" />
     <Compile Include="Assets\src\sjh\Scripts\SceneChanger.cs" />
-    <Compile Include="Assets\Sprite\sjh\script\UIManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
