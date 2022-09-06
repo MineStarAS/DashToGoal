@@ -10,12 +10,13 @@ namespace src.sjh.Scripts
         [SerializeField] private const byte DefaultAirJumpAmount = 2; // 기본 점프 가능 횟수 1 = 1단, 2 = 2단 점프 가능
 
         /// ##### Field #####
-        [SerializeField] private float moveForce;    // 플레이어 이동 힘
+        [SerializeField] private float moveForce;    // 플레이어 이동에 가해지는 힘
         [SerializeField] private float jumpForce;    // 플레이어 점프 힘
         [SerializeField] private float gizmoSize;
 
+        private float m_fMoveSpeed; // 플레이어 이동속도
         private byte airJumpAmount; // 공중 점프 가능 횟수
-        private bool m_isLanding = false; // 땅에 닿았는가
+        private bool m_isLanding; // 땅에 닿았는가
         private Rigidbody2D _body; // 플레이어 물리
         private SpriteRenderer _spriteRenderer; // 스프라이트 정보
         private Transform target; // 감지된 물체
@@ -25,6 +26,7 @@ namespace src.sjh.Scripts
         private void Start() // 변수 초기화
         {
             m_isLanding = false;
+            m_fMoveSpeed = 0.0f;
             moveForce = 6.0f;
             jumpForce = 13.0f;
             gizmoSize = 5.0f;
@@ -49,28 +51,28 @@ namespace src.sjh.Scripts
             var rayHit = Physics2D.Raycast(_body.position, Vector3.down, 1, LayerMask.GetMask("Platform"));
             var rayHitCollider = rayHit.collider;
             //if (rayHitCollider != null) Debug.Log(rayHitCollider.tag);
-            if(_body.velocity.y < -10.0f && !m_isLanding)
+            if(_body.velocity.y < -10.0f)
             {
-                _body.drag = 2.0f;
+                _body.drag = 2.0f; // 플레이어 낙하 속도
             }
         }
 
         /// ##### Movement Functions #####
         private void _DoMove()
         {
-            var fSpeed = 0.0f;
+            m_fMoveSpeed = 0.0f;
             if (Input.GetKey(KeyCode.RightArrow))
             {
-                fSpeed = moveForce;
+                m_fMoveSpeed = moveForce;
                 _spriteRenderer.flipX = false;
             }
             else if (Input.GetKey(KeyCode.LeftArrow))
             {
-                fSpeed = -moveForce;
+                m_fMoveSpeed = -moveForce;
                 _spriteRenderer.flipX = true;
             }
 
-            _body.velocity = new Vector2(fSpeed, _body.velocity.y);
+            _body.velocity = new Vector2(m_fMoveSpeed, _body.velocity.y);
         }
 
         private void _DoJump()
@@ -122,6 +124,7 @@ namespace src.sjh.Scripts
                 m_isLanding = true;
                 airJumpAmount = DefaultAirJumpAmount;
                 _body.drag = 0;
+                _body.velocity = new Vector2(m_fMoveSpeed, 0);
             }
         }
 

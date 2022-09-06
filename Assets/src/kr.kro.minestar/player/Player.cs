@@ -4,10 +4,11 @@ using System.Linq;
 using JetBrains.Annotations;
 using src.kr.kro.minestar.player.effect;
 using src.kr.kro.minestar.player.skill;
+using UnityEngine;
 
 namespace src.kr.kro.minestar.player
 {
-    public class Player
+    public class Player : MonoBehaviour
     {
         /// ##### Constant Field #####
         private const float MoveForce = 6.0f;
