@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using src.kr.kro.minestar.player.effect;
+using src.sjh.Scripts;
+using UnityEngine;
 
 namespace src.kr.kro.minestar.player
 {
@@ -164,6 +166,10 @@ namespace src.kr.kro.minestar.player
 
             _airJumpAmount = value;
             return value;
+        }
+
+        public void addVector(Vector2 vector)
+        {
         }
 
         /// ##### Calculate Functions #####
