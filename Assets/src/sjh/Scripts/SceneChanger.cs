@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 
-namespace Assets.src.sjh.Scripts
+namespace src.sjh.Scripts
 {
     public class SceneChanger : MonoBehaviour
     {

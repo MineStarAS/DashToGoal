@@ -1,4 +1,3 @@
-using src.kr.kro.minestar.player;
 using src.kr.kro.minestar.player.skill;
 
 namespace src.kr.kro.minestar.gameEvent
@@ -28,7 +27,7 @@ namespace src.kr.kro.minestar.gameEvent
                 var activeSkill2 = player.GetPlayerCharacter().GetActiveSkill2();
 
 
-                if (passiveSkill.GetDetectEvent() == gameEvent.GetType()) passiveSkill.UseSkill();
+                if (passiveSkill.GetDetectEvent() == gameEvent.GetType()) passiveSkill.UseSkill(player);
 
                 if (activeSkill1 is ChargeActiveSkill skill1)
                     if (skill1.GetDetectEvent() == gameEvent.GetType())

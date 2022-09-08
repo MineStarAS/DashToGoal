@@ -12,11 +12,11 @@ namespace src.kr.kro.minestar.player
     public abstract class PlayerCharacter
     {
         /// ##### Static Functions #####
-        public static PlayerCharacter FromEnum(PlayerCharacterEnum playerCharacterEnum)
+        public static PlayerCharacter FromEnum(Player player, PlayerCharacterEnum playerCharacterEnum)
         {
             return playerCharacterEnum switch
             {
-                PlayerCharacterEnum.MineStar => new MineStar(),
+                PlayerCharacterEnum.MineStar => new MineStar(player),
                 PlayerCharacterEnum.SonJunHo => new MineStar1(),
                 _ => new MineStar2()
             };
@@ -45,6 +45,12 @@ namespace src.kr.kro.minestar.player
 
     public class MineStar : PlayerCharacter
     {
+        public MineStar(Player player)
+        {
+            SetPassiveSkill(new PassiveSkillSpeedy(player));
+            SetActiveSkill1(new ActiveSkillDash());
+            SetActiveSkill2(new ActiveSkillSuperJump());
+        }
     }
 
     public class MineStar1 : PlayerCharacter

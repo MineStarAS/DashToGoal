@@ -1,22 +1,28 @@
 using System.Collections.Generic;
 using src.kr.kro.minestar.gameEvent;
 using src.kr.kro.minestar.player;
+using UnityEngine;
 
 namespace src.kr.kro.minestar
 {
-    public class GameSystem
+    public class GameSystem : MonoBehaviour
     {
         /// ##### Field #####
-        public GameEventOperator GameEventOperator;
+        public readonly GameEventOperator GameEventOperator;
 
-        public string PlayMap;
+        public string playMap;
         
-        public HashSet<Player> Players = new();
+        public readonly HashSet<Player> Players;
 
         /// ##### Constructor #####
         public GameSystem()
         {
             GameEventOperator = new GameEventOperator(this);
+            Players = new HashSet<Player>();
+
+            var player = gameObject.AddComponent<Player>();
+
+            Players.Add(player);
         }
     }
 }
