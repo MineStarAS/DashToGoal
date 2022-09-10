@@ -1,3 +1,4 @@
+using src.kr.kro.minestar.player.character;
 using src.kr.kro.minestar.player.skill;
 
 namespace src.kr.kro.minestar.player
@@ -16,9 +17,9 @@ namespace src.kr.kro.minestar.player
         {
             return playerCharacterEnum switch
             {
-                PlayerCharacterEnum.MineStar => new MineStar(player),
-                PlayerCharacterEnum.SonJunHo => new MineStar1(),
-                _ => new MineStar2()
+                PlayerCharacterEnum.MineStar => new PcMineStar(player),
+                PlayerCharacterEnum.SonJunHo => new PcMineStar(player),
+                _ => new PcMineStar(player),
             };
         }
 
@@ -41,23 +42,5 @@ namespace src.kr.kro.minestar.player
         protected void SetActiveSkill1(ActiveSkill activeSkill) => _activeSkill1 = activeSkill;
 
         protected void SetActiveSkill2(ActiveSkill activeSkill) => _activeSkill2 = activeSkill;
-    }
-
-    public class MineStar : PlayerCharacter
-    {
-        public MineStar(Player player)
-        {
-            SetPassiveSkill(new PassiveSkillSpeedy(player));
-            SetActiveSkill1(new ActiveSkillDash());
-            SetActiveSkill2(new ActiveSkillSuperJump());
-        }
-    }
-
-    public class MineStar1 : PlayerCharacter
-    {
-    }
-
-    public class MineStar2 : PlayerCharacter
-    {
     }
 }

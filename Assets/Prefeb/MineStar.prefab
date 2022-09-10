@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 2765020810452925488}
   - component: {fileID: 7457704279363318501}
   - component: {fileID: 6323556499862312342}
-  - component: {fileID: 2720732739996177992}
   - component: {fileID: 3247080807963324705}
   m_Layer: 2
   m_Name: MineStar
@@ -102,7 +101,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.75}
+  m_Offset: {x: 0, y: -0.6}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -152,22 +151,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &2720732739996177992
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7243836870788264014}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bf72fe33415a1bf47a17e85258298a81, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveForce: 0
-  jumpForce: 0
-  gizmoSize: 0
-  m_iGroundjump: 0
 --- !u!114 &3247080807963324705
 MonoBehaviour:
   m_ObjectHideFlags: 0

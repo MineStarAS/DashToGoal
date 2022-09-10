@@ -17,17 +17,10 @@ namespace src.kr.kro.minestar.gameEvent
 
     public class PlayerMoveEvent : PlayerEvent
     {
-        /// ##### Field #####
-        private readonly float _moveForce;
-
-        /// ##### Getter #####
-        public float GetMoveForce() => _moveForce;
-
         /// ##### Constructor #####
-        public PlayerMoveEvent(Player player, float moveForce)
+        public PlayerMoveEvent(Player player)
         {
             SetPlayer(player);
-            _moveForce = moveForce;
             
             player.GetGameSystem().GameEventOperator.DoEvent(this);
         }
@@ -35,17 +28,10 @@ namespace src.kr.kro.minestar.gameEvent
 
     public class PlayerJumpEvent : PlayerEvent
     {
-        /// ##### Field #####
-        private readonly float _jumpForce;
-
-        /// ##### Getter #####
-        public float GetJumpForce() => _jumpForce;
-
         /// ##### Constructor #####
-        public PlayerJumpEvent(Player player, float jumpForce)
+        public PlayerJumpEvent(Player player)
         {
             SetPlayer(player);
-            _jumpForce = jumpForce;
             
             player.GetGameSystem().GameEventOperator.DoEvent(this);
         }

@@ -1,24 +1,28 @@
+using System;
+using System.Linq;
 using UnityEngine;
 using src.kr.kro.minestar.player;
 using Unity.VisualScripting;
 using System.Linq.Expressions;
+using src.kr.kro.minestar.gameEvent;
+using src.kr.kro.minestar.player.effect;
 
 namespace src.sjh.Scripts
 {
     public class PlayerMove : MonoBehaviour
     {
-        /// ##### Default Field #####
-        [SerializeField] private const byte DefaultAirJumpAmount = 1; // 공중 점프 가능한 횟수.
-        Player m_Player;
         /// ##### Field #####
-        [SerializeField] private float moveForce;    // 플레이어 이동에 가해지는 힘
-        [SerializeField] private float jumpForce;    // 플레이어 점프 힘
-        [SerializeField] private float gizmoSize;
+        private Player m_Player;
 
+        private float m_fMaxSpeed = 8.0f; // 플레이어 이동속도
+        private float moveForce = 0.05f; // 플레이어 이동에 가해지는 힘
+        private float jumpForce = 13.0f; // 플레이어 점프 힘
+        private float gizmoSize = 0f;
         private bool m_isJump; // 점프키를 눌렀는가
-        private float m_fMaxSpeed; // 플레이어 이동속도
-        private byte _airJumpAmount; // 공중 점프 가능 횟수
-        [SerializeField] private int m_iGroundjump; // 땅에 있을때 점프할 수 있는 
+
+        private const int DefaultAirJumpAmount = 1; // 공중 점프 가능한 횟수.
+        private int _airJumpAmount = DefaultAirJumpAmount; // 공중 점프 가능 횟수
+        private int m_iGroundjump; // 땅에 있을때 점프할 수 있는 
         private Rigidbody2D _body; // 플레이어 물리
         private SpriteRenderer _spriteRenderer; // 스프라이트 정보
 
@@ -26,49 +30,203 @@ namespace src.sjh.Scripts
         private void Start() // 변수 초기화
         {
             m_Player = GetComponent<Player>();
-            m_fMaxSpeed = 5.0f;
-            moveForce = 0.05f;
-            jumpForce = 13.0f;
-
-            _airJumpAmount = DefaultAirJumpAmount;
-
             _body = GetComponent<Rigidbody2D>();
             _spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
-        private void Update()
-        {  
-            _DoJump(); // 점프
-            _DoMove(); // 좌우 이동
-            _DoUseSkill(); // 스킬 사용
+        public void FixedCheck()
+        {
+            if (_body != null)
+                if (_body.velocity.y < -10.0f)
+                {
+                    _body.drag = 2.0f; // 플레이어 낙하 속도
+                }
+
+            if (transform.position.y < -15) transform.position = new Vector3(0, 0, 0);
+        }
+        
+        /// ##### Calculate Functions #####
+        
+        private float GetMoveForce()
+        {
+            var value = m_fMaxSpeed;
+            var effects = m_Player.GetEffects();
+
+            if (effects == null || effects.Count == 0) return value;
+
+            // Add Calculate
+            foreach (var effect in effects.Where(effect => effect.GetValueCalculator() == ValueCalculator.Add))
+            {
+                switch (effect.GetEffectType())
+                {
+                    case EffectType.FastMovement:
+                    case EffectType.SlowMovement:
+                        value = Calculate(value, effect);
+                        continue;
+                    case EffectType.Bondage:
+                        return 0F;
+                    case EffectType.BonusJump:
+                    case EffectType.SuperJump:
+                    case EffectType.JumpFatigue:
+                    case EffectType.Disorder:
+                    default:
+                        continue;
+                }
+            }
+
+            // Multi Calculate
+            foreach (var effect in effects.Where(effect => effect.GetValueCalculator() == ValueCalculator.Multi))
+            {
+                switch (effect.GetEffectType())
+                {
+                    case EffectType.FastMovement:
+                    case EffectType.SlowMovement:
+                        value = Calculate(value, effect);
+                        continue;
+                    case EffectType.Bondage:
+                        return 0F;
+                    case EffectType.BonusJump:
+                    case EffectType.SuperJump:
+                    case EffectType.JumpFatigue:
+                    case EffectType.Disorder:
+                    default:
+                        continue;
+                }
+            }
+
+            return value;
         }
 
-        private void FixedUpdate()
+        private float GetJumpForce()
         {
-            if(_body.velocity.y < -10.0f)
+            var value = jumpForce;
+            // var effects = m_Player.GetEffects();
+
+            // if (effects == null || effects.Count == 0) return value;
+            //
+            // foreach (var effect in effects.Where(effect => effect.GetValueCalculator() == ValueCalculator.Add))
+            // {
+            //     switch (effect.GetEffectType())
+            //     {
+            //         case EffectType.SuperJump:
+            //         case EffectType.JumpFatigue:
+            //             value = Calculate(value, effect);
+            //             continue;
+            //         case EffectType.Bondage:
+            //             return 0F;
+            //         case EffectType.FastMovement:
+            //         case EffectType.SlowMovement:
+            //         case EffectType.BonusJump:
+            //         case EffectType.Disorder:
+            //         default:
+            //             continue;
+            //     }
+            // }
+            //
+            // foreach (var effect in effects.Where(effect => effect.GetValueCalculator() == ValueCalculator.Multi))
+            // {
+            //     switch (effect.GetEffectType())
+            //     {
+            //         case EffectType.SuperJump:
+            //         case EffectType.JumpFatigue:
+            //             value = Calculate(value, effect);
+            //             continue;
+            //         case EffectType.Bondage:
+            //             return 0F;
+            //         case EffectType.FastMovement:
+            //         case EffectType.SlowMovement:
+            //         case EffectType.BonusJump:
+            //         case EffectType.Disorder:
+            //         default:
+            //             continue;
+            //     }
+            // }
+
+            return value;
+        }
+        
+        public int LandingAirJumpAmountCharge()
+        {
+            var value = DefaultAirJumpAmount;
+            var effects = m_Player.GetEffects();
+
+            // Add Calculate
+            foreach (var effect in effects.Where(effect => effect.GetValueCalculator() == ValueCalculator.Add))
             {
-                _body.drag = 2.0f; // 플레이어 낙하 속도
+                switch (effect.GetEffectType())
+                {
+                    case EffectType.BonusJump:
+                        value = Calculate(value, effect);
+                        continue;
+                    case EffectType.FastMovement:
+                    case EffectType.SlowMovement:
+                    case EffectType.Bondage:
+                    case EffectType.SuperJump:
+                    case EffectType.JumpFatigue:
+                    case EffectType.Disorder:
+                    default:
+                        continue;
+                }
             }
 
-            if (this.transform.position.y < -15) this.transform.position = new Vector3(0, 0, 0);
+            // Multi Calculate
+            foreach (var effect in effects.Where(effect => effect.GetValueCalculator() == ValueCalculator.Multi))
+            {
+                switch (effect.GetEffectType())
+                {
+                    case EffectType.BonusJump:
+                        value = Calculate(value, effect);
+                        continue;
+                    case EffectType.FastMovement:
+                    case EffectType.SlowMovement:
+                    case EffectType.Bondage:
+                    case EffectType.SuperJump:
+                    case EffectType.JumpFatigue:
+                    case EffectType.Disorder:
+                    default:
+                        continue;
+                }
+            }
+
+            return value;
+        }
+        
+        private static float Calculate(float value, Effect effect)
+        {
+            return effect.GetValueCalculator() switch
+            {
+                ValueCalculator.Add => value + effect.GetCalculatorValue(),
+                ValueCalculator.Multi => value * effect.GetCalculatorValue(),
+                _ => value
+            };
         }
 
-        private void _DoUseSkill()
+        private static int Calculate(int value, Effect effect)
         {
-            if(Input.GetKeyDown(KeyCode.Z))
+            return effect.GetValueCalculator() switch
             {
-                m_Player.DoUseActiveSkill1();
-            }
-            
-            if (Input.GetKeyDown(KeyCode.X))
-            {
-                m_Player.DoUseActiveSkill2();
-            }
+                ValueCalculator.Add => value + Convert.ToByte(effect.GetCalculatorValue()),
+                ValueCalculator.Multi => value * Convert.ToByte(effect.GetCalculatorValue()),
+                _ => value
+            };
         }
 
         /// ##### Movement Functions #####
-        private void _DoMove()
+        public void DoMove()
         {
+            var pressAllKey = Input.GetKey(KeyCode.RightArrow) && Input.GetKey(KeyCode.LeftArrow);
+            var notPressKey = !Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow);
+            
+            Debug.Log($"pressAllKey: {pressAllKey}");
+            Debug.Log($"notPressKey: {notPressKey}");
+            
+            if (pressAllKey || notPressKey)
+            {
+                Stop();
+                return;
+            }
+            
+            var maxMoveForce = GetMoveForce();
             // 움직임
             float h = 0; // 좌우 방향
             if (Input.GetKey(KeyCode.RightArrow))
@@ -83,29 +241,36 @@ namespace src.sjh.Scripts
                 _body.drag = 0.0f; // 저항값
                 _spriteRenderer.flipX = true;
             }
+
             _body.AddForce(Vector2.right * h * moveForce, ForceMode2D.Impulse);
-            
-
-            if (_body.velocity.x > m_fMaxSpeed)
-                _body.velocity = new Vector2(m_fMaxSpeed, _body.velocity.y);
-            else if (_body.velocity.x < -m_fMaxSpeed)
-                _body.velocity = new Vector2(-m_fMaxSpeed, _body.velocity.y);
 
 
-            // 멈추기
-            if (m_iGroundjump == 0 || m_isJump == true) return; // 플레이어가 공중에 있으면 실행 못하게
-            if (Input.GetKeyUp(KeyCode.RightArrow))
+            if (_body.velocity.x > maxMoveForce)
+                _body.velocity = new Vector2(maxMoveForce, _body.velocity.y);
+            else if (_body.velocity.x < -maxMoveForce)
+                _body.velocity = new Vector2(-maxMoveForce, _body.velocity.y);
+
+            void Stop()
             {
-                _body.drag = 30.0f;
+                // 멈추기
+                if (m_iGroundjump == 0 || m_isJump == true) return; // 플레이어가 공중에 있으면 실행 못하게
+                if (Input.GetKeyUp(KeyCode.RightArrow))
+                {
+                    _body.drag = 30.0f;
+                }
+                else if (Input.GetKeyUp(KeyCode.LeftArrow))
+                {
+                    _body.drag = 30.0f;
+                }
             }
-            else if (Input.GetKeyUp(KeyCode.LeftArrow))
-            {
-                _body.drag = 30.0f;
-            }
+
+            new PlayerMoveEvent(m_Player);
         }
 
-        private void _DoJump()
+        public void DoJump()
         {
+            var jf = GetJumpForce();
+
             if (_airJumpAmount <= 0) return;
             // 점프 횟수 추가
             if (Input.GetKeyDown(KeyCode.C) & _airJumpAmount != 0)
@@ -113,10 +278,17 @@ namespace src.sjh.Scripts
                 m_isJump = true;
                 if (m_iGroundjump == 0) _airJumpAmount--;
                 _body.drag = 0.0f;
-                _body.velocity = new Vector2(_body.velocity.x,0);
-                _body.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+                _body.velocity = new Vector2(_body.velocity.x, 0);
+                _body.AddForce(Vector2.up * jf, ForceMode2D.Impulse);
+            
+                new PlayerJumpEvent(m_Player);
             }
         }
+
+        public void AddMovement(float x, float y) => _body.AddForce(new Vector2(x, y));
+        
+        public void AddMovementFlip(float x, float y) => _body.AddForce(!_spriteRenderer.flipX ? new Vector2(x, y) : new Vector2(-x, y));
+       
 
         private void OnTriggerEnter2D(Collider2D other)
         {
@@ -165,7 +337,7 @@ namespace src.sjh.Scripts
             }
         }
 
-        void _DoCheckCollider() // 다시 충돌 감지
+        private void _DoCheckCollider() // 다시 충돌 감지
         {
             if (!this.GetComponent<BoxCollider2D>().enabled)
                 this.GetComponent<BoxCollider2D>().enabled = true;
