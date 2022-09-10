@@ -1,25 +1,24 @@
-using src.kr.kro.minestar.gameEvent;
+using System;
+using System.Linq;
 using src.kr.kro.minestar.player.effect;
 
 namespace src.kr.kro.minestar.player.skill
 {
-    public class PassiveSkillSpeedy : PassiveSkill
+    public abstract class PassiveSkill : Skill
     {
-        public PassiveSkillSpeedy(Player player)
-        {
-            SetPlayer(player);
-            SetName("Speedy");
-            SetDescription("I'm FAST!!!");
-            
-            SetEffects(new Effect[]{new Speed(player)});
-            SetDetectEvent<PlayerUseActiveSkill1Event>();
-        }
-        
-        public override void UseSkill(Player player)
-        {
-            var playerEvent = new PlayerUsePassiveSkillEvent(player, this);
-        }
+        /// ##### Field #####
+        private Effect[] _effects;
 
-        protected override bool CanUseSkill() => true;
+        private Type _detectEvent;
+
+        /// ##### Getter #####
+        public Effect[] GetEffects() => _effects.ToArray();
+
+        public Type GetDetectEvent() => _detectEvent;
+
+        /// ##### Setter #####
+        protected void SetEffects(Effect[] effects) => _effects = effects;
+
+        protected void SetDetectEvent<T>() => _detectEvent = typeof(T);
     }
 }

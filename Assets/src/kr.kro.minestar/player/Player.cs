@@ -1,7 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using JetBrains.Annotations;
 using src.kr.kro.minestar.gameEvent;
 using src.kr.kro.minestar.player.effect;
 using src.kr.kro.minestar.player.skill;
@@ -10,115 +7,48 @@ using UnityEngine;
 
 namespace src.kr.kro.minestar.player
 {
-    public class Player :MonoBehaviour
+    public class Player : MonoBehaviour
     {
-        [SerializeField] PlayerCharacterEnum m_enum;
         /// ##### Field #####
-        private /*readonly*/ GameSystem _gameSystem;
+        private GameSystem _gameSystem;
 
-        private /*readonly*/ PlayerCharacter _playerCharacter;
+        [SerializeField] PlayerCharacterEnum m_enum;
+        private PlayerCharacter _playerCharacter;
+        private List<Effect> _effects;
+        private PlayerMove _playerMove;
 
-        private /*readonly*/ List<Effect> _effects = new ();
-        [CanBeNull] private string _item;
-
-        /// ##### Constructor #####
-        /*
-        public Player(GameSystem gameSystem, PlayerCharacterEnum playerCharacterEnum)
-        {
-            _gameSystem = gameSystem;
-            _playerCharacter = PlayerCharacter.FromEnum(this, playerCharacterEnum);
-            // _effects = new List<Effect>();
-        }*/
+        /// ##### Unity Functions #####
         private void Start()
         {
-            _gameSystem = GameObject.Find("GameManager").gameObject.GetComponent<GameSystem>();
-            _playerCharacter = PlayerCharacter.FromEnum(this, m_enum);
             _effects = new List<Effect>();
+            _gameSystem = GameObject.Find("GameManager").gameObject.GetComponent<GameSystem>();
+            _playerMove = gameObject.AddComponent<PlayerMove>();
+            _playerCharacter = PlayerCharacter.FromEnum(this, m_enum);
         }
+
+
+        private void Update()
+        {
+            _playerMove.DoJump(); // ì í”„
+            _playerMove.DoMove(); // ì¢Œìš° ì´ë™
+            DoUseSkill();
+        }
+
+        private void FixedUpdate()
+        {
+            _playerMove.FixedCheck();
+        }
+
 
         /// ##### Get Functions #####
+        public GameSystem GetGameSystem() => _gameSystem;
+
         public PlayerCharacter GetPlayerCharacter() => _playerCharacter;
 
-        public List<Effect> GetEffects => _effects;
+        public List<Effect> GetEffects() => new List<Effect>();
 
-        public float GetMoveForce()
-        {
-            var value = 1f;
+        public PlayerMove GetPlayerMove() => _playerMove;
 
-            if (_effects == null || _effects.Count == 0) return value;
-
-            // Add Calculate
-            foreach (var effect in _effects.Where(effect => effect.GetValueCalculator() == ValueCalculator.Add))
-            {
-                switch (effect.GetEffectType())
-                {
-                    case EffectType.FastMovement:
-                    case EffectType.SlowMovement:
-                        value = Calculate(value, effect);
-                        continue;
-                    case EffectType.Bondage:
-                        return 0F;
-                    case EffectType.BonusJump:
-                    case EffectType.SuperJump:
-                    case EffectType.JumpFatigue:
-                    case EffectType.Disorder:
-                    default:
-                        continue;
-                }
-            }
-
-            // Multi Calculate
-            foreach (var effect in _effects.Where(effect => effect.GetValueCalculator() == ValueCalculator.Multi))
-            {
-                switch (effect.GetEffectType())
-                {
-                    case EffectType.FastMovement:
-                    case EffectType.SlowMovement:
-                        value = Calculate(value, effect);
-                        continue;
-                    case EffectType.Bondage:
-                        return 0F;
-                    case EffectType.BonusJump:
-                    case EffectType.SuperJump:
-                    case EffectType.JumpFatigue:
-                    case EffectType.Disorder:
-                    default:
-                        continue;
-                }
-            }
-
-            return value;
-        }
-
-        public float GetJumpForce()
-        {
-            var value = 1f;
-
-            if (_effects == null || _effects.Count == 0) return value;
-                
-            foreach (var effect in _effects)
-            {
-                switch (effect.GetEffectType())
-                {
-                    case EffectType.SuperJump:
-                    case EffectType.JumpFatigue:
-                        value = Calculate(value, effect);
-                        continue;
-                    case EffectType.Bondage:
-                        return 0F;
-                    case EffectType.FastMovement:
-                    case EffectType.SlowMovement:
-                    case EffectType.BonusJump:
-                    case EffectType.Disorder:
-                    default:
-                        continue;
-                }
-            }
-
-            return value;
-        }
-
-        public GameSystem GetGameSystem() => _gameSystem;
 
         public PassiveSkill GetPassiveSkill() => _playerCharacter.GetPassiveSkill();
         public ActiveSkill GetGetActiveSkill1() => _playerCharacter.GetActiveSkill1();
@@ -135,90 +65,31 @@ namespace src.kr.kro.minestar.player
             _effects.Remove(effect);
         }
 
-        /// ##### Calculate Functions #####
-        private static float Calculate(float value, Effect effect)
-        {
-            return effect.GetValueCalculator() switch
-            {
-                ValueCalculator.Add => value + effect.GetCalculatorValue(),
-                ValueCalculator.Multi => value * effect.GetCalculatorValue(),
-                _ => value
-            };
-        }
-
-        private static int Calculate(int value, Effect effect)
-        {
-            return effect.GetValueCalculator() switch
-            {
-                ValueCalculator.Add => value + Convert.ToByte(effect.GetCalculatorValue()),
-                ValueCalculator.Multi => value * Convert.ToByte(effect.GetCalculatorValue()),
-                _ => value
-            };
-        }
-
+        // ReSharper disable Unity.PerformanceAnalysis
         ///###### Do Functions #####
+        private void DoUseSkill()
+        {
+            if (Input.GetKeyDown(KeyCode.Z))
+            {
+                DoUseActiveSkill1();
+            }
 
-        public void DoUseActiveSkill1() // PlayerMove¿¡¼­ »ç¿ëÇÒ ¼ö ÀÖ°Ô public À¸·Î ¼öÁ¤ - ¼ÕÁØÈ£
+            if (Input.GetKeyDown(KeyCode.X))
+            {
+                DoUseActiveSkill2();
+            }
+        }
+
+        private void DoUseActiveSkill1()
         {
             var skill = GetGetActiveSkill1();
-            skill.UseSkill(this);
-
-            var playerEvent = new PlayerUseActiveSkill1Event(this, skill);
+            if (skill.UseSkill(this)) _gameSystem.GameEventOperator.DoEvent(new PlayerUseActiveSkill1Event(this, skill));
         }
 
-        public void DoUseActiveSkill2() // PlayerMove¿¡¼­ »ç¿ëÇÒ ¼ö ÀÖ°Ô public À¸·Î ¼öÁ¤ - ¼ÕÁØÈ£
+        private void DoUseActiveSkill2()
         {
             var skill = GetGetActiveSkill2();
-            skill.UseSkill(this);
-
-            var playerEvent = new PlayerUseActiveSkill1Event(this, skill);
-        }
-
-
-        /// ##### Other Functions #####
-        public int LandingAirJumpAmountCharge()
-        {
-            var value = 1;
-
-            // Add Calculate
-            foreach (var effect in _effects.Where(effect => effect.GetValueCalculator() == ValueCalculator.Add))
-            {
-                switch (effect.GetEffectType())
-                {
-                    case EffectType.BonusJump:
-                        value = Calculate(value, effect);
-                        continue;
-                    case EffectType.FastMovement:
-                    case EffectType.SlowMovement:
-                    case EffectType.Bondage:
-                    case EffectType.SuperJump:
-                    case EffectType.JumpFatigue:
-                    case EffectType.Disorder:
-                    default:
-                        continue;
-                }
-            }
-
-            // Multi Calculate
-            foreach (var effect in _effects.Where(effect => effect.GetValueCalculator() == ValueCalculator.Multi))
-            {
-                switch (effect.GetEffectType())
-                {
-                    case EffectType.BonusJump:
-                        value = Calculate(value, effect);
-                        continue;
-                    case EffectType.FastMovement:
-                    case EffectType.SlowMovement:
-                    case EffectType.Bondage:
-                    case EffectType.SuperJump:
-                    case EffectType.JumpFatigue:
-                    case EffectType.Disorder:
-                    default:
-                        continue;
-                }
-            }
-            
-            return value;
+            if (skill.UseSkill(this)) _gameSystem.GameEventOperator.DoEvent(new PlayerUseActiveSkill2Event(this, skill));
         }
     }
 }
