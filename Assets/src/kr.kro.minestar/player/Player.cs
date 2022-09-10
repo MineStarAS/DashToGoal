@@ -317,7 +317,6 @@ namespace src.kr.kro.minestar.player
         {
             // 무한 점프 막기
             if (other.gameObject.layer != 6 || !(_body.velocity.y <= 0)) return;
-            m_isLanding = true;
             _airJumpAmount = DefaultAirJumpAmount;
             _body.drag = 0;
         }
