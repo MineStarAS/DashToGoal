@@ -14,11 +14,8 @@ namespace src.kr.kro.minestar.player
     {
         /// ##### Constant Field #####
         private const float MoveForce = 6F;
-
         private const float JumpForce = 13F;
-
         private const float GizmoSize = 5F;
-
         private const byte DefaultAirJumpAmount = 2;
 
         /// ##### Field #####
