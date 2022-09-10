@@ -7,9 +7,13 @@ namespace src.sjh.Scripts
 {
     public class SceneChanger : MonoBehaviour
     {
-        void OnMouseDown()
+        public void func_ClickBtn()
         {
-            SceneManager.LoadScene("SampleScene");
+            Scene CurrentScene = SceneManager.GetActiveScene();
+            if(CurrentScene.name == "Title")
+                SceneManager.LoadScene("CharacterSelect");
+            else if (CurrentScene.name == "CharacterSelect")
+                SceneManager.LoadScene("Map1");
         }
     }
 }

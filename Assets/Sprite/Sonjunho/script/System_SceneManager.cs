@@ -7,6 +7,6 @@ public class System_SceneManager : MonoBehaviour
 {
     public void OnMouseDown()
     {
-        SceneManager.LoadScene("SampleScene");
+        SceneManager.LoadScene("CharaterSelect");
     }
 }
