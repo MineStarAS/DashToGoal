@@ -1,6 +1,4 @@
-using UnityEditor;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace src.sjh.Scripts
 {
@@ -8,6 +6,7 @@ namespace src.sjh.Scripts
     {
         /// ##### Default Field #####
         [SerializeField] private const byte DefaultAirJumpAmount = 2; // 기본 점프 가능 횟수 1 = 1단, 2 = 2단 점프 가능
+        private bool m_isLanding; // 땅에 닿았는가
 
         /// ##### Field #####
         [SerializeField] private float moveForce;    // 플레이어 이동에 가해지는 힘
@@ -19,7 +18,7 @@ namespace src.sjh.Scripts
         private bool m_isLanding; // 땅에 닿았는가
         private Rigidbody2D _body; // 플레이어 물리
         private SpriteRenderer _spriteRenderer; // 스프라이트 정보
-        private Transform target; // 감지된 물체
+        private Transform _target; // 감지된 물체
 
 
         /// ##### Unity Functions #####
@@ -31,7 +30,7 @@ namespace src.sjh.Scripts
             jumpForce = 13.0f;
             gizmoSize = 5.0f;
 
-            airJumpAmount = DefaultAirJumpAmount;
+            _airJumpAmount = DefaultAirJumpAmount;
 
             _body = GetComponent<Rigidbody2D>();
             _spriteRenderer = GetComponent<SpriteRenderer>();
@@ -41,7 +40,7 @@ namespace src.sjh.Scripts
         {  
             _DoJump(); // 점프
             _DoMove(); // 좌우 이동
-            _DoDitect(); // 범위내 오브젝트 감지
+            _DoDetect(); // 범위내 오브젝트 감지
         }
 
         private void FixedUpdate()
@@ -77,7 +76,7 @@ namespace src.sjh.Scripts
 
         private void _DoJump()
         {
-            if (airJumpAmount < 0) return;
+            if (_airJumpAmount <= 0) return;
             // 점프 횟수 추가
             if (Input.GetKeyDown(KeyCode.Space) & airJumpAmount != 0)
             {
@@ -88,31 +87,25 @@ namespace src.sjh.Scripts
                 _body.AddForce(jumpVelocity, ForceMode2D.Impulse);
                 m_isLanding = false;
             }
-
         }
 
-        private void _DoDitect() // 플레이어 혹은 물체 감지 - 나중에 스킬로 옮기면됨
+        private void _DoDetect() // 플레이어 혹은 물체 감지 - 나중에 스킬로 옮기면됨
         {
-            if (Input.GetKeyDown(KeyCode.V))
+            if (!Input.GetKeyDown(KeyCode.V)) return;
+            var cols = Physics2D.OverlapCircleAll(transform.position, gizmoSize);
+            if (cols.Length > 0)
             {
-                Collider2D[] cols = Physics2D.OverlapCircleAll(transform.position, gizmoSize);
-                if (cols.Length > 0)
+                foreach (var t in cols)
                 {
-
-                    for (int i = 0; i < cols.Length; i++)
-                    {
-                        if (cols[i].tag == "Enemy")
-                        {
-                            Debug.Log("Physics Enemy : Target found");
-                            target = cols[i].gameObject.transform;
-                        }
-                    }
+                    if (!t.CompareTag("Enemy")) continue;
+                    Debug.Log("Physics Enemy : Target found");
+                    _target = t.gameObject.transform;
                 }
-                else
-                {
-                    Debug.Log("Physics Enemy : Target lost");
-                    target = null;
-                }
+            }
+            else
+            {
+                Debug.Log("Physics Enemy : Target lost");
+                _target = null;
             }
         }
 
