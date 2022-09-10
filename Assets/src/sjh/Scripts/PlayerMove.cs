@@ -100,47 +100,47 @@ namespace src.sjh.Scripts
         private float GetJumpForce()
         {
             var value = jumpForce;
-            // var effects = m_Player.GetEffects();
+            var effects = m_Player.GetEffects();
 
-            // if (effects == null || effects.Count == 0) return value;
-            //
-            // foreach (var effect in effects.Where(effect => effect.GetValueCalculator() == ValueCalculator.Add))
-            // {
-            //     switch (effect.GetEffectType())
-            //     {
-            //         case EffectType.SuperJump:
-            //         case EffectType.JumpFatigue:
-            //             value = Calculate(value, effect);
-            //             continue;
-            //         case EffectType.Bondage:
-            //             return 0F;
-            //         case EffectType.FastMovement:
-            //         case EffectType.SlowMovement:
-            //         case EffectType.BonusJump:
-            //         case EffectType.Disorder:
-            //         default:
-            //             continue;
-            //     }
-            // }
-            //
-            // foreach (var effect in effects.Where(effect => effect.GetValueCalculator() == ValueCalculator.Multi))
-            // {
-            //     switch (effect.GetEffectType())
-            //     {
-            //         case EffectType.SuperJump:
-            //         case EffectType.JumpFatigue:
-            //             value = Calculate(value, effect);
-            //             continue;
-            //         case EffectType.Bondage:
-            //             return 0F;
-            //         case EffectType.FastMovement:
-            //         case EffectType.SlowMovement:
-            //         case EffectType.BonusJump:
-            //         case EffectType.Disorder:
-            //         default:
-            //             continue;
-            //     }
-            // }
+            if (effects == null || effects.Count == 0) return value;
+            
+            foreach (var effect in effects.Where(effect => effect.GetValueCalculator() == ValueCalculator.Add))
+            {
+                switch (effect.GetEffectType())
+                {
+                    case EffectType.SuperJump:
+                    case EffectType.JumpFatigue:
+                        value = Calculate(value, effect);
+                        continue;
+                    case EffectType.Bondage:
+                        return 0F;
+                    case EffectType.FastMovement:
+                    case EffectType.SlowMovement:
+                    case EffectType.BonusJump:
+                    case EffectType.Disorder:
+                    default:
+                        continue;
+                }
+            }
+            
+            foreach (var effect in effects.Where(effect => effect.GetValueCalculator() == ValueCalculator.Multi))
+            {
+                switch (effect.GetEffectType())
+                {
+                    case EffectType.SuperJump:
+                    case EffectType.JumpFatigue:
+                        value = Calculate(value, effect);
+                        continue;
+                    case EffectType.Bondage:
+                        return 0F;
+                    case EffectType.FastMovement:
+                    case EffectType.SlowMovement:
+                    case EffectType.BonusJump:
+                    case EffectType.Disorder:
+                    default:
+                        continue;
+                }
+            }
 
             return value;
         }
@@ -269,12 +269,10 @@ namespace src.sjh.Scripts
 
         public void DoJump()
         {
+            if (!Input.GetKeyDown(KeyCode.C) || _airJumpAmount <= 0) return;
             var jf = GetJumpForce();
-
-            if (_airJumpAmount <= 0) return;
+            
             // 점프 횟수 추가
-            if (Input.GetKeyDown(KeyCode.C) & _airJumpAmount != 0)
-            {
                 m_isJump = true;
                 if (m_iGroundjump == 0) _airJumpAmount--;
                 _body.drag = 0.0f;
@@ -282,7 +280,6 @@ namespace src.sjh.Scripts
                 _body.AddForce(Vector2.up * jf, ForceMode2D.Impulse);
             
                 new PlayerJumpEvent(m_Player);
-            }
         }
 
         public void AddMovement(float x, float y) => _body.AddForce(new Vector2(x, y));
