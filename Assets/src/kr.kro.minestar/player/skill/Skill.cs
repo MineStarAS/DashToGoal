@@ -1,11 +1,8 @@
-using System;
-using System.Linq;
-using src.kr.kro.minestar.gameEvent;
-using src.kr.kro.minestar.player.effect;
+using UnityEngine;
 
 namespace src.kr.kro.minestar.player.skill
 {
-    public abstract class Skill
+    public abstract class Skill: MonoBehaviour
     {
         /// ##### Field #####
         private Player _player;

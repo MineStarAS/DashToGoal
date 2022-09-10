@@ -1,38 +1,51 @@
 using System;
+using System.Collections;
+using System.Threading;
 using src.kr.kro.minestar.gameEvent;
+using UnityEngine;
 
 namespace src.kr.kro.minestar.player.skill
 {
     public abstract class ActiveSkill : Skill
     {
         /// ##### Field #####
-        private float _startCoolTime;
+        public int DefaultCoolTime { get; private set; }
 
-        private float _defaultCoolTime;
-        private float _coolTime;
+        public int CurrentCoolTime { get; private set; }
 
-        /// ##### Getter #####
-        public float GetStartCoolTime() => _startCoolTime;
-
-        public float GetDefaultCoolTime() => _defaultCoolTime;
-
-        /// ##### Setter #####
-        protected void SetStartCoolTime(float value) => _startCoolTime = value;
-
-        protected void SetDefaultCoolTime(float value) => _defaultCoolTime = value;
+        private Timer _timer;
 
         /// ##### Functions #####
-        protected ActiveSkill()
+        protected virtual void Init(float startCoolTime, float defaultCoolTime)
         {
-            _coolTime = _startCoolTime;
+            gameObject.AddComponent<Skill>();
+            
+            var startAmount = Convert.ToInt32(Math.Round(startCoolTime, 2) * 100);
+            var defaultAmount = Convert.ToInt32(Math.Round(defaultCoolTime, 2) * 100);
+
+            DefaultCoolTime = defaultAmount;
+            CurrentCoolTime = startAmount;
+
+            StartTimer(startAmount);
         }
 
-        public void StartTimer()
+        protected void StartTimer(int coolTime)
         {
-            _coolTime -= 0.1F;
+            CurrentCoolTime = coolTime;
+            StartCoroutine(Timer());
         }
 
-        protected override bool CanUseSkill() => _coolTime <= 0.05F;
+        private IEnumerator Timer()
+        {
+            while (CurrentCoolTime >= 0)
+            {
+                Debug.Log($"CoolTime: {CurrentCoolTime}");
+                CurrentCoolTime -= 1;
+                yield return new WaitForSeconds(0.01F);
+            }
+        }
+
+        protected override bool CanUseSkill() => CurrentCoolTime <= 0;
     }
 
     public abstract class ChargeActiveSkill : ActiveSkill
@@ -71,8 +84,9 @@ namespace src.kr.kro.minestar.player.skill
 
 
         /// ##### Functions #####
-        protected ChargeActiveSkill()
+        protected override void Init(float startCoolTime, float defaultCoolTime)
         {
+            base.Init(startCoolTime, defaultCoolTime);
             _chargedAmount = _maxChargeAmount < _startChargeAmount ? _maxChargeAmount : _startChargeAmount;
         }
 

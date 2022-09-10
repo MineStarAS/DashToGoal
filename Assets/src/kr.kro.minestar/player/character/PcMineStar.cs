@@ -1,19 +1,21 @@
-using System;
+using System.Diagnostics.CodeAnalysis;
 using src.kr.kro.minestar.gameEvent;
 using src.kr.kro.minestar.player.effect;
 using src.kr.kro.minestar.player.skill;
 using UnityEngine;
+// ReSharper disable All
 
 namespace src.kr.kro.minestar.player.character
 {
     public class PcMineStar : PlayerCharacter
     {
         
+        [SuppressMessage("ReSharper", "Unity.IncorrectMonoBehaviourInstantiation")]
         public PcMineStar(Player player)
         {
-            SetPassiveSkill(new PsSpeedy(player));
-            SetActiveSkill1(new AsDash());
-            SetActiveSkill2(new AsSuperJump());
+            PassiveSkill = new PsSpeedy(player);
+            ActiveSkill1 = Skill.Instantiate<ActiveSkill>(player.GetComponent<AsDash>());
+            ActiveSkill2 = new AsSuperJump(20, 10);
         }
     }
     public class PsSpeedy : PassiveSkill
@@ -39,14 +41,12 @@ namespace src.kr.kro.minestar.player.character
 
     public class AsDash : ActiveSkill
     {
-        public AsDash()
+        private void Start()
         {
             SetName("Dash");
             SetDescription("I will dash\n" +
                            "to the goal");
-            
-            SetStartCoolTime(20F);
-            SetDefaultCoolTime(10F);
+            Init(20F, 10F);
         }
 
 
@@ -55,23 +55,18 @@ namespace src.kr.kro.minestar.player.character
             if (!CanUseSkill()) return false;
             player.GetPlayerMove().AddMovementFlip(5F, 2F);
             
-            player.GetGameSystem().GameEventOperator.DoEvent(new PlayerUseActiveSkill1Event(player, this));
-            
-            Debug.Log($"{GetName()} Used");
+            StartTimer(DefaultCoolTime);
             return true;
         }
     }
 
     public class AsSuperJump : ChargeActiveSkill
     {
-        public AsSuperJump()
+        public AsSuperJump(float startCoolTime, float defaultCoolTime)
         {
             SetName("SuperJump");
             SetDescription("I will jump\n" +
                            "to the goal");
-            
-            SetStartCoolTime(20F);
-            SetDefaultCoolTime(10F);
 
             SetStartChargeAmount(0);
             SetMaxChargeAmount(10);
@@ -85,7 +80,7 @@ namespace src.kr.kro.minestar.player.character
         {
             if (!CanUseSkill()) return false;
 
-            player.GetPlayerMove().AddMovement(0F, 30F);
+            player.GetPlayerMove().AddMovement(0F, 50F);
             
             Debug.Log($"{GetName()} Used");
             return true;

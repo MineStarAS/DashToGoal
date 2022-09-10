@@ -4,65 +4,61 @@ using src.kr.kro.minestar.player.effect;
 using src.kr.kro.minestar.player.skill;
 using src.sjh.Scripts;
 using UnityEngine;
+// ReSharper disable ObjectCreationAsStatement
 
 namespace src.kr.kro.minestar.player
 {
     public class Player : MonoBehaviour
     {
         /// ##### Field #####
-        private GameSystem _gameSystem;
+        public GameSystem GameSystem { get; private set; }
 
         [SerializeField] PlayerCharacterEnum m_enum;
-        private PlayerCharacter _playerCharacter;
-        private List<Effect> _effects;
-        private PlayerMove _playerMove;
+        public PlayerCharacter PlayerCharacter { get; private set; }
+        public List<Effect> Effects{ get; private set; }
+        public PlayerMove PlayerMove{ get; private set; }
 
         /// ##### Unity Functions #####
         private void Start()
         {
-            _effects = new List<Effect>();
-            _gameSystem = GameObject.Find("GameManager").gameObject.GetComponent<GameSystem>();
-            _playerMove = gameObject.AddComponent<PlayerMove>();
-            _playerCharacter = PlayerCharacter.FromEnum(this, m_enum);
+            Effects = new List<Effect>();
+            GameSystem = GameObject.Find("GameManager").gameObject.GetComponent<GameSystem>();
+            PlayerMove = gameObject.AddComponent<PlayerMove>();
+            PlayerCharacter = PlayerCharacter.FromEnum(this, m_enum);
+
+            GameSystem.Players.Add(this);
         }
 
 
         private void Update()
         {
-            _playerMove.DoJump(); // 점프
-            _playerMove.DoMove(); // 좌우 이동
+            PlayerMove.DoJump(); // 점프
+            PlayerMove.DoMove(); // 좌우 이동
             DoUseSkill();
         }
 
         private void FixedUpdate()
         {
-            _playerMove.FixedCheck();
+            PlayerMove.FixedCheck();
         }
 
 
         /// ##### Get Functions #####
-        public GameSystem GetGameSystem() => _gameSystem;
+        public GameSystem GetGameSystem() => GameSystem;
 
-        public PlayerCharacter GetPlayerCharacter() => _playerCharacter;
+        public PlayerCharacter GetPlayerCharacter() => PlayerCharacter;
 
-        public List<Effect> GetEffects() => new List<Effect>();
-
-        public PlayerMove GetPlayerMove() => _playerMove;
-
-
-        public PassiveSkill GetPassiveSkill() => _playerCharacter.GetPassiveSkill();
-        public ActiveSkill GetGetActiveSkill1() => _playerCharacter.GetActiveSkill1();
-        public ActiveSkill GetGetActiveSkill2() => _playerCharacter.GetActiveSkill2();
+        public PlayerMove GetPlayerMove() => PlayerMove;
 
         ///##### Effect Functions #####
         public void AddEffect(Effect effect)
         {
-            _effects.Add(effect);
+            Effects.Add(effect);
         }
 
         public void RemoveEffect(Effect effect)
         {
-            _effects.Remove(effect);
+            Effects.Remove(effect);
         }
 
         // ReSharper disable Unity.PerformanceAnalysis
@@ -82,14 +78,14 @@ namespace src.kr.kro.minestar.player
 
         private void DoUseActiveSkill1()
         {
-            var skill = GetGetActiveSkill1();
-            if (skill.UseSkill(this)) _gameSystem.GameEventOperator.DoEvent(new PlayerUseActiveSkill1Event(this, skill));
+            var skill = PlayerCharacter.ActiveSkill1;
+            if (skill.UseSkill(this)) new PlayerUseActiveSkill1Event(this, skill);
         }
 
         private void DoUseActiveSkill2()
         {
-            var skill = GetGetActiveSkill2();
-            if (skill.UseSkill(this)) _gameSystem.GameEventOperator.DoEvent(new PlayerUseActiveSkill2Event(this, skill));
+            var skill = PlayerCharacter.ActiveSkill2;
+            if (skill.UseSkill(this)) new PlayerUseActiveSkill2Event(this, skill);
         }
     }
 }

@@ -7,22 +7,18 @@ namespace src.kr.kro.minestar
 {
     public class GameSystem : MonoBehaviour
     {
-        /// ##### Field #####
-        public readonly GameEventOperator GameEventOperator;
-
-        //public string playMap;
-        
-        public readonly HashSet<Player> Players;
+        [SerializeField] GameObject m_gCamera;
 
         /// ##### Constructor #####
-        public GameSystem()
+        private void Start()
         {
             GameEventOperator = new GameEventOperator(this);
             Players = new HashSet<Player>();
-
-            //var player = gameObject.AddComponent<Player>();
-
-            //Players.Add(player);
         }
+        
+        /// ##### Getter #####
+        public GameEventOperator GameEventOperator { get; private set; }
+
+        public HashSet<Player> Players { get; private set; }
     }
 }

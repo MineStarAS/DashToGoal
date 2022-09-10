@@ -2,8 +2,6 @@ using System;
 using System.Linq;
 using UnityEngine;
 using src.kr.kro.minestar.player;
-using Unity.VisualScripting;
-using System.Linq.Expressions;
 using src.kr.kro.minestar.gameEvent;
 using src.kr.kro.minestar.player.effect;
 
@@ -50,7 +48,7 @@ namespace src.sjh.Scripts
         private float GetMoveForce()
         {
             var value = m_fMaxSpeed;
-            var effects = m_Player.GetEffects();
+            var effects = m_Player.Effects;
 
             if (effects == null || effects.Count == 0) return value;
 
@@ -100,7 +98,7 @@ namespace src.sjh.Scripts
         private float GetJumpForce()
         {
             var value = jumpForce;
-            var effects = m_Player.GetEffects();
+            var effects = m_Player.Effects;
 
             if (effects == null || effects.Count == 0) return value;
             
@@ -148,7 +146,7 @@ namespace src.sjh.Scripts
         public int LandingAirJumpAmountCharge()
         {
             var value = DefaultAirJumpAmount;
-            var effects = m_Player.GetEffects();
+            var effects = m_Player.Effects;
 
             // Add Calculate
             foreach (var effect in effects.Where(effect => effect.GetValueCalculator() == ValueCalculator.Add))
@@ -217,8 +215,8 @@ namespace src.sjh.Scripts
             var pressAllKey = Input.GetKey(KeyCode.RightArrow) && Input.GetKey(KeyCode.LeftArrow);
             var notPressKey = !Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow);
             
-            Debug.Log($"pressAllKey: {pressAllKey}");
-            Debug.Log($"notPressKey: {notPressKey}");
+            // Debug.Log($"pressAllKey: {pressAllKey}");
+            // Debug.Log($"notPressKey: {notPressKey}");
             
             if (pressAllKey || notPressKey)
             {
@@ -282,9 +280,9 @@ namespace src.sjh.Scripts
                 new PlayerJumpEvent(m_Player);
         }
 
-        public void AddMovement(float x, float y) => _body.AddForce(new Vector2(x, y));
+        public void AddMovement(float x, float y) => _body.AddForce(new Vector2(x, y), ForceMode2D.Impulse);
         
-        public void AddMovementFlip(float x, float y) => _body.AddForce(!_spriteRenderer.flipX ? new Vector2(x, y) : new Vector2(-x, y));
+        public void AddMovementFlip(float x, float y) => _body.AddForce(!_spriteRenderer.flipX ? new Vector2(x, y) : new Vector2(-x, y), ForceMode2D.Impulse);
        
 
         private void OnTriggerEnter2D(Collider2D other)

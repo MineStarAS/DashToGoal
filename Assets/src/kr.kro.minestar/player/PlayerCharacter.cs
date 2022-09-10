@@ -24,23 +24,10 @@ namespace src.kr.kro.minestar.player
         }
 
         /// ##### Field #####
-        private PassiveSkill _passiveSkill;
+        public PassiveSkill PassiveSkill { get; protected set; }
 
-        private ActiveSkill _activeSkill1;
-        private ActiveSkill _activeSkill2;
+        public ActiveSkill ActiveSkill1 { get; protected set; }
 
-        /// ##### Getter #####
-        public PassiveSkill GetPassiveSkill() => _passiveSkill;
-
-        public ActiveSkill GetActiveSkill1() => _activeSkill1;
-
-        public ActiveSkill GetActiveSkill2() => _activeSkill2;
-
-        /// ##### Setter #####
-        protected void SetPassiveSkill(PassiveSkill passiveSkill) => _passiveSkill = passiveSkill;
-
-        protected void SetActiveSkill1(ActiveSkill activeSkill) => _activeSkill1 = activeSkill;
-
-        protected void SetActiveSkill2(ActiveSkill activeSkill) => _activeSkill2 = activeSkill;
+        public ActiveSkill ActiveSkill2 { get; protected set; }
     }
 }
