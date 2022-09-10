@@ -6,7 +6,6 @@ namespace src.sjh.Scripts
     {
         /// ##### Default Field #####
         [SerializeField] private const byte DefaultAirJumpAmount = 2; // 기본 점프 가능 횟수 1 = 1단, 2 = 2단 점프 가능
-        private bool m_isLanding; // 땅에 닿았는가
 
         /// ##### Field #####
         [SerializeField] private float moveForce;    // 플레이어 이동에 가해지는 힘
@@ -14,7 +13,7 @@ namespace src.sjh.Scripts
         [SerializeField] private float gizmoSize;
 
         private float m_fMoveSpeed; // 플레이어 이동속도
-        private byte airJumpAmount; // 공중 점프 가능 횟수
+        private byte _airJumpAmount; // 공중 점프 가능 횟수
         private bool m_isLanding; // 땅에 닿았는가
         private Rigidbody2D _body; // 플레이어 물리
         private SpriteRenderer _spriteRenderer; // 스프라이트 정보
@@ -78,9 +77,9 @@ namespace src.sjh.Scripts
         {
             if (_airJumpAmount <= 0) return;
             // 점프 횟수 추가
-            if (Input.GetKeyDown(KeyCode.Space) & airJumpAmount != 0)
+            if (Input.GetKeyDown(KeyCode.Space) & _airJumpAmount != 0)
             {
-                airJumpAmount--;
+                _airJumpAmount--;
                 _body.drag = 0.0f;
                 _body.velocity = Vector2.zero;
                 var jumpVelocity = new Vector2(0, jumpForce); // 점프 속력
@@ -115,7 +114,7 @@ namespace src.sjh.Scripts
             if (other.gameObject.layer == 6 && _body.velocity.y <= 0)
             {
                 m_isLanding = true;
-                airJumpAmount = DefaultAirJumpAmount;
+                _airJumpAmount = DefaultAirJumpAmount;
                 _body.drag = 0;
                 _body.velocity = new Vector2(m_fMoveSpeed, 0);
             }
