@@ -82,7 +82,7 @@ namespace src.sjh.Scripts
             if (Input.GetKeyDown(KeyCode.Space) & airJumpAmount != 0)
             {
                 airJumpAmount--;
-
+                _body.drag = 0.0f;
                 _body.velocity = Vector2.zero;
                 var jumpVelocity = new Vector2(0, jumpForce); // 점프 속력
                 _body.AddForce(jumpVelocity, ForceMode2D.Impulse);

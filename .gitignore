@@ -2,4 +2,5 @@
 Library/
 obj/
 Logs/
+UserSettings/
 Assembly-CSharp.csproj
