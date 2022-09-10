@@ -10,7 +10,7 @@ namespace src.kr.kro.minestar
         /// ##### Field #####
         public readonly GameEventOperator GameEventOperator;
 
-        public string playMap;
+        //public string playMap;
         
         public readonly HashSet<Player> Players;
 
@@ -20,9 +20,9 @@ namespace src.kr.kro.minestar
             GameEventOperator = new GameEventOperator(this);
             Players = new HashSet<Player>();
 
-            var player = gameObject.AddComponent<Player>();
+            //var player = gameObject.AddComponent<Player>();
 
-            Players.Add(player);
+            //Players.Add(player);
         }
     }
 }

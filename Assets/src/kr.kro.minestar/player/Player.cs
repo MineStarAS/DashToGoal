@@ -10,24 +10,30 @@ using UnityEngine;
 
 namespace src.kr.kro.minestar.player
 {
-    public class Player : MonoBehaviour
+    public class Player :MonoBehaviour
     {
+        [SerializeField] PlayerCharacterEnum m_enum;
         /// ##### Field #####
-        private readonly GameSystem _gameSystem;
+        private /*readonly*/ GameSystem _gameSystem;
 
-        private readonly PlayerCharacter _playerCharacter;
+        private /*readonly*/ PlayerCharacter _playerCharacter;
 
-        private readonly List<Effect> _effects = new ();
+        private /*readonly*/ List<Effect> _effects = new ();
         [CanBeNull] private string _item;
 
-        private PlayerMove _playerMove;
-
         /// ##### Constructor #####
+        /*
         public Player(GameSystem gameSystem, PlayerCharacterEnum playerCharacterEnum)
         {
             _gameSystem = gameSystem;
             _playerCharacter = PlayerCharacter.FromEnum(this, playerCharacterEnum);
             // _effects = new List<Effect>();
+        }*/
+        private void Start()
+        {
+            _gameSystem = GameObject.Find("GameManager").gameObject.GetComponent<GameSystem>();
+            _playerCharacter = PlayerCharacter.FromEnum(this, m_enum);
+            _effects = new List<Effect>();
         }
 
         /// ##### Get Functions #####
@@ -152,7 +158,7 @@ namespace src.kr.kro.minestar.player
 
         ///###### Do Functions #####
 
-        private void DoUseActiveSkill1()
+        public void DoUseActiveSkill1() // PlayerMove에서 사용할 수 있게 public 으로 수정 - 손준호
         {
             var skill = GetGetActiveSkill1();
             skill.UseSkill(this);
@@ -160,7 +166,7 @@ namespace src.kr.kro.minestar.player
             var playerEvent = new PlayerUseActiveSkill1Event(this, skill);
         }
 
-        private void DoUseActiveSkill2()
+        public void DoUseActiveSkill2() // PlayerMove에서 사용할 수 있게 public 으로 수정 - 손준호
         {
             var skill = GetGetActiveSkill2();
             skill.UseSkill(this);
