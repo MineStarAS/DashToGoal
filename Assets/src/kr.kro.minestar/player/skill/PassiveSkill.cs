@@ -7,18 +7,14 @@ namespace src.kr.kro.minestar.player.skill
     public abstract class PassiveSkill : Skill
     {
         /// ##### Field #####
-        private Effect[] _effects;
+        public Effect[] Effects
+        {
+            get => Effects.ToArray();
+            protected set { }
+        }
 
-        private Type _detectEvent;
+        public Type DetectEvent { get; private set; }
 
-        /// ##### Getter #####
-        public Effect[] GetEffects() => _effects.ToArray();
-
-        public Type GetDetectEvent() => _detectEvent;
-
-        /// ##### Setter #####
-        protected void SetEffects(Effect[] effects) => _effects = effects;
-
-        protected void SetDetectEvent<T>() => _detectEvent = typeof(T);
+        protected void SetDetectEvent<T>() => DetectEvent = typeof(T);
     }
 }

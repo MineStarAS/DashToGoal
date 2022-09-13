@@ -29,14 +29,14 @@ namespace src.kr.kro.minestar.gameEvent
                 var activeSkill2 = player.PlayerCharacter.ActiveSkill2;
 
 
-                if (passiveSkill.GetDetectEvent() == gameEvent.GetType()) passiveSkill.UseSkill(player);
+                if (passiveSkill.DetectEvent == gameEvent.GetType()) passiveSkill.UseSkill(player);
 
                 if (activeSkill1 is ChargeActiveSkill skill1)
-                    if (skill1.GetDetectEvent() == gameEvent.GetType())
+                    if (skill1.DetectEvent == gameEvent.GetType())
                         skill1.DoCharge(gameEvent);
 
                 if (activeSkill2 is not ChargeActiveSkill skill2) continue;
-                if (skill2.GetDetectEvent() == gameEvent.GetType())
+                if (skill2.DetectEvent == gameEvent.GetType())
                     skill2.DoCharge(gameEvent);
             }
         }

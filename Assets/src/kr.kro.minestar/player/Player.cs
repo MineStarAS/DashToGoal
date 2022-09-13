@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using src.kr.kro.minestar.gameEvent;
 using src.kr.kro.minestar.player.effect;
-using src.kr.kro.minestar.player.skill;
 using src.sjh.Scripts;
 using UnityEngine;
 // ReSharper disable ObjectCreationAsStatement
@@ -27,6 +26,7 @@ namespace src.kr.kro.minestar.player
             PlayerCharacter = PlayerCharacter.FromEnum(this, m_enum);
 
             GameSystem.Players.Add(this);
+            Debug.Log("Player Start");
         }
 
 

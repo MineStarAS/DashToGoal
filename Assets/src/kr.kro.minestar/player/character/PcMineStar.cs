@@ -1,35 +1,35 @@
-using System.Diagnostics.CodeAnalysis;
 using src.kr.kro.minestar.gameEvent;
 using src.kr.kro.minestar.player.effect;
 using src.kr.kro.minestar.player.skill;
 using UnityEngine;
+
 // ReSharper disable All
 
 namespace src.kr.kro.minestar.player.character
 {
     public class PcMineStar : PlayerCharacter
     {
-        
-        [SuppressMessage("ReSharper", "Unity.IncorrectMonoBehaviourInstantiation")]
-        public PcMineStar(Player player)
+        private void Start()
         {
-            PassiveSkill = new PsSpeedy(player);
-            ActiveSkill1 = Skill.Instantiate<ActiveSkill>(player.GetComponent<AsDash>());
-            ActiveSkill2 = new AsSuperJump(20, 10);
+            PassiveSkill = gameObject.AddComponent<PsSpeedy>();
+            ActiveSkill1 = gameObject.AddComponent<AsDash>();
+            ActiveSkill2 = gameObject.AddComponent<AsSuperJump>();
         }
     }
+
     public class PsSpeedy : PassiveSkill
     {
-        public PsSpeedy(Player player)
+        private void Start()
         {
-            SetPlayer(player);
-            SetName("Speedy");
-            SetDescription("I'm FAST!!!");
-            
-            SetEffects(new Effect[]{new Speed(player)});
+            Player = gameObject.GetComponent<Player>();
+            Name = "Speedy";
+            Description = "I'm FAST!!!";
+
+            Effects = new Effect[] { new Speed(Player) };
             SetDetectEvent<PlayerUseActiveSkill1Event>();
+            Debug.Log("PsSpeedy Start");
         }
-        
+
         public override bool UseSkill(Player player)
         {
             new PlayerUsePassiveSkillEvent(player, this);
@@ -43,9 +43,9 @@ namespace src.kr.kro.minestar.player.character
     {
         private void Start()
         {
-            SetName("Dash");
-            SetDescription("I will dash\n" +
-                           "to the goal");
+            Name = "Dash";
+            Description = "I will dash\n" +
+                          "to the goal";
             Init(20F, 10F);
         }
 
@@ -54,7 +54,7 @@ namespace src.kr.kro.minestar.player.character
         {
             if (!CanUseSkill()) return false;
             player.GetPlayerMove().AddMovementFlip(5F, 2F);
-            
+
             StartTimer(DefaultCoolTime);
             return true;
         }
@@ -62,17 +62,19 @@ namespace src.kr.kro.minestar.player.character
 
     public class AsSuperJump : ChargeActiveSkill
     {
-        public AsSuperJump(float startCoolTime, float defaultCoolTime)
+        private void Start()
         {
-            SetName("SuperJump");
-            SetDescription("I will jump\n" +
-                           "to the goal");
+            Name = "SuperJump";
+            Description = "I will jump\n" +
+                          "to the goal";
 
-            SetStartChargeAmount(0);
-            SetMaxChargeAmount(10);
-            SetUseChargeAmount(10);
-            SetChargingAmount(1);
+            StartChargeAmount = 0;
+            MaxChargeAmount = 10;
+            UseChargeAmount = 10;
+            ChargingAmount = 1;
+
             SetDetectEvent<PlayerJumpEvent>();
+            Init(20, 10);
         }
 
 
@@ -81,8 +83,8 @@ namespace src.kr.kro.minestar.player.character
             if (!CanUseSkill()) return false;
 
             player.GetPlayerMove().AddMovement(0F, 50F);
-            
-            Debug.Log($"{GetName()} Used");
+
+            Debug.Log($"{Name} Used");
             return true;
         }
     }

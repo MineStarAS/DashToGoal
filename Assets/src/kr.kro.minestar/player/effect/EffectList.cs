@@ -11,12 +11,10 @@ namespace src.kr.kro.minestar.player.effect
             SetDescription("FAST SPEED!!!");
             
             
-            SetValueCalculator(ValueCalculator.Multi);
+            SetValueCalculator(Calculator.Multi);
             SetCalculatorValue(1.15F);
             
             SetTime(10);
-
-            AddEffect();
         }
     }
 }
