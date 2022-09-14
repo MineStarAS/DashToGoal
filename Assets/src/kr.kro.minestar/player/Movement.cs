@@ -330,44 +330,30 @@ namespace src.sjh.Scripts
 
         public void OnTriggerEnter2D(Collider2D other)
         {
+            Debug.Log(Body.velocity.y);
             try
             {
-                //IsJump = false;
-                //_airJumpAmount = DefaultAirJumpAmount;
-                //Body.drag = 0;
-                //Body.velocity = new Vector2(Body.velocity.x, -1);
-                //GroundJumpAmount = 1;
-
-                if (!Input.GetKey(KeyCode.RightArrow))
-                    // 무한 점프 막기
-                    if (other.gameObject.layer == 6 && Body.velocity.y <= 0) // 점프 후 착지했다면
+                if (other.gameObject.layer == 6 && (Body.velocity.y <= 0 || Body.drag == 2)) // 점프 후 착지했다면
+                {
+                    Debug.Log("Hello");
+                    m_isSkill = false;
+                    IsJump = false;
+                    AirJumpAmount = DefaultAirJumpAmount;
+                    Body.drag = 0;
+                    Body.velocity = new Vector2(Body.velocity.x, -1);
+                    GroundJumpAmount = 1;
+                    if (!Input.GetKey(KeyCode.RightArrow) || !Input.GetKey(KeyCode.LeftArrow))
                     {
-                        m_isSkill = false;
-                        IsJump = false;
-                        AirJumpAmount = DefaultAirJumpAmount;
-                        Body.drag = 0;
-                        Body.velocity = new Vector2(Body.velocity.x, -1);
-                        GroundJumpAmount = 1;
-                        if (!Input.GetKey(KeyCode.RightArrow))
-                        {
-                            Body.drag = 30.0f;
-                        }
-                        else if (!Input.GetKey(KeyCode.LeftArrow))
-                        {
-                            Body.drag = 30.0f;
-                        }
+                        Body.drag = 30.0f;
                     }
+                }
 
                 if (!m_isSkill && !IsJump && other.gameObject.layer == 6 && Body.velocity.y >= 0) // 땅에 있다면
                 {
                     GroundJumpAmount = 1;
                     AirJumpAmount = DefaultAirJumpAmount;
                     Body.velocity = new Vector2(Body.velocity.x, -1);
-                    if (!Input.GetKey(KeyCode.RightArrow))
-                    {
-                        Body.drag = 30.0f;
-                    }
-                    else if (!Input.GetKey(KeyCode.LeftArrow))
+                    if (!Input.GetKey(KeyCode.RightArrow) || !Input.GetKey(KeyCode.LeftArrow))
                     {
                         Body.drag = 30.0f;
                     }
