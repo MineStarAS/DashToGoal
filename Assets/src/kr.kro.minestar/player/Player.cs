@@ -26,9 +26,7 @@ namespace src.kr.kro.minestar.player
             PlayerCharacter = PlayerCharacter.FromEnum(this, m_enum);
 
             GameSystem.Players.Add(this);
-            Debug.Log("Player Start");
         }
-
 
         private void Update()
         {

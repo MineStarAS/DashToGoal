@@ -15,7 +15,6 @@ namespace src.sjh.Scripts
         private float m_fMaxSpeed = 8.0f; // 플레이어 이동속도
         private float moveForce = 0.05f; // 플레이어 이동에 가해지는 힘
         private float jumpForce = 13.0f; // 플레이어 점프 힘
-        private float gizmoSize = 0f;
         private bool m_isJump; // 점프키를 눌렀는가
 
         private const int DefaultAirJumpAmount = 1; // 공중 점프 가능한 횟수.
@@ -35,10 +34,12 @@ namespace src.sjh.Scripts
         public void FixedCheck()
         {
             if (_body != null)
+            {
                 if (_body.velocity.y < -10.0f)
                 {
                     _body.drag = 2.0f; // 플레이어 낙하 속도
                 }
+            }
 
             if (transform.position.y < -15) transform.position = new Vector3(0, 0, 0);
         }
@@ -211,6 +212,7 @@ namespace src.sjh.Scripts
         /// ##### Movement Functions #####
         public void DoMove()
         {
+            float h = 0;
             var pressAllKey = Input.GetKey(KeyCode.RightArrow) && Input.GetKey(KeyCode.LeftArrow);
             var notPressKey = !Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow);
 
@@ -222,24 +224,30 @@ namespace src.sjh.Scripts
                 Stop();
                 return;
             }
-
+            
             var maxMoveForce = GetMoveForce();
             // 움직임
-            float h = 0; // 좌우 방향
-            if (Input.GetKey(KeyCode.RightArrow))
+            if (Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow))
             {
                 h = 1;
                 _body.drag = 0.0f;
                 _spriteRenderer.flipX = false;
             }
-            else if (Input.GetKey(KeyCode.LeftArrow))
+            else if (Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
             {
                 h = -1;
                 _body.drag = 0.0f; // 저항값
                 _spriteRenderer.flipX = true;
             }
+            else if (Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.RightArrow))
+            {
+                h = 0;
+            }
 
-            _body.AddForce(Vector2.right * h * moveForce, ForceMode2D.Impulse);
+            if(h == 0)
+                _body.velocity = new Vector2(0, _body.velocity.y);
+            else
+                _body.AddForce(Vector2.right * h * moveForce, ForceMode2D.Impulse);
 
 
             if (_body.velocity.x > maxMoveForce)
@@ -247,18 +255,15 @@ namespace src.sjh.Scripts
             else if (_body.velocity.x < -maxMoveForce)
                 _body.velocity = new Vector2(-maxMoveForce, _body.velocity.y);
 
-            void Stop()
-            {
                 // 멈추기
-                if (m_iGroundjump == 0 || m_isJump == true) return; // 플레이어가 공중에 있으면 실행 못하게
-                if (Input.GetKeyUp(KeyCode.RightArrow))
-                {
-                    _body.drag = 30.0f;
-                }
-                else if (Input.GetKeyUp(KeyCode.LeftArrow))
-                {
-                    _body.drag = 30.0f;
-                }
+            if (m_iGroundjump == 0 || m_isJump == true) return; // 플레이어가 공중에 있으면 실행 못하게
+            if (Input.GetKeyUp(KeyCode.RightArrow))
+            {
+                _body.drag = 30.0f;
+            }
+            else if (Input.GetKeyUp(KeyCode.LeftArrow))
+            {
+                _body.drag = 30.0f;
             }
 
             new PlayerMoveEvent(m_Player);
@@ -275,7 +280,6 @@ namespace src.sjh.Scripts
             _body.drag = 0.0f;
             _body.velocity = new Vector2(_body.velocity.x, 0);
             _body.AddForce(Vector2.up * jf, ForceMode2D.Impulse);
-
             new PlayerJumpEvent(m_Player);
         }
 
@@ -288,6 +292,13 @@ namespace src.sjh.Scripts
         {
             try
             {
+                m_isJump = false;
+                _airJumpAmount = DefaultAirJumpAmount;
+                _body.drag = 0;
+                _body.velocity = new Vector2(_body.velocity.x, -1);
+                m_iGroundjump = 1;
+
+                if (!Input.GetKey(KeyCode.RightArrow))
                 // 무한 점프 막기
                 if (other.gameObject.layer == 6 && _body.velocity.y <= 0) // 점프 후 착지했다면
                 {
