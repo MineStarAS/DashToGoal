@@ -1,4 +1,7 @@
-using UnityEngine;
+using src.kr.kro.minestar.player.effect;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace src.kr.kro.minestar.player.skill
 {
@@ -10,6 +13,10 @@ namespace src.kr.kro.minestar.player.skill
         public string Name { get; protected set; }
         
         public string Description { get; protected set; }
+        
+        public int DefaultCoolTime { get; private set; }
+
+        public int CurrentCoolTime { get; private set; }
 
         /// ##### Constructor #####
         protected Skill(Player player)
@@ -18,9 +25,97 @@ namespace src.kr.kro.minestar.player.skill
         }
 
         /// ##### Functions #####
+        protected virtual void Init(double startCoolTime, double defaultCoolTime)
+        {
+            DefaultCoolTime = Convert.ToInt32(Math.Round(defaultCoolTime, 2) * 100);
+            CurrentCoolTime = Convert.ToInt32(Math.Round(startCoolTime, 2) * 100);
+        }
 
-        public abstract bool UseSkill(Player player);
+        public void DoPassesTime()
+        {
+            if (CurrentCoolTime <= 0) return;
+            CurrentCoolTime--;
+        }
 
-        protected abstract bool CanUseSkill();
+        public abstract bool UseSkill();
+
+        protected void UsedSkill()
+        {
+            int value = DefaultCoolTime;
+            Dictionary<string, Effect>.ValueCollection effects = Player.Effects.Values;
+
+            if (effects.Count == 0)
+            {
+                CurrentCoolTime = value;
+                return;
+            }
+
+            // Add Calculate
+            foreach (Effect effect in effects.Where(effect => effect.Calculator == Calculator.Add))
+            {
+                switch (effect.EffectType)
+                {
+                    case EffectType.CoolTimeReduction:
+                    case EffectType.CoolTimeIncrease:
+                        value = Calculate(value, effect);
+                        continue;
+                    case EffectType.FastMovement:
+                    case EffectType.SlowMovement:
+                    case EffectType.Bondage:
+                    case EffectType.BonusJump:
+                    case EffectType.SuperJump:
+                    case EffectType.JumpFatigue:
+                    case EffectType.Disorder:
+                    default:
+                        continue;
+                }
+            }
+
+            // Multi Calculate
+            foreach (Effect effect in effects.Where(effect => effect.Calculator == Calculator.Multi))
+            {
+                switch (effect.EffectType)
+                {
+                    case EffectType.CoolTimeReduction:
+                    case EffectType.CoolTimeIncrease:
+                        value = Calculate(value, effect);
+                        continue;
+                    case EffectType.FastMovement:
+                    case EffectType.SlowMovement:
+                    case EffectType.Bondage:
+                    case EffectType.BonusJump:
+                    case EffectType.SuperJump:
+                    case EffectType.JumpFatigue:
+                    case EffectType.Disorder:
+                    default:
+                        continue;
+                }
+            }
+            CurrentCoolTime = value;
+        }
+
+        protected virtual bool CanUseSkill() => CurrentCoolTime <= 0;
+        
+        
+
+        private static float Calculate(float value, Effect effect)
+        {
+            return effect.Calculator switch
+            {
+                Calculator.Add => value + effect.CalculatorValue,
+                Calculator.Multi => value * effect.CalculatorValue,
+                _ => value
+            };
+        }
+
+        private static int Calculate(int value, Effect effect)
+        {
+            return effect.Calculator switch
+            {
+                Calculator.Add => value + Convert.ToByte(effect.CalculatorValue),
+                Calculator.Multi => value * Convert.ToByte(effect.CalculatorValue),
+                _ => value
+            };
+        }
     }
 }

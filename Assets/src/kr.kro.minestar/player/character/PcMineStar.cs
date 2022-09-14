@@ -19,21 +19,24 @@ namespace src.kr.kro.minestar.player.character
         }
     }
 
-    public class PsSpeedy : PassiveSkill
+    public class PsSpeedy : DetectPassiveSkill
     {
         public PsSpeedy(Player player): base(player)
         {
             Player = player;
             Name = "Speedy";
             Description = "I'm FAST!!!";
-
-            Effects = new Effect[] { new Speed(Player) };
             SetDetectEvent<PlayerUseActiveSkill1Event>();
         }
 
-        public override bool UseSkill(Player player)
+        public override bool UseSkill()
         {
-            new PlayerUsePassiveSkillEvent(player, this);
+            var effects = new Effect[] { new Speed(Player) };
+            foreach (var effect in effects)
+            {
+                Player.AddEffect(effect);
+            }
+            new PlayerUsePassiveSkillEvent(Player, this);
             return true;
         }
 
@@ -53,10 +56,10 @@ namespace src.kr.kro.minestar.player.character
         }
 
 
-        public override bool UseSkill(Player player)
+        public override bool UseSkill()
         {
             if (!CanUseSkill()) return false;
-            player.GetPlayerMove().AddMovementFlip(30F, 20F);
+            Player.GetPlayerMove().AddMovementFlip(30F, 20F);
             UsedSkill();
             return true;
         }
@@ -82,12 +85,12 @@ namespace src.kr.kro.minestar.player.character
         }
 
 
-        public override bool UseSkill(Player player)
+        public override bool UseSkill()
         {
             Debug.Log($"{CurrentCoolTime}");
             if (!CanUseSkill()) return false;
 
-            player.GetPlayerMove().AddMovement(0F, 50F);
+            Player.GetPlayerMove().AddMovement(0F, 50F);
             UsedSkill();
             return true;
         }
