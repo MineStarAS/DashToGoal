@@ -1,33 +1,22 @@
-using System;
-using System.Linq;
-using src.kr.kro.minestar.gameEvent;
-using src.kr.kro.minestar.player.effect;
+using UnityEngine;
 
 namespace src.kr.kro.minestar.player.skill
 {
     public abstract class Skill
     {
         /// ##### Field #####
-        private Player _player;
-
-        private string _name;
-        private string _description;
-
-        /// ##### Getter #####
-        public Player GetPlayer() => _player;
+        public Player Player { get; protected set; }
         
-        public string GetName() => _name;
-
-        public string GetDescription() => _description;
-
-
-        /// ##### Setter #####
-        protected void SetPlayer(Player player) => _player = player;
+        public string Name { get; protected set; }
         
-        protected void SetName(string name) => _name = name;
+        public string Description { get; protected set; }
 
-        protected void SetDescription(string description) => _description = description;
-        
+        /// ##### Constructor #####
+        protected Skill(Player player)
+        {
+            Player = player;
+        }
+
         /// ##### Functions #####
 
         public abstract bool UseSkill(Player player);

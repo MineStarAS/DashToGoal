@@ -1,33 +1,36 @@
-using System;
 using src.kr.kro.minestar.gameEvent;
 using src.kr.kro.minestar.player.effect;
 using src.kr.kro.minestar.player.skill;
 using UnityEngine;
 
+// ReSharper disable All
+
 namespace src.kr.kro.minestar.player.character
 {
     public class PcMineStar : PlayerCharacter
     {
-        
-        public PcMineStar(Player player)
+        private void Start()
         {
-            SetPassiveSkill(new PsSpeedy(player));
-            SetActiveSkill1(new AsDash());
-            SetActiveSkill2(new AsSuperJump());
+            var player = GetComponent<Player>();
+            PassiveSkill = new PsSpeedy(player);
+            ActiveSkill1 = new AsDash(player);
+            ActiveSkill2 = new AsSuperJump(player);
+            StartTimer();
         }
     }
+
     public class PsSpeedy : PassiveSkill
     {
-        public PsSpeedy(Player player)
+        public PsSpeedy(Player player): base(player)
         {
-            SetPlayer(player);
-            SetName("Speedy");
-            SetDescription("I'm FAST!!!");
-            
-            SetEffects(new Effect[]{new Speed(player)});
+            Player = player;
+            Name = "Speedy";
+            Description = "I'm FAST!!!";
+
+            Effects = new Effect[] { new Speed(Player) };
             SetDetectEvent<PlayerUseActiveSkill1Event>();
         }
-        
+
         public override bool UseSkill(Player player)
         {
             new PlayerUsePassiveSkillEvent(player, this);
@@ -39,55 +42,53 @@ namespace src.kr.kro.minestar.player.character
 
     public class AsDash : ActiveSkill
     {
-        public AsDash()
+        public AsDash(Player player): base(player)
         {
-            SetName("Dash");
-            SetDescription("I will dash\n" +
-                           "to the goal");
-            
-            SetStartCoolTime(20F);
-            SetDefaultCoolTime(10F);
+            Player = player;
+            Name = "Dash";
+            Description = "I will dash\n" +
+                          "to the goal";
+
+            Init(1F, 1F);
         }
 
 
         public override bool UseSkill(Player player)
         {
             if (!CanUseSkill()) return false;
-            player.GetPlayerMove().AddMovementFlip(5F, 2F);
-            
-            player.GetGameSystem().GameEventOperator.DoEvent(new PlayerUseActiveSkill1Event(player, this));
-            
-            Debug.Log($"{GetName()} Used");
+            player.GetPlayerMove().AddMovementFlip(30F, 20F);
+            UsedSkill();
             return true;
         }
     }
 
     public class AsSuperJump : ChargeActiveSkill
     {
-        public AsSuperJump()
+        public AsSuperJump(Player player): base(player)
         {
-            SetName("SuperJump");
-            SetDescription("I will jump\n" +
-                           "to the goal");
-            
-            SetStartCoolTime(20F);
-            SetDefaultCoolTime(10F);
+            Player = player;
+            Name = "SuperJump";
+            Description = "I will jump\n" +
+                          "to the goal";
 
-            SetStartChargeAmount(0);
-            SetMaxChargeAmount(10);
-            SetUseChargeAmount(10);
-            SetChargingAmount(1);
+            StartChargeAmount = 0;
+            MaxChargeAmount = 10;
+            UseChargeAmount = 10;
+            ChargingAmount = 1;
+
             SetDetectEvent<PlayerJumpEvent>();
+
+            Init(20, 10);
         }
 
 
         public override bool UseSkill(Player player)
         {
+            Debug.Log($"{CurrentCoolTime}");
             if (!CanUseSkill()) return false;
 
-            player.GetPlayerMove().AddMovement(0F, 30F);
-            
-            Debug.Log($"{GetName()} Used");
+            player.GetPlayerMove().AddMovement(0F, 50F);
+            UsedSkill();
             return true;
         }
     }

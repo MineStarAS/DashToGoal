@@ -1,5 +1,10 @@
+using System.Collections;
+using System.Linq;
 using src.kr.kro.minestar.player.character;
+using src.kr.kro.minestar.player.effect;
 using src.kr.kro.minestar.player.skill;
+using Unity.VisualScripting;
+using UnityEngine;
 
 namespace src.kr.kro.minestar.player
 {
@@ -10,37 +15,50 @@ namespace src.kr.kro.minestar.player
     }
 
 
-    public abstract class PlayerCharacter
+    public abstract class PlayerCharacter : MonoBehaviour
     {
         /// ##### Static Functions #####
         public static PlayerCharacter FromEnum(Player player, PlayerCharacterEnum playerCharacterEnum)
         {
             return playerCharacterEnum switch
             {
-                PlayerCharacterEnum.MineStar => new PcMineStar(player),
-                PlayerCharacterEnum.SonJunHo => new PcMineStar(player),
-                _ => new PcMineStar(player),
+                PlayerCharacterEnum.MineStar => player.AddComponent<PcMineStar>(),
+                PlayerCharacterEnum.SonJunHo => player.AddComponent<PcMineStar>(),
+                _ => player.AddComponent<PcMineStar>(),
             };
         }
 
         /// ##### Field #####
-        private PassiveSkill _passiveSkill;
+        public PassiveSkill PassiveSkill { get; protected set; }
 
-        private ActiveSkill _activeSkill1;
-        private ActiveSkill _activeSkill2;
+        public ActiveSkill ActiveSkill1 { get; protected set; }
 
-        /// ##### Getter #####
-        public PassiveSkill GetPassiveSkill() => _passiveSkill;
+        public ActiveSkill ActiveSkill2 { get; protected set; }
 
-        public ActiveSkill GetActiveSkill1() => _activeSkill1;
+        /// ##### Functions #####
+        protected void StartTimer()
+        {
+            var player = gameObject.GetComponent<Player>();
+            
+            StartCoroutine(Timer());
 
-        public ActiveSkill GetActiveSkill2() => _activeSkill2;
+            IEnumerator Timer()
+            {
+                while (true)
+                {
+                    foreach (var effect in player.Effects.Where(effect => effect is TimerEffect))
+                    {
+                        ((TimerEffect)effect).DoPassesTime();
+                    }
 
-        /// ##### Setter #####
-        protected void SetPassiveSkill(PassiveSkill passiveSkill) => _passiveSkill = passiveSkill;
+                    ActiveSkill1.DoPassesTime();
+                    ActiveSkill2.DoPassesTime();
+                    
+                    yield return new WaitForSeconds(0.01F);
+                }
+            }
+        }
 
-        protected void SetActiveSkill1(ActiveSkill activeSkill) => _activeSkill1 = activeSkill;
-
-        protected void SetActiveSkill2(ActiveSkill activeSkill) => _activeSkill2 = activeSkill;
+        public void StopTimer() => StopAllCoroutines();
     }
 }

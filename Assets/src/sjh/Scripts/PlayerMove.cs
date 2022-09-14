@@ -2,8 +2,6 @@ using System;
 using System.Linq;
 using UnityEngine;
 using src.kr.kro.minestar.player;
-using Unity.VisualScripting;
-using System.Linq.Expressions;
 using src.kr.kro.minestar.gameEvent;
 using src.kr.kro.minestar.player.effect;
 
@@ -45,20 +43,19 @@ namespace src.sjh.Scripts
 
             if (transform.position.y < -15) transform.position = new Vector3(0, 0, 0);
         }
-        
+
         /// ##### Calculate Functions #####
-        
         private float GetMoveForce()
         {
             var value = m_fMaxSpeed;
-            var effects = m_Player.GetEffects();
+            var effects = m_Player.Effects;
 
             if (effects == null || effects.Count == 0) return value;
 
             // Add Calculate
-            foreach (var effect in effects.Where(effect => effect.GetValueCalculator() == ValueCalculator.Add))
+            foreach (var effect in effects.Where(effect => effect.Calculator == Calculator.Add))
             {
-                switch (effect.GetEffectType())
+                switch (effect.EffectType)
                 {
                     case EffectType.FastMovement:
                     case EffectType.SlowMovement:
@@ -76,9 +73,9 @@ namespace src.sjh.Scripts
             }
 
             // Multi Calculate
-            foreach (var effect in effects.Where(effect => effect.GetValueCalculator() == ValueCalculator.Multi))
+            foreach (var effect in effects.Where(effect => effect.Calculator == Calculator.Multi))
             {
-                switch (effect.GetEffectType())
+                switch (effect.EffectType)
                 {
                     case EffectType.FastMovement:
                     case EffectType.SlowMovement:
@@ -101,13 +98,13 @@ namespace src.sjh.Scripts
         private float GetJumpForce()
         {
             var value = jumpForce;
-            var effects = m_Player.GetEffects();
+            var effects = m_Player.Effects;
 
             if (effects == null || effects.Count == 0) return value;
-            
-            foreach (var effect in effects.Where(effect => effect.GetValueCalculator() == ValueCalculator.Add))
+
+            foreach (var effect in effects.Where(effect => effect.Calculator == Calculator.Add))
             {
-                switch (effect.GetEffectType())
+                switch (effect.EffectType)
                 {
                     case EffectType.SuperJump:
                     case EffectType.JumpFatigue:
@@ -123,10 +120,10 @@ namespace src.sjh.Scripts
                         continue;
                 }
             }
-            
-            foreach (var effect in effects.Where(effect => effect.GetValueCalculator() == ValueCalculator.Multi))
+
+            foreach (var effect in effects.Where(effect => effect.Calculator == Calculator.Multi))
             {
-                switch (effect.GetEffectType())
+                switch (effect.EffectType)
                 {
                     case EffectType.SuperJump:
                     case EffectType.JumpFatigue:
@@ -145,16 +142,16 @@ namespace src.sjh.Scripts
 
             return value;
         }
-        
+
         public int LandingAirJumpAmountCharge()
         {
             var value = DefaultAirJumpAmount;
-            var effects = m_Player.GetEffects();
+            var effects = m_Player.Effects;
 
             // Add Calculate
-            foreach (var effect in effects.Where(effect => effect.GetValueCalculator() == ValueCalculator.Add))
+            foreach (var effect in effects.Where(effect => effect.Calculator == Calculator.Add))
             {
-                switch (effect.GetEffectType())
+                switch (effect.EffectType)
                 {
                     case EffectType.BonusJump:
                         value = Calculate(value, effect);
@@ -171,9 +168,9 @@ namespace src.sjh.Scripts
             }
 
             // Multi Calculate
-            foreach (var effect in effects.Where(effect => effect.GetValueCalculator() == ValueCalculator.Multi))
+            foreach (var effect in effects.Where(effect => effect.Calculator == Calculator.Multi))
             {
-                switch (effect.GetEffectType())
+                switch (effect.EffectType)
                 {
                     case EffectType.BonusJump:
                         value = Calculate(value, effect);
@@ -191,23 +188,23 @@ namespace src.sjh.Scripts
 
             return value;
         }
-        
+
         private static float Calculate(float value, Effect effect)
         {
-            return effect.GetValueCalculator() switch
+            return effect.Calculator switch
             {
-                ValueCalculator.Add => value + effect.GetCalculatorValue(),
-                ValueCalculator.Multi => value * effect.GetCalculatorValue(),
+                Calculator.Add => value + effect.CalculatorValue,
+                Calculator.Multi => value * effect.CalculatorValue,
                 _ => value
             };
         }
 
         private static int Calculate(int value, Effect effect)
         {
-            return effect.GetValueCalculator() switch
+            return effect.Calculator switch
             {
-                ValueCalculator.Add => value + Convert.ToByte(effect.GetCalculatorValue()),
-                ValueCalculator.Multi => value * Convert.ToByte(effect.GetCalculatorValue()),
+                Calculator.Add => value + Convert.ToByte(effect.CalculatorValue),
+                Calculator.Multi => value * Convert.ToByte(effect.CalculatorValue),
                 _ => value
             };
         }
@@ -216,6 +213,18 @@ namespace src.sjh.Scripts
         public void DoMove()
         {
             float h = 0;
+            var pressAllKey = Input.GetKey(KeyCode.RightArrow) && Input.GetKey(KeyCode.LeftArrow);
+            var notPressKey = !Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow);
+
+            // Debug.Log($"pressAllKey: {pressAllKey}");
+            // Debug.Log($"notPressKey: {notPressKey}");
+
+            if (pressAllKey || notPressKey)
+            {
+                Stop();
+                return;
+            }
+            
             var maxMoveForce = GetMoveForce();
             // 움직임
             if (Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow))
@@ -271,19 +280,17 @@ namespace src.sjh.Scripts
             _body.drag = 0.0f;
             _body.velocity = new Vector2(_body.velocity.x, 0);
             _body.AddForce(Vector2.up * jf, ForceMode2D.Impulse);
-            
             new PlayerJumpEvent(m_Player);
         }
 
-        public void AddMovement(float x, float y) => _body.AddForce(new Vector2(x, y));
-        
-        public void AddMovementFlip(float x, float y) => _body.AddForce(!_spriteRenderer.flipX ? new Vector2(x, y) : new Vector2(-x, y));
-       
+        public void AddMovement(float x, float y) => _body.AddForce(new Vector2(x, y), ForceMode2D.Impulse);
+
+        public void AddMovementFlip(float x, float y) => _body.AddForce(!_spriteRenderer.flipX ? new Vector2(x, y) : new Vector2(-x, y), ForceMode2D.Impulse);
+
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            // 무한 점프 막기
-            if (other.gameObject.layer == 6 && _body.velocity.y <= 0) // 점프 후 착지했다면
+            try
             {
                 m_isJump = false;
                 _airJumpAmount = DefaultAirJumpAmount;
@@ -292,28 +299,41 @@ namespace src.sjh.Scripts
                 m_iGroundjump = 1;
 
                 if (!Input.GetKey(KeyCode.RightArrow))
+                // 무한 점프 막기
+                if (other.gameObject.layer == 6 && _body.velocity.y <= 0) // 점프 후 착지했다면
                 {
-                    _body.drag = 30.0f;
+                    m_isJump = false;
+                    _airJumpAmount = DefaultAirJumpAmount;
+                    _body.drag = 0;
+                    _body.velocity = new Vector2(_body.velocity.x, -1);
+                    m_iGroundjump = 1;
+                    if (!Input.GetKey(KeyCode.RightArrow))
+                    {
+                        _body.drag = 30.0f;
+                    }
+                    else if (!Input.GetKey(KeyCode.LeftArrow))
+                    {
+                        _body.drag = 30.0f;
+                    }
                 }
-                else if (!Input.GetKey(KeyCode.LeftArrow))
+
+                if (!m_isJump && other.gameObject.layer == 6 && _body.velocity.y >= 0) // 땅에 있다면
                 {
-                    _body.drag = 30.0f;
+                    m_iGroundjump = 1;
+                    _airJumpAmount = DefaultAirJumpAmount;
+                    _body.velocity = new Vector2(_body.velocity.x, -1);
+                    if (!Input.GetKey(KeyCode.RightArrow))
+                    {
+                        _body.drag = 30.0f;
+                    }
+                    else if (!Input.GetKey(KeyCode.LeftArrow))
+                    {
+                        _body.drag = 30.0f;
+                    }
                 }
             }
-
-            if (!m_isJump && other.gameObject.layer == 6 && _body.velocity.y >= 0) // 땅에 있다면
+            catch (NullReferenceException)
             {
-                m_iGroundjump = 1;
-                _airJumpAmount = DefaultAirJumpAmount;
-                _body.velocity = new Vector2(_body.velocity.x, -1);
-                if (!Input.GetKey(KeyCode.RightArrow))
-                {
-                    _body.drag = 30.0f;
-                }
-                else if (!Input.GetKey(KeyCode.LeftArrow))
-                {
-                    _body.drag = 30.0f;
-                }
             }
         }
 
@@ -323,8 +343,7 @@ namespace src.sjh.Scripts
             {
                 m_iGroundjump = 0;
                 _body.drag = 0.0f;
-
-                this.GetComponent<BoxCollider2D>().enabled = false;
+                GetComponent<BoxCollider2D>().enabled = false;
                 Invoke("_DoCheckCollider", 0.05f); // 다시 체크.
             }
         }

@@ -1,103 +1,92 @@
 using System;
-using System.Collections.Generic;
 using System.Collections;
+using System.Threading;
 using src.kr.kro.minestar.gameEvent;
+using UnityEngine;
 
 namespace src.kr.kro.minestar.player.skill
 {
     public abstract class ActiveSkill : Skill
     {
         /// ##### Field #####
-        private float _startCoolTime;
+        
+        public int DefaultCoolTime { get; private set; }
 
-        private float _defaultCoolTime;
-        private float _coolTime;
-
-        /// ##### Getter #####
-        public float GetStartCoolTime() => _startCoolTime;
-
-        public float GetDefaultCoolTime() => _defaultCoolTime;
-
-        /// ##### Setter #####
-        protected void SetStartCoolTime(float value) => _startCoolTime = value;
-
-        protected void SetDefaultCoolTime(float value) => _defaultCoolTime = value;
+        public int CurrentCoolTime { get; private set; }
+        
+        /// ##### Constructor #####
+        protected ActiveSkill(Player player) : base(player)
+        {
+        }
 
         /// ##### Functions #####
-        protected ActiveSkill()
+        protected virtual void Init(double startCoolTime, double defaultCoolTime)
         {
-            _coolTime = _startCoolTime;
+            DefaultCoolTime = Convert.ToInt32(Math.Round(defaultCoolTime, 2) * 100);
+            CurrentCoolTime = Convert.ToInt32(Math.Round(startCoolTime, 2) * 100);
         }
 
-        public void StartTimer()
+        public void DoPassesTime()
         {
-            _coolTime -= 0.1F;
+            if (CurrentCoolTime <= 0) return;
+            CurrentCoolTime--;
         }
 
-        protected override bool CanUseSkill() => _coolTime <= 0.05F;
+        protected void UsedSkill() => CurrentCoolTime = DefaultCoolTime;
+        
+
+        protected override bool CanUseSkill() => CurrentCoolTime <= 0;
+
+
     }
 
     public abstract class ChargeActiveSkill : ActiveSkill
     {
         /// ##### Field #####
-        private int _startChargeAmount;
+        public int StartChargeAmount { get; protected set; } // 시작 충전량
 
-        private int _maxChargeAmount; // 최대 충전량
-        private int _useChargeAmount; // 1회 사용량
-        private int _chargingAmount; // 1회 충전량
-        private int _chargedAmount; // 현재 충전량
+        public int MaxChargeAmount { get; protected set; } // 최대 충전량
+        public int UseChargeAmount { get; protected set; } // 1회 사용량
+        public int ChargingAmount { get; protected set; } // 1회 충전량
+        public int ChargedAmount { get; protected set; } // 현재 충전량
 
-        private Type _detectEvent; // 충전 트리거 이벤트
+        public Type DetectEvent { get; private set; } // 충전 트리거 이벤트
 
-        /// ##### Getter #####
-        public float GetStartChargeAmount() => _startChargeAmount;
-
-        public float GetMaxChargeAmount() => _maxChargeAmount;
-
-        public float GetUseChargeAmount() => _useChargeAmount;
-
-        public float GetChargingAmount() => _chargingAmount;
-
-        public Type GetDetectEvent() => _detectEvent;
-
-        /// ##### Setter #####
-        protected void SetStartChargeAmount(int value) => _startChargeAmount = value;
-
-        protected void SetMaxChargeAmount(int value) => _maxChargeAmount = value;
-
-        protected void SetUseChargeAmount(int value) => _useChargeAmount = value;
-
-        protected void SetChargingAmount(int value) => _chargingAmount = value;
-
-        protected void SetDetectEvent<T>() => _detectEvent = typeof(T);
+        protected void SetDetectEvent<T>() => DetectEvent = typeof(T);
+        
+        /// ##### Constructor #####
+        protected ChargeActiveSkill(Player player) : base(player)
+        {
+        }
 
 
         /// ##### Functions #####
-        protected ChargeActiveSkill()
+        protected override void Init(double startCoolTime, double defaultCoolTime)
         {
-            _chargedAmount = _maxChargeAmount < _startChargeAmount ? _maxChargeAmount : _startChargeAmount;
+            base.Init(startCoolTime, defaultCoolTime);
+            ChargedAmount = MaxChargeAmount < StartChargeAmount ? MaxChargeAmount : StartChargeAmount;
         }
 
         public void DoCharge(GameEvent gameEvent)
         {
-            if (_detectEvent != gameEvent.GetType()) return;
+            if (DetectEvent != gameEvent.GetType()) return;
 
-            if (_chargedAmount + _chargingAmount >= _maxChargeAmount) _chargedAmount = _maxChargeAmount;
-            else _chargedAmount += _chargingAmount;
+            if (ChargedAmount + ChargingAmount >= MaxChargeAmount) ChargedAmount = MaxChargeAmount;
+            else ChargedAmount += ChargingAmount;
         }
 
         public void DoCharge(GameEvent gameEvent, int chargeValue)
         {
-            if (_detectEvent != gameEvent.GetType()) return;
+            if (DetectEvent != gameEvent.GetType()) return;
 
-            if (_chargedAmount + chargeValue >= _maxChargeAmount) _chargedAmount = _maxChargeAmount;
-            else _chargedAmount += chargeValue;
+            if (ChargedAmount + chargeValue >= MaxChargeAmount) ChargedAmount = MaxChargeAmount;
+            else ChargedAmount += chargeValue;
         }
 
         protected override bool CanUseSkill()
         {
             if (!base.CanUseSkill()) return false;
-            return _chargedAmount >= _useChargeAmount;
+            return ChargedAmount >= UseChargeAmount;
         }
     }
 }
