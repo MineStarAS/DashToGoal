@@ -62,7 +62,7 @@ namespace src.kr.kro.minestar.player.character
             Player.Movement.SetMovement(0F, 0F);
             Player.Movement.SetDrag(0);
             Player.Movement.AddMovementFlip(30F, 20F);
-            Player.Movement.isSkill = true;
+            // Player.Movement.IsSkill = true;
             UsedSkill();
             return true;
         }
@@ -92,7 +92,7 @@ namespace src.kr.kro.minestar.player.character
         {
             if (!CanUseSkill()) return false;
 
-            Player.Movement.AddMovement(0F, 50F);
+            Player.Movement.AddMovement(0F, 20F);
             UsedSkill();
             return true;
         }

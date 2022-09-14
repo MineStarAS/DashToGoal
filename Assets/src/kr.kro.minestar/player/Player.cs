@@ -2,11 +2,7 @@ using System.Collections.Generic;
 using src.kr.kro.minestar.gameEvent;
 using src.kr.kro.minestar.player.effect;
 using src.kr.kro.minestar.player.skill;
-using src.sjh.Scripts;
-using System.Collections;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 
 // ReSharper disable ObjectCreationAsStatement
 
@@ -34,7 +30,7 @@ namespace src.kr.kro.minestar.player
             Movement = new Movement(this);
             PlayerCharacter = PlayerCharacter.FromEnum(this, playerCharacterEnum);
 
-            GameSystem.Players.Add(this);
+            GameSystem.RegisterPlayer(this);
         }
 
         private void Update()
@@ -51,14 +47,17 @@ namespace src.kr.kro.minestar.player
 
         private void OnTriggerEnter2D(Collider2D other) => Movement.OnTriggerEnter2D(other);
 
+        private void OnTriggerStay2D(Collider2D other) => Movement.OnTriggerStay2D(other);
+
         private void OnTriggerExit2D(Collider2D other) => Movement.OnTriggerExit2D(other);
 
         private void DoCheckCollider() // 다시 충돌 감지
         {
             BoxCollider2D boxCollider2D = GetComponent<BoxCollider2D>();
-            if (!boxCollider2D.enabled)
-                boxCollider2D.enabled = true;
-        } 
+            if (!boxCollider2D.enabled) boxCollider2D.enabled = true;
+        }
+
+        public void TestFunction(string text) => Debug.Log(text);
 
         ///##### Effect Functions #####
         public void AddEffect(Effect effect)
