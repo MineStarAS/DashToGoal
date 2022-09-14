@@ -6,7 +6,7 @@ TagManager:
   tags:
   - Grass
   - Stone
-  - Enemy
+  - Device
   layers:
   - Default
   - TransparentFX
