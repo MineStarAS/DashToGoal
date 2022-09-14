@@ -4,15 +4,15 @@ namespace src.kr.kro.minestar.player.effect
     {
         public Speed(Player player)
         {
-            SetPlayer(player);
-            SetEffectType(EffectType.FastMovement);
+            Player = player;
+            EffectType =  EffectType.FastMovement;
             
-            SetName("Speed");
-            SetDescription("FAST SPEED!!!");
+            Name = "Speed";
+            Description = "FAST SPEED!!!";
             
             
-            SetValueCalculator(Calculator.Multi);
-            SetCalculatorValue(1.15F);
+            Calculator = Calculator.Multi;
+            CalculatorValue = 1.15F;
             
             SetTime(10);
         }

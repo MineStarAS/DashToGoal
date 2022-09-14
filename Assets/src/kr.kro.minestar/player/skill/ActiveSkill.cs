@@ -9,42 +9,35 @@ namespace src.kr.kro.minestar.player.skill
     public abstract class ActiveSkill : Skill
     {
         /// ##### Field #####
+        
         public int DefaultCoolTime { get; private set; }
 
         public int CurrentCoolTime { get; private set; }
+        
+        /// ##### Constructor #####
+        protected ActiveSkill(Player player) : base(player)
+        {
+        }
 
         /// ##### Functions #####
-        protected virtual void Init(float startCoolTime, float defaultCoolTime)
+        protected virtual void Init(double startCoolTime, double defaultCoolTime)
         {
-            gameObject.AddComponent<Skill>();
-            Player = gameObject.GetComponent<Player>();
-
-            var startAmount = Convert.ToInt32(Math.Round(startCoolTime, 2) * 100);
-            var defaultAmount = Convert.ToInt32(Math.Round(defaultCoolTime, 2) * 100);
-
-            DefaultCoolTime = defaultAmount;
-            CurrentCoolTime = startAmount;
-
-            StartTimer(startAmount);
+            DefaultCoolTime = Convert.ToInt32(Math.Round(defaultCoolTime, 2) * 100);
+            CurrentCoolTime = Convert.ToInt32(Math.Round(startCoolTime, 2) * 100);
         }
 
-        protected void StartTimer(int coolTime)
+        public void DoPassesTime()
         {
-            CurrentCoolTime = coolTime;
-            StartCoroutine(Timer());
+            if (CurrentCoolTime <= 0) return;
+            CurrentCoolTime--;
         }
 
-        private IEnumerator Timer()
-        {
-            while (CurrentCoolTime >= 0)
-            {
-                CurrentCoolTime -= 1;
-                yield return new WaitForSeconds(0.01F);
-            }
-            Debug.Log($"{Name} activate");
-        }
+        protected void UsedSkill() => CurrentCoolTime = DefaultCoolTime;
+        
 
         protected override bool CanUseSkill() => CurrentCoolTime <= 0;
+
+
     }
 
     public abstract class ChargeActiveSkill : ActiveSkill
@@ -60,10 +53,15 @@ namespace src.kr.kro.minestar.player.skill
         public Type DetectEvent { get; private set; } // 충전 트리거 이벤트
 
         protected void SetDetectEvent<T>() => DetectEvent = typeof(T);
+        
+        /// ##### Constructor #####
+        protected ChargeActiveSkill(Player player) : base(player)
+        {
+        }
 
 
         /// ##### Functions #####
-        protected override void Init(float startCoolTime, float defaultCoolTime)
+        protected override void Init(double startCoolTime, double defaultCoolTime)
         {
             base.Init(startCoolTime, defaultCoolTime);
             ChargedAmount = MaxChargeAmount < StartChargeAmount ? MaxChargeAmount : StartChargeAmount;

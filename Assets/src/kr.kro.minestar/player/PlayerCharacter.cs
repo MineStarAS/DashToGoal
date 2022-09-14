@@ -46,12 +46,14 @@ namespace src.kr.kro.minestar.player
             {
                 while (true)
                 {
-                    foreach (var effect in player.Effects.Where(effect => effect is not TimerEffect))
+                    foreach (var effect in player.Effects.Where(effect => effect is TimerEffect))
                     {
-                        //TODO(왜 타이머 이펙트로 인식 못하냐 에휴 극혐 언어)
+                        ((TimerEffect)effect).DoPassesTime();
                     }
 
-
+                    ActiveSkill1.DoPassesTime();
+                    ActiveSkill2.DoPassesTime();
+                    
                     yield return new WaitForSeconds(0.01F);
                 }
             }

@@ -6,6 +6,10 @@ namespace src.kr.kro.minestar.player.skill
 {
     public abstract class PassiveSkill : Skill
     {
+        /// ##### Constructor #####
+        protected PassiveSkill(Player player) : base(player)
+        {
+        }
         /// ##### Field #####
         public Effect[] Effects
         {
