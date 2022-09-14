@@ -11,21 +11,20 @@ namespace src.kr.kro.minestar.player
     {
         /// ##### Field #####
         private GameSystem _gameSystem;
-
+        
         [SerializeField] PlayerCharacterEnum m_enum;
         private PlayerCharacter _playerCharacter;
         private List<Effect> _effects;
         private PlayerMove _playerMove;
-
         /// ##### Unity Functions #####
         private void Start()
         {
+            Debug.Log("Hello");
             _effects = new List<Effect>();
             _gameSystem = GameObject.Find("GameManager").gameObject.GetComponent<GameSystem>();
             _playerMove = gameObject.AddComponent<PlayerMove>();
             _playerCharacter = PlayerCharacter.FromEnum(this, m_enum);
         }
-
 
         private void Update()
         {

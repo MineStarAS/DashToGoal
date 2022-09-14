@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 3671804353185553457}
   - component: {fileID: 8346467371717497572}
   - component: {fileID: 4857770464160232855}
-  - component: {fileID: 3560783108225578569}
   - component: {fileID: 4725958199956896203}
   m_Layer: 2
   m_Name: SonJunHo
@@ -102,7 +101,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.75}
+  m_Offset: {x: 0, y: -0.3}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -113,7 +112,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.3, y: 0.3}
+  m_Size: {x: 0.3, y: 1}
   m_EdgeRadius: 0
 --- !u!70 &8346467371717497572
 CapsuleCollider2D:
@@ -152,22 +151,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &3560783108225578569
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8083057656219455567}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bf72fe33415a1bf47a17e85258298a81, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveForce: 0
-  jumpForce: 0
-  gizmoSize: 0
-  m_iGroundjump: 0
 --- !u!114 &4725958199956896203
 MonoBehaviour:
   m_ObjectHideFlags: 0

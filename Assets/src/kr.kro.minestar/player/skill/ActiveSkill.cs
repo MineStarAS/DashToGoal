@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Collections;
 using src.kr.kro.minestar.gameEvent;
 
 namespace src.kr.kro.minestar.player.skill
