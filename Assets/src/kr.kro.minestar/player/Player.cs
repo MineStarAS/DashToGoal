@@ -60,6 +60,8 @@ namespace src.kr.kro.minestar.player
                 boxCollider2D.enabled = true;
         }
 
+        public UIManager UIManager() => GameObject.Find("GameManager").GetComponent<UIManager>();
+
         ///##### Effect Functions #####
         public void AddEffect(Effect effect)
         {

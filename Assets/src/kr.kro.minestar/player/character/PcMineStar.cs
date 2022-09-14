@@ -89,7 +89,6 @@ namespace src.kr.kro.minestar.player.character
 
         public override bool UseSkill()
         {
-            Debug.Log($"{CurrentCoolTime}");
             if (!CanUseSkill()) return false;
 
             Player.Movement.AddMovement(0F, 50F);

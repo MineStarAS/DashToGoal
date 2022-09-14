@@ -2,6 +2,7 @@ using src.kr.kro.minestar.player.effect;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace src.kr.kro.minestar.player.skill
@@ -28,16 +29,22 @@ namespace src.kr.kro.minestar.player.skill
             Player = player;
         }
 
-        /// ##### Functions #####
         protected virtual void Init(double startCoolTime, double defaultCoolTime)
         {
             DefaultCoolTime = Convert.ToInt32(Math.Round(defaultCoolTime, 2) * 100);
             CurrentCoolTime = Convert.ToInt32(Math.Round(startCoolTime, 2) * 100);
         }
-
+        
+        /// ##### CoolTime Functions #####
         public void DoPassesTime()
         {
-            if (CurrentCoolTime <= 0) return;
+            if (CurrentCoolTime <= 0)
+            {
+                CoolTimeText.gameObject.SetActive(false);
+                return;
+            }
+            CoolTimeText.gameObject.SetActive(true);
+            CoolTimeText.text = ConvertSecond(CurrentCoolTime).ToString();
             CurrentCoolTime--;
             SetCoolTimePercent();
         }
@@ -60,6 +67,9 @@ namespace src.kr.kro.minestar.player.skill
             }
         }
 
+        private static double ConvertSecond(int time) => Math.Round(time / 100.0, 1);
+
+        /// ##### Use Skill Functions #####
 
         public abstract bool UseSkill();
 
