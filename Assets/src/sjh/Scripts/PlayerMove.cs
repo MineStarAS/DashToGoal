@@ -17,6 +17,8 @@ namespace src.sjh.Scripts
         private float moveForce = 0.05f; // 플레이어 이동에 가해지는 힘
         private float jumpForce = 13.0f; // 플레이어 점프 힘
         private bool m_isJump; // 점프키를 눌렀는가
+        private bool m_isSkill = false; // 스킬 사용
+        public bool isSkill { get => m_isSkill; set => m_isSkill = value; }
 
         private const int DefaultAirJumpAmount = 1; // 공중 점프 가능한 횟수.
         private int _airJumpAmount = DefaultAirJumpAmount; // 공중 점프 가능 횟수
@@ -233,14 +235,17 @@ namespace src.sjh.Scripts
                 m_dir = -2;
             }
 
-            if (m_dir == -2)
+            if (m_dir == -2) // 좌우키 동시 입력
             {
-                _body.velocity = new Vector2(0, _body.velocity.y);
+                if(_body.velocity.x > 0.1f) _body.AddForce(Vector2.right * -1 * moveForce, ForceMode2D.Impulse);
+                else if (_body.velocity.x < -0.1f) _body.AddForce(Vector2.right * 1 * moveForce, ForceMode2D.Impulse);
+                else _body.velocity = new Vector2(0, _body.velocity.y);
+
                 return;
             }
 
 
-            if (_body.velocity.x > maxMoveForce)
+            if (_body.velocity.x > maxMoveForce) // 최고 속도보다 클 때
             {
                 if (Input.GetKeyUp(KeyCode.RightArrow))
                 {
@@ -250,26 +255,33 @@ namespace src.sjh.Scripts
                 if (!Input.GetKey(KeyCode.LeftArrow)) return;
                 _body.AddForce(Vector2.right * m_dir * moveForce, ForceMode2D.Impulse);
             }
-            if (_body.velocity.x < -maxMoveForce)
+            if (_body.velocity.x < -maxMoveForce) // 최고 속도보다 작을 때
             {
                 if (Input.GetKeyUp(KeyCode.LeftArrow))
                 {
                     if (m_iGroundjump == 0 || m_isJump == true) return; // 플레이어가 공중에 있으면 실행 못하게
                     SetDrag(30F);
                 }
-                if (Input.GetKey(KeyCode.LeftArrow)) return;
+                if (!Input.GetKey(KeyCode.RightArrow)) return;
                 _body.AddForce(Vector2.right * m_dir * moveForce, ForceMode2D.Impulse);
             }
-            else
+            else                                    // 현재 속도가 최고 속도보다 작지도 크지도 않을 때
             {
                 if (m_dir == -1 && Input.GetKeyUp(KeyCode.LeftArrow))
                 {
                     if (m_iGroundjump == 0 || m_isJump == true) return; // 플레이어가 공중에 있으면 실행 못하게
                     SetDrag(30F);
                 }
-                else if (m_dir == 1 && Input.GetKeyUp(KeyCode.RightArrow)) SetDrag(30F);
+                else if (m_dir == 1 && Input.GetKeyUp(KeyCode.RightArrow))
+                {
+                    if (m_iGroundjump == 0 || m_isJump == true) return; // 플레이어가 공중에 있으면 실행 못하게
+                    SetDrag(30F);
+                }
 
-                if(_body.drag != 30) _body.AddForce(Vector2.right * m_dir * moveForce, ForceMode2D.Impulse);
+                if (_body.drag != 30 && (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.LeftArrow)))
+                {
+                    _body.AddForce(Vector2.right * m_dir * moveForce, ForceMode2D.Impulse);
+                }
             }
 
             new PlayerMoveEvent(m_Player);
@@ -281,6 +293,7 @@ namespace src.sjh.Scripts
             var jf = GetJumpForce();
 
             // 점프 횟수 추가
+            m_dir = 0;
             m_isJump = true;
             if (m_iGroundjump == 0) _airJumpAmount--;
             _body.drag = 0.0f;
@@ -305,10 +318,11 @@ namespace src.sjh.Scripts
                 //_body.velocity = new Vector2(_body.velocity.x, -1);
                 //m_iGroundjump = 1;
 
-                if (!Input.GetKey(KeyCode.RightArrow))
+                //if (!Input.GetKey(KeyCode.RightArrow))
                 // 무한 점프 막기
                 if (other.gameObject.layer == 6 && _body.velocity.y <= 0) // 점프 후 착지했다면
                 {
+                    m_isSkill = false;
                     m_isJump = false;
                     _airJumpAmount = DefaultAirJumpAmount;
                     _body.drag = 0;
@@ -324,7 +338,7 @@ namespace src.sjh.Scripts
                     }
                 }
 
-                if (!m_isJump && other.gameObject.layer == 6 && _body.velocity.y >= 0) // 땅에 있다면
+                if (!m_isSkill && !m_isJump && other.gameObject.layer == 6 && _body.velocity.y >= 0) // 땅에 있다면
                 {
                     m_iGroundjump = 1;
                     _airJumpAmount = DefaultAirJumpAmount;

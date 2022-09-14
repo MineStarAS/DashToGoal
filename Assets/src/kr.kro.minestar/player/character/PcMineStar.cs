@@ -59,6 +59,7 @@ namespace src.kr.kro.minestar.player.character
             player.GetPlayerMove().SetMovementFlip(0F, 0F);
             player.GetPlayerMove().SetDrag(0);
             player.GetPlayerMove().AddMovementFlip(30F, 20F);
+            player.GetPlayerMove().isSkill = true;
             UsedSkill();
             return true;
         }
