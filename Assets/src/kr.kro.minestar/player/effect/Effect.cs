@@ -12,12 +12,14 @@ namespace src.kr.kro.minestar.player.effect
         FastMovement, // 증속
         BonusJump, // 추가 공중 점프
         SuperJump, // 점프력 증가
+        CoolTimeReduction, // 쿨타임 감소
 
         ///Harmful Effect
         SlowMovement, // 감속
         JumpFatigue, // 점프감소
         Bondage, // 속박
         Disorder, // 혼란, 좌우 반전
+        CoolTimeIncrease, // 쿨타임 증가
     }
 
     public enum Calculator
@@ -63,7 +65,7 @@ namespace src.kr.kro.minestar.player.effect
         /// ##### Setter #####
         protected void SetTime(double time)
         {
-            var value = Convert.ToInt32(Math.Round(time, 2) * 100);
+            int value = Convert.ToInt32(Math.Round(time, 2) * 100);
 
             _maxTime = value;
             _currentTime = value;
@@ -78,7 +80,7 @@ namespace src.kr.kro.minestar.player.effect
         {
             if (time <= 0) return;
 
-            var value = Convert.ToInt32(Math.Round(time, 2) * 100);
+            int value = Convert.ToInt32(Math.Round(time, 2) * 100);
 
             _currentTime += value;
         }
@@ -87,7 +89,7 @@ namespace src.kr.kro.minestar.player.effect
         {
             if (time <= 0) return;
 
-            var value = Convert.ToInt32(Math.Round(time, 2) * 100);
+            int value = Convert.ToInt32(Math.Round(time, 2) * 100);
 
             _currentTime -= value;
         }

@@ -1,3 +1,4 @@
+using src.kr.kro.minestar.player;
 using src.kr.kro.minestar.player.skill;
 using UnityEngine;
 
@@ -22,14 +23,14 @@ namespace src.kr.kro.minestar.gameEvent
         public void DoEvent(GameEvent gameEvent)
         {
             //Debug.Log(gameEvent.GetType().Name);
-            foreach (var player in _gameSystem.Players)
+            foreach (Player player in _gameSystem.Players)
             {
-                var passiveSkill = player.PlayerCharacter.PassiveSkill;
-                var activeSkill1 = player.PlayerCharacter.ActiveSkill1;
-                var activeSkill2 = player.PlayerCharacter.ActiveSkill2;
+                PassiveSkill passiveSkill = player.PlayerCharacter.PassiveSkill;
+                ActiveSkill activeSkill1 = player.PlayerCharacter.ActiveSkill1;
+                ActiveSkill activeSkill2 = player.PlayerCharacter.ActiveSkill2;
 
-
-                if (passiveSkill.DetectEvent == gameEvent.GetType()) passiveSkill.UseSkill(player);
+                if (passiveSkill is DetectPassiveSkill skill0)
+                    if (skill0.DetectEvent == gameEvent.GetType()) passiveSkill.UseSkill();
 
                 if (activeSkill1 is ChargeActiveSkill skill1)
                     if (skill1.DetectEvent == gameEvent.GetType())
