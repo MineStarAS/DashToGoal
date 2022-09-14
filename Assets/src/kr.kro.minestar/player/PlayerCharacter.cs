@@ -5,6 +5,7 @@ using src.kr.kro.minestar.player.effect;
 using src.kr.kro.minestar.player.skill;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace src.kr.kro.minestar.player
 {
@@ -39,7 +40,10 @@ namespace src.kr.kro.minestar.player
         protected void StartTimer()
         {
             var player = gameObject.GetComponent<Player>();
-            
+            var UIManager = GameObject.Find("GameManager").GetComponent<UIManager>();
+            ActiveSkill1.SetImageCooltime(UIManager.imgActive1, UIManager.tActive1);
+            ActiveSkill2.SetImageCooltime(UIManager.imgActive2, UIManager.tActive2);
+
             StartCoroutine(Timer());
 
             IEnumerator Timer()

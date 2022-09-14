@@ -1,13 +1,30 @@
 using System;
 using src.kr.kro.minestar.gameEvent;
+
 namespace src.kr.kro.minestar.player.skill
-{
+{ 
     public abstract class ActiveSkill : Skill
     {
+        /// ##### Field #####
+
+        Image m_ActiveImage;
+        Text m_CooltimeText;
+
+        public void SetImageCooltime(Image argImage, Text argText)
+        {
+            m_ActiveImage = argImage;
+            m_CooltimeText = argText;
+        }
+        
         /// ##### Constructor #####
         protected ActiveSkill(Player player) : base(player)
         {
         }
+
+        /// ##### Functions #####
+
+        // Set_FillAmount(DefaultCoolTime - (DefaultCoolTime - CurrentCoolTime));
+        private void Set_FillAmount(float _value) => m_ActiveImage.fillAmount = _value / DefaultCoolTime;
     }
 
     public abstract class ChargeActiveSkill : ActiveSkill

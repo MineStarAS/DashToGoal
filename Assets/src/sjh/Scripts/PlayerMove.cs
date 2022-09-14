@@ -13,6 +13,7 @@ namespace src.sjh.Scripts
         /// ##### Field #####
         private Player m_Player;
 
+        float m_dir = 0;
         private float m_fMaxSpeed = 8.0f; // 플레이어 이동속도
         private float moveForce = 0.05f; // 플레이어 이동에 가해지는 힘
         private float jumpForce = 13.0f; // 플레이어 점프 힘
@@ -21,7 +22,7 @@ namespace src.sjh.Scripts
         private const int DefaultAirJumpAmount = 1; // 공중 점프 가능한 횟수.
         private int _airJumpAmount = DefaultAirJumpAmount; // 공중 점프 가능 횟수
         private int m_iGroundjump; // 땅에 있을때 점프할 수 있는 
-        private Rigidbody2D _body; // 플레이어 물리
+        public Rigidbody2D _body; // 플레이어 물리
         private SpriteRenderer _spriteRenderer; // 스프라이트 정보
 
         /// ##### Unity Functions #####
@@ -38,7 +39,7 @@ namespace src.sjh.Scripts
             {
                 if (_body.velocity.y < -10.0f)
                 {
-                    _body.drag = 2.0f; // 플레이어 낙하 속도
+                    SetDrag(2F);
                 }
             }
 
@@ -225,47 +226,62 @@ namespace src.sjh.Scripts
         /// ##### Movement Functions #####
         public void DoMove()
         {
-            float h = 0;
-            
-            float maxMoveForce = GetMoveForce();
+            var maxMoveForce = GetMoveForce();
             // 움직임
             if (Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow))
             {
-                h = 1;
+                m_dir = 1;
                 _body.drag = 0.0f;
                 _spriteRenderer.flipX = false;
             }
             else if (Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
             {
-                h = -1;
+                m_dir = -1;
                 _body.drag = 0.0f; // 저항값
                 _spriteRenderer.flipX = true;
             }
             else if (Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.RightArrow))
             {
-                h = 0;
+                m_dir = -2;
             }
 
-            if(h == 0)
+            if (m_dir == -2)
+            {
                 _body.velocity = new Vector2(0, _body.velocity.y);
-            else
-                _body.AddForce(Vector2.right * h * moveForce, ForceMode2D.Impulse);
+                return;
+            }
 
 
             if (_body.velocity.x > maxMoveForce)
-                _body.velocity = new Vector2(maxMoveForce, _body.velocity.y);
-            else if (_body.velocity.x < -maxMoveForce)
-                _body.velocity = new Vector2(-maxMoveForce, _body.velocity.y);
-
-                // 멈추기
-            if (m_iGroundjump == 0 || m_isJump == true) return; // 플레이어가 공중에 있으면 실행 못하게
-            if (Input.GetKeyUp(KeyCode.RightArrow))
             {
-                _body.drag = 30.0f;
+                if (Input.GetKeyUp(KeyCode.RightArrow))
+                {
+                    if (m_iGroundjump == 0 || m_isJump == true) return; // 플레이어가 공중에 있으면 실행 못하게
+                    SetDrag(30F);
+                }
+                if (!Input.GetKey(KeyCode.LeftArrow)) return;
+                _body.AddForce(Vector2.right * m_dir * moveForce, ForceMode2D.Impulse);
             }
-            else if (Input.GetKeyUp(KeyCode.LeftArrow))
+            if (_body.velocity.x < -maxMoveForce)
             {
-                _body.drag = 30.0f;
+                if (Input.GetKeyUp(KeyCode.LeftArrow))
+                {
+                    if (m_iGroundjump == 0 || m_isJump == true) return; // 플레이어가 공중에 있으면 실행 못하게
+                    SetDrag(30F);
+                }
+                if (Input.GetKey(KeyCode.LeftArrow)) return;
+                _body.AddForce(Vector2.right * m_dir * moveForce, ForceMode2D.Impulse);
+            }
+            else
+            {
+                if (m_dir == -1 && Input.GetKeyUp(KeyCode.LeftArrow))
+                {
+                    if (m_iGroundjump == 0 || m_isJump == true) return; // 플레이어가 공중에 있으면 실행 못하게
+                    SetDrag(30F);
+                }
+                else if (m_dir == 1 && Input.GetKeyUp(KeyCode.RightArrow)) SetDrag(30F);
+
+                if(_body.drag != 30) _body.AddForce(Vector2.right * m_dir * moveForce, ForceMode2D.Impulse);
             }
 
             new PlayerMoveEvent(m_Player);
@@ -284,21 +300,22 @@ namespace src.sjh.Scripts
             _body.AddForce(Vector2.up * jf, ForceMode2D.Impulse);
             new PlayerJumpEvent(m_Player);
         }
-
         public void AddMovement(float x, float y) => _body.AddForce(new Vector2(x, y), ForceMode2D.Impulse);
 
         public void AddMovementFlip(float x, float y) => _body.AddForce(!_spriteRenderer.flipX ? new Vector2(x, y) : new Vector2(-x, y), ForceMode2D.Impulse);
+        public void SetMovementFlip(float x, float y) => _body.velocity = new Vector2(x,y);
+        public void SetDrag(float value) => _body.drag = value;
 
 
         private void OnTriggerEnter2D(Collider2D other)
         {
             try
             {
-                m_isJump = false;
-                _airJumpAmount = DefaultAirJumpAmount;
-                _body.drag = 0;
-                _body.velocity = new Vector2(_body.velocity.x, -1);
-                m_iGroundjump = 1;
+                //m_isJump = false;
+                //_airJumpAmount = DefaultAirJumpAmount;
+                //_body.drag = 0;
+                //_body.velocity = new Vector2(_body.velocity.x, -1);
+                //m_iGroundjump = 1;
 
                 if (!Input.GetKey(KeyCode.RightArrow))
                 // 무한 점프 막기
