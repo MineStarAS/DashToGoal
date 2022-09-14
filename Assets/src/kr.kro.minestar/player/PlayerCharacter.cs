@@ -48,7 +48,7 @@ namespace src.kr.kro.minestar.player
         /// ##### Functions #####
         protected void StartTimer()
         {
-            UIManager uiManager = Player.UIManager();
+            UIManager uiManager = GameObject.Find("GameManager").GetComponent<UIManager>();
             
             ActiveSkill1.SetImageCoolTime(uiManager.imgActive1, uiManager.tActive1);
             ActiveSkill2.SetImageCoolTime(uiManager.imgActive2, uiManager.tActive2);
@@ -59,7 +59,7 @@ namespace src.kr.kro.minestar.player
             {
                 while (true)
                 {
-                    foreach (Effect effect in Player.Effects.Values.Where(effect => effect is TimerEffect))
+                    foreach (Effect effect in Player.Effects.Values.ToArray().Where(effect => effect is TimerEffect))
                     {
                         try
                         {

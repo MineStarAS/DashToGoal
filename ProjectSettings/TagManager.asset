@@ -7,7 +7,6 @@ TagManager:
   - Grass
   - Stone
   - Enemy
-  - Platform
   layers:
   - Default
   - TransparentFX

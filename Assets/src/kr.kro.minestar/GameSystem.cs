@@ -8,6 +8,10 @@ namespace src.kr.kro.minestar
     public class GameSystem : MonoBehaviour
     {
         [SerializeField] private GameObject Camera;
+        
+        public GameEventOperator GameEventOperator { get; private set; }
+
+        public HashSet<Player> Players { get; private set; }
 
         /// ##### Constructor #####
         private void Start()
@@ -15,10 +19,7 @@ namespace src.kr.kro.minestar
             GameEventOperator = new GameEventOperator(this);
             Players = new HashSet<Player>();
         }
-        
-        /// ##### Getter #####
-        public GameEventOperator GameEventOperator { get; private set; }
 
-        public HashSet<Player> Players { get; private set; }
+        public void RegisterPlayer(Player player) => Players.Add(player);
     }
 }
