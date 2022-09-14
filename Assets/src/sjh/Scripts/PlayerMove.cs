@@ -4,6 +4,7 @@ using UnityEngine;
 using src.kr.kro.minestar.player;
 using src.kr.kro.minestar.gameEvent;
 using src.kr.kro.minestar.player.effect;
+using System.Collections.Generic;
 
 namespace src.sjh.Scripts
 {
@@ -50,13 +51,13 @@ namespace src.sjh.Scripts
         /// ##### Calculate Functions #####
         private float GetMoveForce()
         {
-            var value = m_fMaxSpeed;
-            var effects = m_Player.Effects;
+            float value = m_fMaxSpeed;
+            Dictionary<string, Effect>.ValueCollection effects = m_Player.Effects.Values;
 
-            if (effects == null || effects.Count == 0) return value;
+            if (effects.Count == 0) return value;
 
             // Add Calculate
-            foreach (var effect in effects.Where(effect => effect.Calculator == Calculator.Add))
+            foreach (Effect effect in effects.Where(effect => effect.Calculator == Calculator.Add))
             {
                 switch (effect.EffectType)
                 {
@@ -70,13 +71,15 @@ namespace src.sjh.Scripts
                     case EffectType.SuperJump:
                     case EffectType.JumpFatigue:
                     case EffectType.Disorder:
+                    case EffectType.CoolTimeReduction:
+                    case EffectType.CoolTimeIncrease:
                     default:
                         continue;
                 }
             }
 
             // Multi Calculate
-            foreach (var effect in effects.Where(effect => effect.Calculator == Calculator.Multi))
+            foreach (Effect effect in effects.Where(effect => effect.Calculator == Calculator.Multi))
             {
                 switch (effect.EffectType)
                 {
@@ -90,6 +93,8 @@ namespace src.sjh.Scripts
                     case EffectType.SuperJump:
                     case EffectType.JumpFatigue:
                     case EffectType.Disorder:
+                    case EffectType.CoolTimeReduction:
+                    case EffectType.CoolTimeIncrease:
                     default:
                         continue;
                 }
@@ -100,12 +105,12 @@ namespace src.sjh.Scripts
 
         private float GetJumpForce()
         {
-            var value = jumpForce;
-            var effects = m_Player.Effects;
+            float value = jumpForce;
+            Dictionary<string, Effect>.ValueCollection effects = m_Player.Effects.Values;
 
-            if (effects == null || effects.Count == 0) return value;
+            if (effects.Count == 0) return value;
 
-            foreach (var effect in effects.Where(effect => effect.Calculator == Calculator.Add))
+            foreach (Effect effect in effects.Where(effect => effect.Calculator == Calculator.Add))
             {
                 switch (effect.EffectType)
                 {
@@ -119,12 +124,14 @@ namespace src.sjh.Scripts
                     case EffectType.SlowMovement:
                     case EffectType.BonusJump:
                     case EffectType.Disorder:
+                    case EffectType.CoolTimeReduction:
+                    case EffectType.CoolTimeIncrease:
                     default:
                         continue;
                 }
             }
 
-            foreach (var effect in effects.Where(effect => effect.Calculator == Calculator.Multi))
+            foreach (Effect effect in effects.Where(effect => effect.Calculator == Calculator.Multi))
             {
                 switch (effect.EffectType)
                 {
@@ -138,6 +145,8 @@ namespace src.sjh.Scripts
                     case EffectType.SlowMovement:
                     case EffectType.BonusJump:
                     case EffectType.Disorder:
+                    case EffectType.CoolTimeReduction:
+                    case EffectType.CoolTimeIncrease:
                     default:
                         continue;
                 }
@@ -148,11 +157,11 @@ namespace src.sjh.Scripts
 
         public int LandingAirJumpAmountCharge()
         {
-            var value = DefaultAirJumpAmount;
-            var effects = m_Player.Effects;
+            int value = DefaultAirJumpAmount;
+            Dictionary<string, Effect>.ValueCollection effects = m_Player.Effects.Values;
 
             // Add Calculate
-            foreach (var effect in effects.Where(effect => effect.Calculator == Calculator.Add))
+            foreach (Effect effect in effects.Where(effect => effect.Calculator == Calculator.Add))
             {
                 switch (effect.EffectType)
                 {
@@ -165,13 +174,15 @@ namespace src.sjh.Scripts
                     case EffectType.SuperJump:
                     case EffectType.JumpFatigue:
                     case EffectType.Disorder:
+                    case EffectType.CoolTimeReduction:
+                    case EffectType.CoolTimeIncrease:
                     default:
                         continue;
                 }
             }
 
             // Multi Calculate
-            foreach (var effect in effects.Where(effect => effect.Calculator == Calculator.Multi))
+            foreach (Effect effect in effects.Where(effect => effect.Calculator == Calculator.Multi))
             {
                 switch (effect.EffectType)
                 {
@@ -184,6 +195,8 @@ namespace src.sjh.Scripts
                     case EffectType.SuperJump:
                     case EffectType.JumpFatigue:
                     case EffectType.Disorder:
+                    case EffectType.CoolTimeReduction:
+                    case EffectType.CoolTimeIncrease:
                     default:
                         continue;
                 }
@@ -216,7 +229,6 @@ namespace src.sjh.Scripts
         public void DoMove()
         {
             var maxMoveForce = GetMoveForce();
-
             // 움직임
             if (Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow))
             {
@@ -290,7 +302,7 @@ namespace src.sjh.Scripts
         public void DoJump()
         {
             if (!Input.GetKeyDown(KeyCode.C) || _airJumpAmount <= 0) return;
-            var jf = GetJumpForce();
+            float jf = GetJumpForce();
 
             // 점프 횟수 추가
             m_dir = 0;

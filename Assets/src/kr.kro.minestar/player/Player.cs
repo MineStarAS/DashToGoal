@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using src.kr.kro.minestar.gameEvent;
 using src.kr.kro.minestar.player.effect;
+using src.kr.kro.minestar.player.skill;
 using src.sjh.Scripts;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,13 +16,13 @@ namespace src.kr.kro.minestar.player
 
         [SerializeField] PlayerCharacterEnum m_enum;
         public PlayerCharacter PlayerCharacter { get; private set; }
-        public List<Effect> Effects{ get; private set; }
+        public Dictionary<string, Effect> Effects{ get; private set; }
         public PlayerMove PlayerMove{ get; private set; }
 
         /// ##### Unity Functions #####
         private void Start()
         {
-            Effects = new List<Effect>();
+            Effects = new Dictionary<string, Effect>();
             GameSystem = GameObject.Find("GameManager").gameObject.GetComponent<GameSystem>();
             PlayerMove = gameObject.AddComponent<PlayerMove>();
             PlayerCharacter = PlayerCharacter.FromEnum(this, m_enum);
@@ -52,13 +53,12 @@ namespace src.kr.kro.minestar.player
         ///##### Effect Functions #####
         public void AddEffect(Effect effect)
         {
-            Effects.Add(effect);
+            if (Effects.ContainsKey(effect.Name)) Effects[effect.Name].RemoveEffect();
+            Effects.Add(effect.Name, effect);
         }
 
-        public void RemoveEffect(Effect effect)
-        {
-            Effects.Remove(effect);
-        }
+        public void RemoveEffect(Effect effect) => Effects.Remove(effect.Name);
+        
 
         // ReSharper disable Unity.PerformanceAnalysis
         ///###### Do Functions #####
@@ -77,14 +77,14 @@ namespace src.kr.kro.minestar.player
 
         private void DoUseActiveSkill1()
         {
-            var skill = PlayerCharacter.ActiveSkill1;
-            if (skill.UseSkill(this)) new PlayerUseActiveSkill1Event(this, skill);
+            ActiveSkill skill = PlayerCharacter.ActiveSkill1;
+            if (skill.UseSkill()) new PlayerUseActiveSkill1Event(this, skill);
         }
 
         private void DoUseActiveSkill2()
         {
-            var skill = PlayerCharacter.ActiveSkill2;
-            if (skill.UseSkill(this)) new PlayerUseActiveSkill2Event(this, skill);
+            ActiveSkill skill = PlayerCharacter.ActiveSkill2;
+            if (skill.UseSkill()) new PlayerUseActiveSkill2Event(this, skill);
         }
     }
 }

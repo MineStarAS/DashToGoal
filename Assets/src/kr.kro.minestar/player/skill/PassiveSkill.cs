@@ -1,6 +1,4 @@
 using System;
-using System.Linq;
-using src.kr.kro.minestar.player.effect;
 
 namespace src.kr.kro.minestar.player.skill
 {
@@ -10,11 +8,13 @@ namespace src.kr.kro.minestar.player.skill
         protected PassiveSkill(Player player) : base(player)
         {
         }
-        /// ##### Field #####
-        public Effect[] Effects
+    }
+    
+    public abstract class DetectPassiveSkill : PassiveSkill
+    {
+        /// ##### Constructor #####
+        protected DetectPassiveSkill(Player player) : base(player)
         {
-            get => Effects.ToArray();
-            protected set { }
         }
 
         public Type DetectEvent { get; private set; }
