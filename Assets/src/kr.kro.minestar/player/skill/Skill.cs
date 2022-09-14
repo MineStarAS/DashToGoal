@@ -2,6 +2,7 @@ using src.kr.kro.minestar.player.effect;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.UI;
 
 namespace src.kr.kro.minestar.player.skill
 {
@@ -9,14 +10,17 @@ namespace src.kr.kro.minestar.player.skill
     {
         /// ##### Field #####
         public Player Player { get; protected set; }
-        
+
         public string Name { get; protected set; }
-        
+
         public string Description { get; protected set; }
-        
+
         public int DefaultCoolTime { get; private set; }
 
         public int CurrentCoolTime { get; private set; }
+
+        public Image SkillImage;
+        public Text CoolTimeText;
 
         /// ##### Constructor #####
         protected Skill(Player player)
@@ -35,7 +39,27 @@ namespace src.kr.kro.minestar.player.skill
         {
             if (CurrentCoolTime <= 0) return;
             CurrentCoolTime--;
+            SetCoolTimePercent();
         }
+
+        public void SetImageCoolTime(Image image, Text text)
+        {
+            SkillImage = image;
+            CoolTimeText = text;
+        }
+
+        private void SetCoolTimePercent()
+        {
+            try
+            {
+                float value = DefaultCoolTime - (DefaultCoolTime - CurrentCoolTime);
+                SkillImage.fillAmount = value / DefaultCoolTime;
+            }
+            catch (NullReferenceException)
+            {
+            }
+        }
+
 
         public abstract bool UseSkill();
 
@@ -91,12 +115,12 @@ namespace src.kr.kro.minestar.player.skill
                         continue;
                 }
             }
+
             CurrentCoolTime = value;
         }
 
         protected virtual bool CanUseSkill() => CurrentCoolTime <= 0;
-        
-        
+
 
         private static float Calculate(float value, Effect effect)
         {

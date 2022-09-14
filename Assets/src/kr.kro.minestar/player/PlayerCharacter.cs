@@ -16,41 +16,48 @@ namespace src.kr.kro.minestar.player
     }
 
 
-    public abstract class PlayerCharacter : MonoBehaviour
+    public abstract class PlayerCharacter
     {
         /// ##### Static Functions #####
         public static PlayerCharacter FromEnum(Player player, PlayerCharacterEnum playerCharacterEnum)
         {
             return playerCharacterEnum switch
             {
-                PlayerCharacterEnum.MineStar => player.AddComponent<PcMineStar>(),
-                PlayerCharacterEnum.SonJunHo => player.AddComponent<PcMineStar>(),
-                _ => player.AddComponent<PcMineStar>(),
+                PlayerCharacterEnum.MineStar => new PcMineStar(player),
+                PlayerCharacterEnum.SonJunHo => new PcMineStar(player),
+                _ => new PcMineStar(player),
             };
         }
 
         /// ##### Field #####
+        public Player Player { get; protected set; }
         public PassiveSkill PassiveSkill { get; protected set; }
 
         public ActiveSkill ActiveSkill1 { get; protected set; }
 
         public ActiveSkill ActiveSkill2 { get; protected set; }
 
+
+        /// ##### Constructor #####
+        protected PlayerCharacter(Player player)
+        {
+            Player = player;
+        }
+
         /// ##### Functions #####
         protected void StartTimer()
         {
-            var player = gameObject.GetComponent<Player>();
-            var UIManager = GameObject.Find("GameManager").GetComponent<UIManager>();
-            ActiveSkill1.SetImageCooltime(UIManager.imgActive1, UIManager.tActive1);
-            ActiveSkill2.SetImageCooltime(UIManager.imgActive2, UIManager.tActive2);
+            UIManager uiManager = GameObject.Find("GameManager").GetComponent<UIManager>();
+            ActiveSkill1.SetImageCoolTime(uiManager.imgActive1, uiManager.tActive1);
+            ActiveSkill2.SetImageCoolTime(uiManager.imgActive2, uiManager.tActive2);
 
-            StartCoroutine(Timer());
+            Player.StartCoroutine(Timer());
 
             IEnumerator Timer()
             {
                 while (true)
                 {
-                    foreach (var effect in player.Effects.Where(effect => effect is TimerEffect))
+                    foreach (Effect effect in Player.Effects.Values.Where(effect => effect is TimerEffect))
                     {
                         ((TimerEffect)effect).DoPassesTime();
                     }
@@ -60,9 +67,13 @@ namespace src.kr.kro.minestar.player
                     
                     yield return new WaitForSeconds(0.01F);
                 }
+                // ReSharper disable once IteratorNeverReturns
             }
         }
 
-        public void StopTimer() => StopAllCoroutines();
+        public void StopTimer()
+        {
+            Player.StopAllCoroutines();
+        }
     }
 }

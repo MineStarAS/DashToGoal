@@ -8,49 +8,53 @@ using System.Collections.Generic;
 
 namespace src.sjh.Scripts
 {
-    public class PlayerMove : MonoBehaviour
+    public class Movement
     {
         /// ##### Field #####
-        private Player m_Player;
+        public Player Player { get; private set; }
 
-        float m_dir = 0;
-        private float m_fMaxSpeed = 8.0f; // 플레이어 이동속도
-        private float moveForce = 0.05f; // 플레이어 이동에 가해지는 힘
-        private float jumpForce = 13.0f; // 플레이어 점프 힘
-        private bool m_isJump; // 점프키를 눌렀는가
+        public float Flip { get; private set; }
+        public float MaxSpeed { get; private set; } // 플레이어 이동속도
+        public float MoveForce { get; private set; } // 플레이어 이동에 가해지는 힘
+        public float JumpForce { get; private set; } // 플레이어 점프 힘
+        public bool IsJump { get; private set; } // 점프키를 눌렀는가
 
         private const int DefaultAirJumpAmount = 1; // 공중 점프 가능한 횟수.
-        private int _airJumpAmount = DefaultAirJumpAmount; // 공중 점프 가능 횟수
-        private int m_iGroundjump; // 땅에 있을때 점프할 수 있는 
-        public Rigidbody2D _body; // 플레이어 물리
-        private SpriteRenderer _spriteRenderer; // 스프라이트 정보
+        private int AirJumpAmount = DefaultAirJumpAmount; // 공중 점프 가능 횟수
+        private int GroundJumpAmount; // 땅에 있을때 점프할 수 있는 회쇼ㅜ
+        public Rigidbody2D Body; // 플레이어 물리
+        private SpriteRenderer SpriteRenderer; // 스프라이트 정보
 
         /// ##### Unity Functions #####
-        private void Start() // 변수 초기화
+        public Movement(Player player)
         {
-            m_Player = GetComponent<Player>();
-            _body = GetComponent<Rigidbody2D>();
-            _spriteRenderer = GetComponent<SpriteRenderer>();
+            Player = player;
+            Body = player.GetComponent<Rigidbody2D>();
+            SpriteRenderer = player.GetComponent<SpriteRenderer>();
+
+            MaxSpeed = player.maxSpeed <= 0 ? 8.0f : player.maxSpeed;
+            MoveForce = player.moveForce <= 0 ? 0.05f : player.moveForce;
+            JumpForce = player.jumpForce <= 0 ? 13.0f : player.jumpForce;
         }
 
         public void FixedCheck()
         {
-            if (_body != null)
+            if (Body != null)
             {
-                if (_body.velocity.y < -10.0f)
+                if (Body.velocity.y < -10.0f)
                 {
                     SetDrag(2F);
                 }
             }
 
-            if (transform.position.y < -15) transform.position = new Vector3(0, 0, 0);
+            if (Player.transform.position.y < -15) Player.transform.position = new Vector3(0, 0, 0);
         }
 
         /// ##### Calculate Functions #####
         private float GetMoveForce()
         {
-            float value = m_fMaxSpeed;
-            Dictionary<string, Effect>.ValueCollection effects = m_Player.Effects.Values;
+            float value = MaxSpeed;
+            Dictionary<string, Effect>.ValueCollection effects = Player.Effects.Values;
 
             if (effects.Count == 0) return value;
 
@@ -103,8 +107,8 @@ namespace src.sjh.Scripts
 
         private float GetJumpForce()
         {
-            float value = jumpForce;
-            Dictionary<string, Effect>.ValueCollection effects = m_Player.Effects.Values;
+            float value = JumpForce;
+            Dictionary<string, Effect>.ValueCollection effects = Player.Effects.Values;
 
             if (effects.Count == 0) return value;
 
@@ -156,7 +160,7 @@ namespace src.sjh.Scripts
         public int LandingAirJumpAmountCharge()
         {
             int value = DefaultAirJumpAmount;
-            Dictionary<string, Effect>.ValueCollection effects = m_Player.Effects.Values;
+            Dictionary<string, Effect>.ValueCollection effects = Player.Effects.Values;
 
             // Add Calculate
             foreach (Effect effect in effects.Where(effect => effect.Calculator == Calculator.Add))
@@ -226,88 +230,95 @@ namespace src.sjh.Scripts
         /// ##### Movement Functions #####
         public void DoMove()
         {
-            var maxMoveForce = GetMoveForce();
+            float maxMoveForce = GetMoveForce();
             // 움직임
             if (Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow))
             {
-                m_dir = 1;
-                _body.drag = 0.0f;
-                _spriteRenderer.flipX = false;
+                Flip = 1;
+                Body.drag = 0.0f;
+                SpriteRenderer.flipX = false;
             }
             else if (Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
             {
-                m_dir = -1;
-                _body.drag = 0.0f; // 저항값
-                _spriteRenderer.flipX = true;
+                Flip = -1;
+                Body.drag = 0.0f; // 저항값
+                SpriteRenderer.flipX = true;
             }
             else if (Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.RightArrow))
             {
-                m_dir = -2;
+                Flip = -2;
             }
 
-            if (m_dir == -2)
+            if (Flip == -2)
             {
-                _body.velocity = new Vector2(0, _body.velocity.y);
+                Body.velocity = new Vector2(0, Body.velocity.y);
                 return;
             }
 
 
-            if (_body.velocity.x > maxMoveForce)
+            if (Body.velocity.x > maxMoveForce)
             {
                 if (Input.GetKeyUp(KeyCode.RightArrow))
                 {
-                    if (m_iGroundjump == 0 || m_isJump == true) return; // 플레이어가 공중에 있으면 실행 못하게
+                    if (GroundJumpAmount == 0 || IsJump == true) return; // 플레이어가 공중에 있으면 실행 못하게
                     SetDrag(30F);
                 }
+
                 if (!Input.GetKey(KeyCode.LeftArrow)) return;
-                _body.AddForce(Vector2.right * m_dir * moveForce, ForceMode2D.Impulse);
+                Body.AddForce(Vector2.right * Flip * MoveForce, ForceMode2D.Impulse);
             }
-            if (_body.velocity.x < -maxMoveForce)
+
+            if (Body.velocity.x < -maxMoveForce)
             {
                 if (Input.GetKeyUp(KeyCode.LeftArrow))
                 {
-                    if (m_iGroundjump == 0 || m_isJump == true) return; // 플레이어가 공중에 있으면 실행 못하게
+                    if (GroundJumpAmount == 0 || IsJump == true) return; // 플레이어가 공중에 있으면 실행 못하게
                     SetDrag(30F);
                 }
+
                 if (Input.GetKey(KeyCode.LeftArrow)) return;
-                _body.AddForce(Vector2.right * m_dir * moveForce, ForceMode2D.Impulse);
+                Body.AddForce(Vector2.right * Flip * MoveForce, ForceMode2D.Impulse);
             }
             else
             {
-                if (m_dir == -1 && Input.GetKeyUp(KeyCode.LeftArrow))
+                if (Flip == -1 && Input.GetKeyUp(KeyCode.LeftArrow))
                 {
-                    if (m_iGroundjump == 0 || m_isJump == true) return; // 플레이어가 공중에 있으면 실행 못하게
+                    if (GroundJumpAmount == 0 || IsJump == true) return; // 플레이어가 공중에 있으면 실행 못하게
                     SetDrag(30F);
                 }
-                else if (m_dir == 1 && Input.GetKeyUp(KeyCode.RightArrow)) SetDrag(30F);
+                else if (Flip == 1 && Input.GetKeyUp(KeyCode.RightArrow)) SetDrag(30F);
 
-                if(_body.drag != 30) _body.AddForce(Vector2.right * m_dir * moveForce, ForceMode2D.Impulse);
+                if (Body.drag != 30) Body.AddForce(Vector2.right * Flip * MoveForce, ForceMode2D.Impulse);
             }
 
-            new PlayerMoveEvent(m_Player);
+            new PlayerMoveEvent(Player);
         }
 
         public void DoJump()
         {
-            if (!Input.GetKeyDown(KeyCode.C) || _airJumpAmount <= 0) return;
+            if (!Input.GetKeyDown(KeyCode.C) || AirJumpAmount <= 0) return;
             float jf = GetJumpForce();
 
             // 점프 횟수 추가
-            m_isJump = true;
-            if (m_iGroundjump == 0) _airJumpAmount--;
-            _body.drag = 0.0f;
-            _body.velocity = new Vector2(_body.velocity.x, 0);
-            _body.AddForce(Vector2.up * jf, ForceMode2D.Impulse);
-            new PlayerJumpEvent(m_Player);
+            IsJump = true;
+            if (GroundJumpAmount == 0) AirJumpAmount--;
+            Body.drag = 0.0f;
+            Body.velocity = new Vector2(Body.velocity.x, 0);
+            Body.AddForce(Vector2.up * jf, ForceMode2D.Impulse);
+            new PlayerJumpEvent(Player);
         }
-        public void AddMovement(float x, float y) => _body.AddForce(new Vector2(x, y), ForceMode2D.Impulse);
-
-        public void AddMovementFlip(float x, float y) => _body.AddForce(!_spriteRenderer.flipX ? new Vector2(x, y) : new Vector2(-x, y), ForceMode2D.Impulse);
-        public void SetMovementFlip(float x, float y) => _body.velocity = new Vector2(x,y);
-        public void SetDrag(float value) => _body.drag = value;
 
 
-        private void OnTriggerEnter2D(Collider2D other)
+        public void SetMovement(float x, float y) => Body.velocity = new Vector2(x, y);
+        public void SetMovementFlip(float x, float y) => Body.velocity = !SpriteRenderer.flipX ? new Vector2(x, y) : new Vector2(-x, y);
+
+        public void AddMovement(float x, float y) => Body.AddForce(new Vector2(x, y), ForceMode2D.Impulse);
+        public void AddMovementFlip(float x, float y) => Body.AddForce(!SpriteRenderer.flipX ? new Vector2(x, y) : new Vector2(-x, y), ForceMode2D.Impulse);
+        
+        public void SetDrag(float value) => Body.drag = value;
+
+
+        public void OnTriggerEnter2D(Collider2D other)
         {
             try
             {
@@ -318,36 +329,36 @@ namespace src.sjh.Scripts
                 //m_iGroundjump = 1;
 
                 if (!Input.GetKey(KeyCode.RightArrow))
-                // 무한 점프 막기
-                if (other.gameObject.layer == 6 && _body.velocity.y <= 0) // 점프 후 착지했다면
-                {
-                    m_isJump = false;
-                    _airJumpAmount = DefaultAirJumpAmount;
-                    _body.drag = 0;
-                    _body.velocity = new Vector2(_body.velocity.x, -1);
-                    m_iGroundjump = 1;
-                    if (!Input.GetKey(KeyCode.RightArrow))
+                    // 무한 점프 막기
+                    if (other.gameObject.layer == 6 && Body.velocity.y <= 0) // 점프 후 착지했다면
                     {
-                        _body.drag = 30.0f;
+                        IsJump = false;
+                        AirJumpAmount = DefaultAirJumpAmount;
+                        Body.drag = 0;
+                        Body.velocity = new Vector2(Body.velocity.x, -1);
+                        GroundJumpAmount = 1;
+                        if (!Input.GetKey(KeyCode.RightArrow))
+                        {
+                            Body.drag = 30.0f;
+                        }
+                        else if (!Input.GetKey(KeyCode.LeftArrow))
+                        {
+                            Body.drag = 30.0f;
+                        }
                     }
-                    else if (!Input.GetKey(KeyCode.LeftArrow))
-                    {
-                        _body.drag = 30.0f;
-                    }
-                }
 
-                if (!m_isJump && other.gameObject.layer == 6 && _body.velocity.y >= 0) // 땅에 있다면
+                if (!IsJump && other.gameObject.layer == 6 && Body.velocity.y >= 0) // 땅에 있다면
                 {
-                    m_iGroundjump = 1;
-                    _airJumpAmount = DefaultAirJumpAmount;
-                    _body.velocity = new Vector2(_body.velocity.x, -1);
+                    GroundJumpAmount = 1;
+                    AirJumpAmount = DefaultAirJumpAmount;
+                    Body.velocity = new Vector2(Body.velocity.x, -1);
                     if (!Input.GetKey(KeyCode.RightArrow))
                     {
-                        _body.drag = 30.0f;
+                        Body.drag = 30.0f;
                     }
                     else if (!Input.GetKey(KeyCode.LeftArrow))
                     {
-                        _body.drag = 30.0f;
+                        Body.drag = 30.0f;
                     }
                 }
             }
@@ -356,21 +367,14 @@ namespace src.sjh.Scripts
             }
         }
 
-        private void OnTriggerExit2D(Collider2D other) // 타일의 경계선을 나가도 실행이 됨.
+        public void OnTriggerExit2D(Collider2D other) // 타일의 경계선을 나가도 실행이 됨.
         {
-            if (other.gameObject.layer == 6)
-            {
-                m_iGroundjump = 0;
-                _body.drag = 0.0f;
-                GetComponent<BoxCollider2D>().enabled = false;
-                Invoke("_DoCheckCollider", 0.05f); // 다시 체크.
-            }
-        }
-
-        private void _DoCheckCollider() // 다시 충돌 감지
-        {
-            if (!this.GetComponent<BoxCollider2D>().enabled)
-                this.GetComponent<BoxCollider2D>().enabled = true;
+            if (other.gameObject.layer != 6) return;
+            
+            GroundJumpAmount = 0;
+            Body.drag = 0.0f;
+            Player.GetComponent<BoxCollider2D>().enabled = false;
+            Player.Invoke("DoCheckCollider", 0.05f); // 다시 체크.
         }
     }
 }

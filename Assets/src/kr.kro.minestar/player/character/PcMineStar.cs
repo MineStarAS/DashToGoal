@@ -9,9 +9,8 @@ namespace src.kr.kro.minestar.player.character
 {
     public class PcMineStar : PlayerCharacter
     {
-        private void Start()
+        public PcMineStar(Player player) : base(player)
         {
-            var player = GetComponent<Player>();
             PassiveSkill = new PsSpeedy(player);
             ActiveSkill1 = new AsDash(player);
             ActiveSkill2 = new AsSuperJump(player);
@@ -21,7 +20,7 @@ namespace src.kr.kro.minestar.player.character
 
     public class PsSpeedy : DetectPassiveSkill
     {
-        public PsSpeedy(Player player): base(player)
+        public PsSpeedy(Player player) : base(player)
         {
             Player = player;
             Name = "Speedy";
@@ -36,6 +35,7 @@ namespace src.kr.kro.minestar.player.character
             {
                 Player.AddEffect(effect);
             }
+
             new PlayerUsePassiveSkillEvent(Player, this);
             return true;
         }
@@ -45,7 +45,7 @@ namespace src.kr.kro.minestar.player.character
 
     public class AsDash : ActiveSkill
     {
-        public AsDash(Player player): base(player)
+        public AsDash(Player player) : base(player)
         {
             Player = player;
             Name = "Dash";
@@ -59,9 +59,9 @@ namespace src.kr.kro.minestar.player.character
         public override bool UseSkill()
         {
             if (!CanUseSkill()) return false;
-            player.GetPlayerMove().SetMovementFlip(0F, 0F);
-            player.GetPlayerMove().SetDrag(0);
-            player.GetPlayerMove().AddMovementFlip(30F, 20F);
+            Player.Movement.SetMovement(0F, 0F);
+            Player.Movement.SetDrag(0);
+            Player.Movement.AddMovementFlip(30F, 20F);
             UsedSkill();
             return true;
         }
@@ -69,7 +69,7 @@ namespace src.kr.kro.minestar.player.character
 
     public class AsSuperJump : ChargeActiveSkill
     {
-        public AsSuperJump(Player player): base(player)
+        public AsSuperJump(Player player) : base(player)
         {
             Player = player;
             Name = "SuperJump";
@@ -92,7 +92,7 @@ namespace src.kr.kro.minestar.player.character
             Debug.Log($"{CurrentCoolTime}");
             if (!CanUseSkill()) return false;
 
-            Player.GetPlayerMove().AddMovement(0F, 50F);
+            Player.Movement.AddMovement(0F, 50F);
             UsedSkill();
             return true;
         }

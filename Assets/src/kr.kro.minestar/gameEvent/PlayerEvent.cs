@@ -22,7 +22,7 @@ namespace src.kr.kro.minestar.gameEvent
         {
             SetPlayer(player);
             
-            player.GetGameSystem().GameEventOperator.DoEvent(this);
+            player.GameSystem.GameEventOperator.DoEvent(this);
         }
     }
 
@@ -33,7 +33,7 @@ namespace src.kr.kro.minestar.gameEvent
         {
             SetPlayer(player);
             
-            player.GetGameSystem().GameEventOperator.DoEvent(this);
+            player.GameSystem.GameEventOperator.DoEvent(this);
         }
     }
 
@@ -51,7 +51,7 @@ namespace src.kr.kro.minestar.gameEvent
             SetPlayer(player);
             _skill = skill;
             
-            player.GetGameSystem().GameEventOperator.DoEvent(this);
+            player.GameSystem.GameEventOperator.DoEvent(this);
         }
     }
 
@@ -69,7 +69,7 @@ namespace src.kr.kro.minestar.gameEvent
             SetPlayer(player);
             _skill = skill;
             
-            player.GetGameSystem().GameEventOperator.DoEvent(this);
+            player.GameSystem.GameEventOperator.DoEvent(this);
         }
     }
 
@@ -87,7 +87,7 @@ namespace src.kr.kro.minestar.gameEvent
             SetPlayer(player);
             _skill = skill;
             
-            player.GetGameSystem().GameEventOperator.DoEvent(this);
+            player.GameSystem.GameEventOperator.DoEvent(this);
         }
     }
 }
