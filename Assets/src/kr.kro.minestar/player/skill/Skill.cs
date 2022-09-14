@@ -2,7 +2,6 @@ using src.kr.kro.minestar.player.effect;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using UnityEngine.UI;
 
 namespace src.kr.kro.minestar.player.skill

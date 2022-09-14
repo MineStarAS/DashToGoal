@@ -14,7 +14,7 @@ namespace src.kr.kro.minestar.player.effect
             Calculator = Calculator.Multi;
             CalculatorValue = 1.15F;
             
-            SetTime(10);
+            SetTime(2);
         }
     }
 }

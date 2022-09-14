@@ -1,24 +1,23 @@
-using System;
-using System.Linq;
-using UnityEngine;
-using src.kr.kro.minestar.player;
 using src.kr.kro.minestar.gameEvent;
 using src.kr.kro.minestar.player.effect;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
-namespace src.sjh.Scripts
+namespace src.kr.kro.minestar.player
 {
     public class Movement
     {
         /// ##### Field #####
-        public Player Player { get; private set; }
+        public Player Player { get; }
 
         public float Flip { get; private set; }
-        public float MaxSpeed { get; private set; } // 플레이어 이동속도
-        public float MoveForce { get; private set; } // 플레이어 이동에 가해지는 힘
-        public float JumpForce { get; private set; } // 플레이어 점프 힘
+        public float MaxSpeed { get; } // 플레이어 이동속도
+        public float MoveForce { get; } // 플레이어 이동에 가해지는 힘
+        public float JumpForce { get; } // 플레이어 점프 힘
         public bool IsJump { get; private set; } // 점프키를 눌렀는가
-        
+
         private bool m_isSkill = false; // 스킬 사용
         public bool isSkill { get => m_isSkill; set => m_isSkill = value; }
 
@@ -233,7 +232,7 @@ namespace src.sjh.Scripts
         /// ##### Movement Functions #####
         public void DoMove()
         {
-             float maxMoveForce = GetMoveForce();
+            float maxMoveForce = GetMoveForce();
             // 움직임
             if (Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow))
             {
@@ -254,7 +253,7 @@ namespace src.sjh.Scripts
 
             if (Flip == -2) // 좌우키 동시 입력
             {
-                if(Body.velocity.x > 0.1f) Body.AddForce(Vector2.right * -1 * MoveForce, ForceMode2D.Impulse);
+                if (Body.velocity.x > 0.1f) Body.AddForce(Vector2.right * -1 * MoveForce, ForceMode2D.Impulse);
                 else if (Body.velocity.x < -0.1f) Body.AddForce(Vector2.right * 1 * MoveForce, ForceMode2D.Impulse);
                 else Body.velocity = new Vector2(0, Body.velocity.y);
 
@@ -269,9 +268,11 @@ namespace src.sjh.Scripts
                     if (GroundJumpAmount == 0 || IsJump == true) return; // 플레이어가 공중에 있으면 실행 못하게
                     SetDrag(30F);
                 }
+
                 if (!Input.GetKey(KeyCode.LeftArrow)) return;
                 Body.AddForce(Vector2.right * Flip * MoveForce, ForceMode2D.Impulse);
             }
+
             if (Body.velocity.x < -maxMoveForce) // 최고 속도보다 작을 때
             {
                 if (Input.GetKeyUp(KeyCode.LeftArrow))
@@ -279,10 +280,11 @@ namespace src.sjh.Scripts
                     if (GroundJumpAmount == 0 || IsJump == true) return; // 플레이어가 공중에 있으면 실행 못하게
                     SetDrag(30F);
                 }
+
                 if (!Input.GetKey(KeyCode.RightArrow)) return;
                 Body.AddForce(Vector2.right * Flip * MoveForce, ForceMode2D.Impulse);
             }
-            else                                    // 현재 속도가 최고 속도보다 작지도 크지도 않을 때
+            else // 현재 속도가 최고 속도보다 작지도 크지도 않을 때
             {
                 if (Flip == -1 && Input.GetKeyUp(KeyCode.LeftArrow))
                 {
@@ -324,7 +326,7 @@ namespace src.sjh.Scripts
 
         public void AddMovement(float x, float y) => Body.AddForce(new Vector2(x, y), ForceMode2D.Impulse);
         public void AddMovementFlip(float x, float y) => Body.AddForce(!SpriteRenderer.flipX ? new Vector2(x, y) : new Vector2(-x, y), ForceMode2D.Impulse);
-        
+
         public void SetDrag(float value) => Body.drag = value;
 
 
@@ -381,7 +383,7 @@ namespace src.sjh.Scripts
         public void OnTriggerExit2D(Collider2D other) // 타일의 경계선을 나가도 실행이 됨.
         {
             if (other.gameObject.layer != 6) return;
-            
+
             GroundJumpAmount = 0;
             Body.drag = 0.0f;
             Player.GetComponent<BoxCollider2D>().enabled = false;
