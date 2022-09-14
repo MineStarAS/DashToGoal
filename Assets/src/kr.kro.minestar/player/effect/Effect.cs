@@ -20,7 +20,7 @@ namespace src.kr.kro.minestar.player.effect
         Disorder, // 혼란, 좌우 반전
     }
 
-    public enum ValueCalculator
+    public enum Calculator
     {
         Add, // 덧셈
         Multi, // 곱셈
@@ -30,46 +30,20 @@ namespace src.kr.kro.minestar.player.effect
     public abstract class Effect
     {
         /// ##### Field #####
-        private Player _player;
+        public Player Player { get; protected set; }
 
-        private EffectType _effectType;
+        public EffectType EffectType { get; protected set; }
 
-        private string _name;
-        private string _description;
+        public string Name { get; protected set; }
+        public string Description { get; protected set; }
 
-        private ValueCalculator _valueCalculator;
-        private float _calculatorValue;
-
-        /// ##### Getter #####
-        public Player GetPlayer() => _player;
-
-        public EffectType GetEffectType() => _effectType;
-
-        public string GetName() => _name;
-
-        public string GetDescription() => _description;
-
-        public ValueCalculator GetValueCalculator() => _valueCalculator;
-
-        public float GetCalculatorValue() => _calculatorValue;
-
-        /// ##### Setter #####
-        protected void SetPlayer(Player player) => _player = player;
-
-        protected void SetEffectType(EffectType effectType) => _effectType = effectType;
-
-        protected void SetName(string name) => _name = name;
-
-        protected void SetDescription(string description) => _description = description;
-
-        protected void SetValueCalculator(ValueCalculator valueCalculator) => _valueCalculator = valueCalculator;
-
-        protected void SetCalculatorValue(float value) => _calculatorValue = value;
+        public Calculator Calculator { get; protected set; }
+        public float CalculatorValue { get; protected set; }
 
         /// ##### Functions #####
-        protected void AddEffect() => _player.AddEffect(this);
+        public void AddEffect() => Player.AddEffect(this);
 
-        protected void RemoveEffect() => _player.RemoveEffect(this);
+        public void RemoveEffect() => Player.RemoveEffect(this);
     }
 
     public abstract class TimerEffect : Effect
@@ -78,7 +52,6 @@ namespace src.kr.kro.minestar.player.effect
         private int _maxTime;
 
         private int _currentTime;
-        private Timer _timer;
 
         /// ##### Getter #####
         public double GetMaxTime() => Math.Round(Convert.ToDouble(_maxTime) / 100, 2);
@@ -94,40 +67,31 @@ namespace src.kr.kro.minestar.player.effect
 
             _maxTime = value;
             _currentTime = value;
-
-            EnableTimer();
         }
 
-        private IEnumerator EnableTimer()
+        public void DoPassesTime()
         {
-            while (_currentTime >= 0)
-            {
-                yield return new WaitForSeconds(0.01F);
-                _currentTime -= 1;
-            }
-
-            RemoveEffect();
+            if (_currentTime-- <= 0) RemoveEffect();
         }
-
-        /// ##### Functions #####
+        
         public void AddTime(double time)
         {
             if (time <= 0) return;
-                
+
             var value = Convert.ToInt32(Math.Round(time, 2) * 100);
 
             _currentTime += value;
         }
-        
+
         public void RemoveTime(double time)
         {
             if (time <= 0) return;
-                
+
             var value = Convert.ToInt32(Math.Round(time, 2) * 100);
 
             _currentTime -= value;
         }
-        
+
         public void MultiplyTime(double multiple)
         {
             if (multiple <= 0) return;
