@@ -3,13 +3,21 @@ using System.Collections;
 using System.Threading;
 using src.kr.kro.minestar.gameEvent;
 using UnityEngine;
-
+using UnityEngine.UI;
 namespace src.kr.kro.minestar.player.skill
-{
+{ 
     public abstract class ActiveSkill : Skill
     {
         /// ##### Field #####
-        
+
+        Image m_ActiveImage;
+        Text m_CooltimeText;
+
+        public void SetImageCooltime(Image argImage, Text argText)
+        {
+            m_ActiveImage = argImage;
+            m_CooltimeText = argText;
+        }
         public int DefaultCoolTime { get; private set; }
 
         public int CurrentCoolTime { get; private set; }
@@ -28,16 +36,22 @@ namespace src.kr.kro.minestar.player.skill
 
         public void DoPassesTime()
         {
-            if (CurrentCoolTime <= 0) return;
+            if (CurrentCoolTime <= 0)
+            {
+                m_CooltimeText.gameObject.SetActive(false);
+                return;
+            }
+            m_CooltimeText.gameObject.SetActive(true);
+            m_CooltimeText.text = CurrentCoolTime.ToString();
             CurrentCoolTime--;
+            Set_FillAmount(DefaultCoolTime - (DefaultCoolTime - CurrentCoolTime));
         }
 
         protected void UsedSkill() => CurrentCoolTime = DefaultCoolTime;
         
-
         protected override bool CanUseSkill() => CurrentCoolTime <= 0;
 
-
+        private void Set_FillAmount(float _value) => m_ActiveImage.fillAmount = _value / DefaultCoolTime;
     }
 
     public abstract class ChargeActiveSkill : ActiveSkill

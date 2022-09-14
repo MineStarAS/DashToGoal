@@ -3,6 +3,7 @@ using src.kr.kro.minestar.gameEvent;
 using src.kr.kro.minestar.player.effect;
 using src.sjh.Scripts;
 using UnityEngine;
+using UnityEngine.UI;
 // ReSharper disable ObjectCreationAsStatement
 
 namespace src.kr.kro.minestar.player

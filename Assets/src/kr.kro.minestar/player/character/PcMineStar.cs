@@ -56,6 +56,8 @@ namespace src.kr.kro.minestar.player.character
         public override bool UseSkill(Player player)
         {
             if (!CanUseSkill()) return false;
+            player.GetPlayerMove().SetMovementFlip(0F, 0F);
+            player.GetPlayerMove().SetDrag(0);
             player.GetPlayerMove().AddMovementFlip(30F, 20F);
             UsedSkill();
             return true;
