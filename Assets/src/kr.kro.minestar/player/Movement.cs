@@ -334,7 +334,7 @@ namespace src.sjh.Scripts
             try
             {
                 if (other.gameObject.layer == 6 && (Body.velocity.y <= 0 || Body.drag == 2)) // 점프 후 착지했다면
-                {
+                { 
                     Debug.Log("Hello");
                     m_isSkill = false;
                     IsJump = false;
@@ -367,7 +367,6 @@ namespace src.sjh.Scripts
         public void OnTriggerExit2D(Collider2D other) // 타일의 경계선을 나가도 실행이 됨.
         {
             if (other.gameObject.layer != 6) return;
-            
             GroundJumpAmount = 0;
             Body.drag = 0.0f;
             Player.GetComponent<BoxCollider2D>().enabled = false;
