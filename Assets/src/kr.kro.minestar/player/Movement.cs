@@ -1,36 +1,35 @@
-using src.kr.kro.minestar.gameEvent;
-using src.kr.kro.minestar.player.effect;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using src.kr.kro.minestar.player;
+using src.kr.kro.minestar.gameEvent;
+using src.kr.kro.minestar.player.effect;
+using System.Collections.Generic;
 
-namespace src.kr.kro.minestar.player
+namespace src.sjh.Scripts
 {
-    public class MovementA
+    public class Movement
     {
-        /// ##### Constant Field #####
-        private const float Drag = 30;
-        
         /// ##### Field #####
-        public Player Player { get; }
+        public Player Player { get; private set; }
 
         public float Flip { get; private set; }
-        public float MaxSpeed { get; } // 플레이어 이동속도
-        public float MoveForce { get; } // 플레이어 이동에 가해지는 힘
-        public float JumpForce { get; } // 플레이어 점프 힘
+        public float MaxSpeed { get; private set; } // 플레이어 이동속도
+        public float MoveForce { get; private set; } // 플레이어 이동에 가해지는 힘
+        public float JumpForce { get; private set; } // 플레이어 점프 힘
         public bool IsJump { get; private set; } // 점프키를 눌렀는가
-
-        public bool IsSkill  { get; set; } // 스킬 사용
+        
+        private bool m_isSkill = false; // 스킬 사용
+        public bool isSkill { get => m_isSkill; set => m_isSkill = value; }
 
         private const int DefaultAirJumpAmount = 1; // 공중 점프 가능한 횟수.
         private int AirJumpAmount = DefaultAirJumpAmount; // 공중 점프 가능 횟수
-        private int GroundJumpAmount; // 땅에 있을때 점프할 수 있는 횟수
+        private int GroundJumpAmount; // 땅에 있을때 점프할 수 있는 회쇼ㅜ
         public Rigidbody2D Body; // 플레이어 물리
         private SpriteRenderer SpriteRenderer; // 스프라이트 정보
 
         /// ##### Unity Functions #####
-        public MovementA(Player player)
+        public Movement(Player player)
         {
             Player = player;
             Body = player.GetComponent<Rigidbody2D>();
@@ -39,8 +38,6 @@ namespace src.kr.kro.minestar.player
             MaxSpeed = player.maxSpeed <= 0 ? 8.0f : player.maxSpeed;
             MoveForce = player.moveForce <= 0 ? 0.05f : player.moveForce;
             JumpForce = player.jumpForce <= 0 ? 13.0f : player.jumpForce;
-
-            IsSkill = false;
         }
 
         public void FixedCheck()
@@ -163,7 +160,7 @@ namespace src.kr.kro.minestar.player
             return value;
         }
 
-        private int AirJumpAmountCharge()
+        public int LandingAirJumpAmountCharge()
         {
             int value = DefaultAirJumpAmount;
             Dictionary<string, Effect>.ValueCollection effects = Player.Effects.Values;
@@ -236,7 +233,7 @@ namespace src.kr.kro.minestar.player
         /// ##### Movement Functions #####
         public void DoMove()
         {
-            float maxMoveForce = GetMoveForce();
+             float maxMoveForce = GetMoveForce();
             // 움직임
             if (Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow))
             {
@@ -257,7 +254,7 @@ namespace src.kr.kro.minestar.player
 
             if (Flip == -2) // 좌우키 동시 입력
             {
-                if (Body.velocity.x > 0.1f) Body.AddForce(Vector2.right * -1 * MoveForce, ForceMode2D.Impulse);
+                if(Body.velocity.x > 0.1f) Body.AddForce(Vector2.right * -1 * MoveForce, ForceMode2D.Impulse);
                 else if (Body.velocity.x < -0.1f) Body.AddForce(Vector2.right * 1 * MoveForce, ForceMode2D.Impulse);
                 else Body.velocity = new Vector2(0, Body.velocity.y);
 
@@ -272,11 +269,9 @@ namespace src.kr.kro.minestar.player
                     if (GroundJumpAmount == 0 || IsJump == true) return; // 플레이어가 공중에 있으면 실행 못하게
                     SetDrag(30F);
                 }
-
                 if (!Input.GetKey(KeyCode.LeftArrow)) return;
                 Body.AddForce(Vector2.right * Flip * MoveForce, ForceMode2D.Impulse);
             }
-
             if (Body.velocity.x < -maxMoveForce) // 최고 속도보다 작을 때
             {
                 if (Input.GetKeyUp(KeyCode.LeftArrow))
@@ -284,11 +279,10 @@ namespace src.kr.kro.minestar.player
                     if (GroundJumpAmount == 0 || IsJump == true) return; // 플레이어가 공중에 있으면 실행 못하게
                     SetDrag(30F);
                 }
-
                 if (!Input.GetKey(KeyCode.RightArrow)) return;
                 Body.AddForce(Vector2.right * Flip * MoveForce, ForceMode2D.Impulse);
             }
-            else // 현재 속도가 최고 속도보다 작지도 크지도 않을 때
+            else                                    // 현재 속도가 최고 속도보다 작지도 크지도 않을 때
             {
                 if (Flip == -1 && Input.GetKeyUp(KeyCode.LeftArrow))
                 {
@@ -330,52 +324,38 @@ namespace src.kr.kro.minestar.player
 
         public void AddMovement(float x, float y) => Body.AddForce(new Vector2(x, y), ForceMode2D.Impulse);
         public void AddMovementFlip(float x, float y) => Body.AddForce(!SpriteRenderer.flipX ? new Vector2(x, y) : new Vector2(-x, y), ForceMode2D.Impulse);
-
+        
         public void SetDrag(float value) => Body.drag = value;
 
 
         public void OnTriggerEnter2D(Collider2D other)
         {
+            Debug.Log(Body.velocity.y);
             try
             {
-                //IsJump = false;
-                //_airJumpAmount = DefaultAirJumpAmount;
-                //Body.drag = 0;
-                //Body.velocity = new Vector2(Body.velocity.x, -1);
-                //GroundJumpAmount = 1;
-
-                if (!Input.GetKey(KeyCode.RightArrow))
-                    // 무한 점프 막기
-                    if (other.gameObject.layer == 6 && Body.velocity.y <= 0) // 점프 후 착지했다면
+                if (other.gameObject.layer == 6 && (Body.velocity.y <= 0 || Body.drag == 2)) // 점프 후 착지했다면
+                {
+                    Debug.Log("Hello");
+                    m_isSkill = false;
+                    IsJump = false;
+                    AirJumpAmount = DefaultAirJumpAmount;
+                    Body.drag = 0;
+                    Body.velocity = new Vector2(Body.velocity.x, -1);
+                    GroundJumpAmount = 1;
+                    if (!Input.GetKey(KeyCode.RightArrow) || !Input.GetKey(KeyCode.LeftArrow))
                     {
-                        IsSkill = false;
-                        IsJump = false;
-                        AirJumpAmount = AirJumpAmountCharge();
-                        Body.drag = 0;
-                        Body.velocity = new Vector2(Body.velocity.x, -1);
-                        GroundJumpAmount = 1;
-                        if (!Input.GetKey(KeyCode.RightArrow))
-                        {
-                            Body.drag = Drag;
-                        }
-                        else if (!Input.GetKey(KeyCode.LeftArrow))
-                        {
-                            Body.drag = Drag;
-                        }
+                        Body.drag = 30.0f;
                     }
+                }
 
-                if (!IsSkill && !IsJump && other.gameObject.layer == 6 && Body.velocity.y >= 0) // 땅에 있다면
+                if (!m_isSkill && !IsJump && other.gameObject.layer == 6 && Body.velocity.y >= 0) // 땅에 있다면
                 {
                     GroundJumpAmount = 1;
-                    AirJumpAmount = AirJumpAmountCharge();
+                    AirJumpAmount = DefaultAirJumpAmount;
                     Body.velocity = new Vector2(Body.velocity.x, -1);
-                    if (!Input.GetKey(KeyCode.RightArrow))
+                    if (!Input.GetKey(KeyCode.RightArrow) || !Input.GetKey(KeyCode.LeftArrow))
                     {
-                        Body.drag = Drag;
-                    }
-                    else if (!Input.GetKey(KeyCode.LeftArrow))
-                    {
-                        Body.drag = Drag;
+                        Body.drag = 30.0f;
                     }
                 }
             }
@@ -387,7 +367,7 @@ namespace src.kr.kro.minestar.player
         public void OnTriggerExit2D(Collider2D other) // 타일의 경계선을 나가도 실행이 됨.
         {
             if (other.gameObject.layer != 6) return;
-
+            
             GroundJumpAmount = 0;
             Body.drag = 0.0f;
             Player.GetComponent<BoxCollider2D>().enabled = false;

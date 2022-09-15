@@ -43,6 +43,7 @@ namespace src.kr.kro.minestar.player
         private void FixedUpdate()
         {
             Movement.FixedCheck();
+
         }
 
         private void OnTriggerEnter2D(Collider2D other) => Movement.OnTriggerEnter2D(other);
