@@ -21,10 +21,13 @@ namespace src.kr.kro.minestar.player
         [SerializeField] public float moveForce;
         [SerializeField] public float jumpForce;
         public Movement Movement { get; private set; }
+        public bool m_IsGoal;
+        public bool IsGoal { get => m_IsGoal; set => m_IsGoal = value; }
 
         /// ##### Unity Functions #####
         private void Start()
         {
+            m_IsGoal = false;
             Effects = new Dictionary<string, Effect>();
             GameSystem = GameObject.Find("GameManager").gameObject.GetComponent<GameSystem>();
             Movement = new Movement(this);
@@ -35,6 +38,7 @@ namespace src.kr.kro.minestar.player
 
         private void Update()
         {
+            if (m_IsGoal) return;
             Movement.DoJump(); // 점프
             Movement.DoMove(); // 좌우 이동
             DoUseSkill();

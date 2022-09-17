@@ -46,6 +46,7 @@ namespace src.kr.kro.minestar.player.skill
     {
         public void Init()
         {
+        
         }
 
         public virtual bool CanUseSkill() => true;
