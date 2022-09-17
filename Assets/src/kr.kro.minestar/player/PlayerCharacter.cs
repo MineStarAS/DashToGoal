@@ -50,8 +50,8 @@ namespace src.kr.kro.minestar.player
         {
             UIManager uiManager = GameObject.Find("GameManager").GetComponent<UIManager>();
             
-            ActiveSkill1.SetImageCoolTime(uiManager.imgActive1, uiManager.tActive1);
-            ActiveSkill2.SetImageCoolTime(uiManager.imgActive2, uiManager.tActive2);
+            ActiveSkill1.SetImageCoolTime(uiManager.imgActive1, uiManager.imgActive1_2, uiManager.tActive1);
+            ActiveSkill2.SetImageCoolTime(uiManager.imgActive2, uiManager.imgActive2_2, uiManager.tActive2);
 
             Player.StartCoroutine(Timer());
 

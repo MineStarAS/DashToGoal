@@ -20,6 +20,7 @@ namespace src.kr.kro.minestar.player.skill
         public int CurrentCoolTime { get; private set; }
 
         public Image SkillImage;
+        public Image SkillImage2;
         public Text CoolTimeText;
 
         /// ##### Constructor #####
@@ -48,9 +49,10 @@ namespace src.kr.kro.minestar.player.skill
             SetCoolTimePercent();
         }
 
-        public void SetImageCoolTime(Image image, Text text)
+        public void SetImageCoolTime(Image image, Image image2, Text text)
         {
             SkillImage = image;
+            SkillImage2 = image2;
             CoolTimeText = text;
         }
 
@@ -60,6 +62,7 @@ namespace src.kr.kro.minestar.player.skill
             {
                 float value = DefaultCoolTime - (DefaultCoolTime - CurrentCoolTime);
                 SkillImage.fillAmount = value / DefaultCoolTime;
+                SkillImage2.fillAmount = value / DefaultCoolTime;
             }
             catch (NullReferenceException)
             {
