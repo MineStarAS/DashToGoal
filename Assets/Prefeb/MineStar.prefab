@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7457704279363318501}
   - component: {fileID: 6323556499862312342}
   - component: {fileID: 3247080807963324705}
-  m_Layer: 2
+  m_Layer: 0
   m_Name: MineStar
   m_TagString: Player
   m_Icon: {fileID: 0}

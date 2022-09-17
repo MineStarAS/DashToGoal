@@ -2,6 +2,7 @@ using src.kr.kro.minestar.player.effect;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace src.kr.kro.minestar.player.skill
@@ -15,73 +16,83 @@ namespace src.kr.kro.minestar.player.skill
 
         public string Description { get; protected set; }
 
-        public int DefaultCoolTime { get; private set; }
-
-        public int CurrentCoolTime { get; private set; }
-
-        public Image SkillImage;
-        public Text CoolTimeText;
-
         /// ##### Constructor #####
         protected Skill(Player player)
         {
             Player = player;
+            (this as ISkillCoolTime)?.Init();
         }
 
-        protected virtual void Init(double startCoolTime, double defaultCoolTime)
+        /// ##### Functions #####
+        public bool UseSkill()
         {
-            DefaultCoolTime = Convert.ToInt32(Math.Round(defaultCoolTime, 2) * 100);
-            CurrentCoolTime = Convert.ToInt32(Math.Round(startCoolTime, 2) * 100);
+            if (!CanUseSkill()) return false;
+            SkillFunction();
+            return true;
         }
+
+        protected abstract void SkillFunction();
+
+
+        private bool CanUseSkill()
+        {
+            if (!(this as ISkillCoolTime)?.CanUseSkill() ?? false) return false;
+
+            return true;
+        }
+    }
+
+    internal interface ISkillFunction
+    {
+        public void Init()
+        {
+        }
+
+        public virtual bool CanUseSkill() => true;
+
+        protected Skill GetSkill() => this as Skill ?? throw new InvalidCastException($"{GetType().Name} is not Skill.");
+
+        public static int ConvertTime(double time) => time <= 0 ? 0 : Convert.ToInt32(Math.Round(time, 2) * 100);
+
+        protected static double ConvertSecond(int time) => Math.Round(time / 100.0, 1);
+
+        protected static float Calculate(float value, Effect effect)
+        {
+            return effect.Calculator switch
+            {
+                Calculator.Add => value + effect.CalculatorValue,
+                Calculator.Multi => value * effect.CalculatorValue,
+                _ => value
+            };
+        }
+
+        protected static int Calculate(int value, Effect effect)
+        {
+            return effect.Calculator switch
+            {
+                Calculator.Add => value + Convert.ToByte(effect.CalculatorValue),
+                Calculator.Multi => value * Convert.ToByte(effect.CalculatorValue),
+                _ => value
+            };
+        }
+    }
+
+    internal interface ISkillCoolTime : ISkillFunction
+    {
+        protected double StartCoolTime { get; }
+        protected double DefaultCoolTime { get; }
         
-        /// ##### CoolTime Functions #####
-        public void DoPassesTime()
+        protected int CurrentCoolTime { get; set; }
+
+        public Image SkillImage { get; set; }
+        public Text CoolTimeText { get; set; }
+
+        protected int GetCoolTime()
         {
-            if (CurrentCoolTime <= 0)
-            {
-                CoolTimeText.gameObject.SetActive(false);
-                return;
-            }
-            CoolTimeText.gameObject.SetActive(true);
-            CoolTimeText.text = ConvertSecond(CurrentCoolTime).ToString();
-            CurrentCoolTime--;
-            SetCoolTimePercent();
-        }
+            int value = ConvertTime(DefaultCoolTime);
+            Dictionary<string, Effect>.ValueCollection effects = GetSkill().Player.Effects.Values;
 
-        public void SetImageCoolTime(Image image, Text text)
-        {
-            SkillImage = image;
-            CoolTimeText = text;
-        }
-
-        private void SetCoolTimePercent()
-        {
-            try
-            {
-                float value = DefaultCoolTime - (DefaultCoolTime - CurrentCoolTime);
-                SkillImage.fillAmount = value / DefaultCoolTime;
-            }
-            catch (NullReferenceException)
-            {
-            }
-        }
-
-        private static double ConvertSecond(int time) => Math.Round(time / 100.0, 1);
-
-        /// ##### Use Skill Functions #####
-
-        public abstract bool UseSkill();
-
-        protected void UsedSkill()
-        {
-            int value = DefaultCoolTime;
-            Dictionary<string, Effect>.ValueCollection effects = Player.Effects.Values;
-
-            if (effects.Count == 0)
-            {
-                CurrentCoolTime = value;
-                return;
-            }
+            if (effects.Count == 0) return value;
 
             // Add Calculate
             foreach (Effect effect in effects.Where(effect => effect.Calculator == Calculator.Add))
@@ -125,30 +136,62 @@ namespace src.kr.kro.minestar.player.skill
                 }
             }
 
-            CurrentCoolTime = value;
+            return value;
         }
-
-        protected virtual bool CanUseSkill() => CurrentCoolTime <= 0;
-
-
-        private static float Calculate(float value, Effect effect)
+        
+        public void DoPassesTime()
         {
-            return effect.Calculator switch
+            if (CurrentCoolTime <= 0)
             {
-                Calculator.Add => value + effect.CalculatorValue,
-                Calculator.Multi => value * effect.CalculatorValue,
-                _ => value
-            };
+                CoolTimeText.gameObject.SetActive(false);
+                return;
+            }
+
+            CoolTimeText.gameObject.SetActive(true);
+            CoolTimeText.text = ConvertSecond(CurrentCoolTime).ToString();
+            CurrentCoolTime--;
+            SetCoolTimePercent();
+        }
+        
+        public void SetImageCoolTime(Image image, Text text)
+        {
+            SkillImage = image;
+            CoolTimeText = text;
         }
 
-        private static int Calculate(int value, Effect effect)
+        private void SetCoolTimePercent()
         {
-            return effect.Calculator switch
+            try
             {
-                Calculator.Add => value + Convert.ToByte(effect.CalculatorValue),
-                Calculator.Multi => value * Convert.ToByte(effect.CalculatorValue),
-                _ => value
-            };
+                double value = DefaultCoolTime - (DefaultCoolTime - CurrentCoolTime);
+                SkillImage.fillAmount = Convert.ToSingle(value / DefaultCoolTime);
+            }
+            catch (NullReferenceException)
+            {
+            }
         }
+
+        public new bool CanUseSkill() => CurrentCoolTime <= 0;
+    }
+    
+    internal interface ISkillDetectEvent : ISkillFunction
+    {
+        protected Type DetectEvent { get; set; }
+
+        protected void DetectedEvent();
+    }
+    
+    internal interface ISkillRangeDetect<T> : ISkillFunction
+    {
+        protected float DetectRadius { get; set; }
+
+        protected Collider2D[] GetDetectedObject()
+        {
+            Vector3 position = GetSkill().Player.transform.position;
+            return Physics2D.OverlapCircleAll(new Vector2(position.x, position.y), DetectRadius);
+        }
+
+        public new bool CanUseSkill() =>  GetDetectedObject().Select(collider => collider.GetComponent<T>()).Any(component => component != null);
+        
     }
 }

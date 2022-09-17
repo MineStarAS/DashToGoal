@@ -1,5 +1,4 @@
-using src.kr.kro.minestar.gameEvent;
-using src.kr.kro.minestar.player.effect;
+using src.kr.kro.minestar.device;
 using src.kr.kro.minestar.player.skill;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -21,12 +20,15 @@ namespace src.kr.kro.minestar.player.character
 
     public class AsSummonDevice : ActiveSkill
     {
+        private GameObject device;
         public AsSummonDevice(Player player) : base(player)
         {
             Player = player;
             Name = "Summon Device";
             Description = "Summon!!!\n" +
                           "De----vice---!!!!";
+
+            device = Resources.Load<GameObject>("Device/TestDevice");
 
             Init(3F, 3F);
         }
@@ -35,7 +37,7 @@ namespace src.kr.kro.minestar.player.character
         public override bool UseSkill()
         {
             if (!CanUseSkill()) return false;
-            Player.AddComponent<>()
+            Device.SummonDevice<TestDevice>(Player.transform.position);
             UsedSkill();
             return true;
         }

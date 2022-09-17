@@ -25,7 +25,7 @@ namespace src.kr.kro.minestar.player
             return playerCharacterEnum switch
             {
                 PlayerCharacterEnum.MineStar => new PcMineStar(player),
-                PlayerCharacterEnum.SonJunHo => new PcMineStar(player),
+                PlayerCharacterEnum.SonJunHo => new PcSonJunHo(player),
                 _ => new PcMineStar(player),
             };
         }
