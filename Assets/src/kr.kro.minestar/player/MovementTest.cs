@@ -294,7 +294,6 @@ namespace src.kr.kro.minestar.player
 
         public void OnTriggerStay2D(Collider2D other)
         {
-            Debug.Log(Body.transform.position.y - other.transform.position.y);
             if (other.GetComponent<PlatformEffector2D>() != null)
                 if (Body.transform.position.y - other.transform.position.y <= -0.05)
                     return;
