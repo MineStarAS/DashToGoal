@@ -1392,9 +1392,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2044282048}
+      - m_Target: {fileID: 2044282043}
         m_TargetAssemblyTypeName: SelectCharater, Assembly-CSharp
-        m_MethodName: func_ClickPlayer
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

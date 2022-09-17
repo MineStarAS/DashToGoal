@@ -62,8 +62,6 @@ namespace src.kr.kro.minestar.player
             if (!boxCollider2D.enabled) boxCollider2D.enabled = true;
         }
 
-        public void TestFunction(string text) => Debug.Log(text);
-
         ///##### Effect Functions #####
         public void AddEffect(Effect effect)
         {
