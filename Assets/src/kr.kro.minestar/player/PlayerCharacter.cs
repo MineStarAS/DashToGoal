@@ -52,7 +52,7 @@ namespace src.kr.kro.minestar.player
             
             ActiveSkill1.SetImageCoolTime(uiManager.imgActive1, uiManager.imgActive1_2, uiManager.tActive1);
             ActiveSkill2.SetImageCoolTime(uiManager.imgActive2, uiManager.imgActive2_2, uiManager.tActive2);
-
+            
             Player.StartCoroutine(Timer());
 
             IEnumerator Timer()
@@ -63,7 +63,11 @@ namespace src.kr.kro.minestar.player
                     {
                         try
                         {
+                            Image FillImage = Player.EffectsUI.func_GetImage(effect);
+                            Player.EffectsUI.func_DoEffect(effect);
+                            ((TimerEffect)effect).SetImage(FillImage);
                             ((TimerEffect)effect).DoPassesTime();
+                            if(((TimerEffect)effect).IsEffectEnd) Player.EffectsUI.func_EffectEnd(effect);
                         }
                         catch (Exception)
                         {
@@ -73,7 +77,7 @@ namespace src.kr.kro.minestar.player
                     ActiveSkill1.DoPassesTime();
                     ActiveSkill2.DoPassesTime();
                     
-                    yield return new WaitForSeconds(0.01F);
+                    yield return new WaitForSeconds(1.0F); // 원본 0.01F
                 }
                 // ReSharper disable once IteratorNeverReturns
             }

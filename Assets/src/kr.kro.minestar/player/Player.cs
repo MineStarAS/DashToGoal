@@ -12,6 +12,8 @@ namespace src.kr.kro.minestar.player
     {
         /// ##### Field #####
         public GameSystem GameSystem { get; private set; }
+        public UIManager EffectsUI { get; private set; }
+        public GameObject GameManager;
 
         [SerializeField] private PlayerCharacterEnum playerCharacterEnum;
         public PlayerCharacter PlayerCharacter { get; private set; }
@@ -29,7 +31,9 @@ namespace src.kr.kro.minestar.player
         {
             m_IsGoal = false;
             Effects = new Dictionary<string, Effect>();
-            GameSystem = GameObject.Find("GameManager").gameObject.GetComponent<GameSystem>();
+            GameManager = GameObject.Find("GameManager");
+            GameSystem = GameManager.GetComponent<GameSystem>();
+            EffectsUI = GameManager.GetComponent<UIManager>();
             Movement = new Movement(this);
             PlayerCharacter = PlayerCharacter.FromEnum(this, playerCharacterEnum);
 
@@ -42,12 +46,12 @@ namespace src.kr.kro.minestar.player
             Movement.DoJump(); // 점프
             Movement.DoMove(); // 좌우 이동
             DoUseSkill();
+            //DoEffect();
         }
 
         private void FixedUpdate()
         {
             Movement.FixedCheck();
-
         }
 
         private void OnTriggerEnter2D(Collider2D other) => Movement.OnTriggerEnter2D(other);
@@ -67,6 +71,7 @@ namespace src.kr.kro.minestar.player
         {
             if (Effects.ContainsKey(effect.Name)) Effects[effect.Name].RemoveEffect();
             Effects.Add(effect.Name, effect);
+            //EffectsUI.func_DoEffect(effect);
         }
 
         public void RemoveEffect(Effect effect) => Effects.Remove(effect.Name);

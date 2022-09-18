@@ -1,5 +1,6 @@
 using System;
 using src.kr.kro.minestar.gameEvent;
+using UnityEngine.UI;
 
 namespace src.kr.kro.minestar.player.skill
 { 
@@ -10,6 +11,31 @@ namespace src.kr.kro.minestar.player.skill
         /// ##### Constructor #####
         protected ActiveSkill(Player player) : base(player)
         {
+            
+        }
+        public void SetImageCoolTime(Image argImage, Image argImage2, Text argText) // 메소드 정의 - 손준호
+        {
+
+        }
+
+        public void DoPassesTime() // 추상 메소드 정의 - 손준호
+        {
+
+        }
+
+        protected override void SkillFunction() // 추상 메소드 정의 - 손준호
+        {
+
+        }
+
+        protected void UsedSkill() // 추상 메소드 정의 - 손준호
+        {
+
+        }
+
+        protected void Init(double startCoolTime, double defaultCoolTime) // 추상 메소드 정의 - 손준호
+        {
+            
         }
     }
 
@@ -34,7 +60,7 @@ namespace src.kr.kro.minestar.player.skill
 
 
         /// ##### Functions #####
-        protected override void Init(double startCoolTime, double defaultCoolTime)
+        protected virtual new void Init(double startCoolTime, double defaultCoolTime) // virtual new 추가 - 손준호
         {
             base.Init(startCoolTime, defaultCoolTime);
             ChargedAmount = MaxChargeAmount < StartChargeAmount ? MaxChargeAmount : StartChargeAmount;
