@@ -24,17 +24,17 @@ namespace src.kr.kro.minestar.player.skill
         }
 
         /// ##### Functions #####
-        public bool UseSkill()
+        public virtual bool UseSkill() // virtual 키워드 추가 - 손준호
         {
             if (!CanUseSkill()) return false;
             SkillFunction();
             return true;
         }
 
-        protected abstract void SkillFunction();
+        protected abstract void SkillFunction(); // private -> protected - 손준호
 
 
-        private bool CanUseSkill()
+        protected virtual bool CanUseSkill() // protected virtual 키워드 추가 - 손준호
         {
             if (!(this as ISkillCoolTime)?.CanUseSkill() ?? false) return false;
 
@@ -80,10 +80,10 @@ namespace src.kr.kro.minestar.player.skill
 
     internal interface ISkillCoolTime : ISkillFunction
     {
-        protected double StartCoolTime { get; }
-        protected double DefaultCoolTime { get; }
-        
-        protected int CurrentCoolTime { get; set; }
+        protected double StartCoolTime { get; } // protected -> public - 손준호
+        protected double DefaultCoolTime { get; } // protected -> public - 손준호
+
+        protected int CurrentCoolTime { get; set; } // protected -> public - 손준호
 
         public Image SkillImage { get; set; }
         public Text CoolTimeText { get; set; }

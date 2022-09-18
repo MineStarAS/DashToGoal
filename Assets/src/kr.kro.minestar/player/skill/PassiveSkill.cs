@@ -8,6 +8,11 @@ namespace src.kr.kro.minestar.player.skill
         protected PassiveSkill(Player player) : base(player)
         {
         }
+
+        protected override void SkillFunction() // 추상 메소드 정의 - 손준호
+        {
+
+        }
     }
     
     public abstract class DetectPassiveSkill : PassiveSkill

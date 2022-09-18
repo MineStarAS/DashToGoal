@@ -1,6 +1,7 @@
 using src.kr.kro.minestar.gameEvent;
 using src.kr.kro.minestar.player.effect;
 using src.kr.kro.minestar.player.skill;
+using Unity.VisualScripting;
 using UnityEngine;
 
 // ReSharper disable All
@@ -30,7 +31,8 @@ namespace src.kr.kro.minestar.player.character
 
         public override bool UseSkill()
         {
-            var effects = new Effect[] { new Speed(Player) };
+            var effects = new Effect[] { new Speed(Player), new ABC(Player), new ABCD(Player), new ABCDE(Player) };
+            
             foreach (var effect in effects)
             {
                 Player.AddEffect(effect);

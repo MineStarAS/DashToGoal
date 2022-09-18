@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 using Timer = System.Threading.Timer;
 
 namespace src.kr.kro.minestar.player.effect
@@ -62,10 +63,15 @@ namespace src.kr.kro.minestar.player.effect
 
         public double GetTimePercent() => Convert.ToDouble(_currentTime) / _maxTime;
 
+        // /- 손준호 작업
+        Image m_EffectFillImage;
+        private bool m_IsEffectEnd;
+        public bool IsEffectEnd { get => m_IsEffectEnd; set => m_IsEffectEnd = value; }
+        public void SetImage(Image argImage) => m_EffectFillImage = argImage;
         /// ##### Setter #####
         protected void SetTime(double time)
         {
-            int value = Convert.ToInt32(Math.Round(time, 2) * 100);
+            int value = Convert.ToInt32(Math.Round(time, 2) ); // 원본 : Math.Round(time, 2) * 100
 
             _maxTime = value;
             _currentTime = value;
@@ -73,7 +79,13 @@ namespace src.kr.kro.minestar.player.effect
 
         public void DoPassesTime()
         {
-            if (_currentTime-- <= 0) RemoveEffect();
+            m_IsEffectEnd = false; // 추가 
+            m_EffectFillImage.fillAmount = (float)GetTimePercent(); // 추가
+            if (_currentTime-- <= 0)
+            {
+                m_IsEffectEnd = true;
+                RemoveEffect();
+            }
         }
         
         public void AddTime(double time)
