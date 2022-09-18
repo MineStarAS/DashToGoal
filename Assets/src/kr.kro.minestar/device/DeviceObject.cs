@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace src.kr.kro.minestar.device
 {
-    public abstract class Device : MonoBehaviour
+    public abstract class DeviceObject : MonoBehaviour
     {
         [CanBeNull] public Player Player { get; protected set; }
 
@@ -17,13 +17,13 @@ namespace src.kr.kro.minestar.device
             (this as IDeviceTimer)?.Init();
         }
 
-        public static Device SummonDevice<T>(Vector3 vector3)
+        public static DeviceObject SummonDevice<T>(Vector3 vector3)
         {
             string deviceName = typeof(T).Name;
             GameObject gameObject = Resources.Load<GameObject>($"Device/{deviceName}") 
                                     ?? throw new NullReferenceException($"Cannot find {deviceName}.");
             
-            Device device = gameObject.GetComponent<Device>()
+            DeviceObject device = gameObject.GetComponent<DeviceObject>()
             ?? throw new NullReferenceException($"{deviceName} is not device.");
 
             Instantiate(device, vector3, Quaternion.identity);
@@ -43,7 +43,7 @@ namespace src.kr.kro.minestar.device
         {
         }
 
-        protected Device GetDevice() => this as Device ?? throw new InvalidCastException($"{GetType().Name} is not Device.");
+        protected DeviceObject GetDevice() => this as DeviceObject ?? throw new InvalidCastException($"{GetType().Name} is not Device.");
 
         public static int ConvertTime(double time) => time <= 0 ? 0 : Convert.ToInt32(Math.Round(time, 2) * 100);
     }
@@ -62,7 +62,7 @@ namespace src.kr.kro.minestar.device
 
         private void StartTimer()
         {
-            Device device = GetDevice();
+            DeviceObject device = GetDevice();
             Coroutine coroutine = null;
             coroutine = device.StartCoroutine(PassesTimer());
 
@@ -85,16 +85,14 @@ namespace src.kr.kro.minestar.device
         protected float PeriodTime { get; set; }
         protected Coroutine Coroutine { get; set; }
 
-        public new void Init()
-        {
-            StartTimer();
-        }
+        public new void Init() => StartTimer();
+        
 
         private void StartTimer()
         {
             if (PeriodTime <= 0) PeriodTime = 0.01F;
             
-            Device device = GetDevice();
+            DeviceObject device = GetDevice();
             Coroutine = device.StartCoroutine(PassesTimer());
 
             IEnumerator PassesTimer()
@@ -109,7 +107,7 @@ namespace src.kr.kro.minestar.device
 
         public void StopTimer()
         {
-            Device device = GetDevice();
+            DeviceObject device = GetDevice();
             device.StopCoroutine(Coroutine);
         }
 

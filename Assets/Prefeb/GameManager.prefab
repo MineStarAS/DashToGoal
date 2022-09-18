@@ -48,7 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_gPlayer:
   - {fileID: 7243836870788264014, guid: fa781ad6fcc0fd14e9841ced799d9f68, type: 3}
-  - {fileID: 8083057656219455567, guid: c345bf578d35663429319e48f02adca5, type: 3}
+  - {fileID: 7243836870788264014, guid: 8e765c2cde6d47b4482bb0876b90cef3, type: 3}
   m_gCamera: {fileID: 0}
   m_gGame: []
 --- !u!114 &8654428129952480451

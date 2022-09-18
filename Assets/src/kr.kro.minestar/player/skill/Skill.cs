@@ -1,12 +1,18 @@
+using src.kr.kro.minestar.device;
+using src.kr.kro.minestar.gameEvent;
 using src.kr.kro.minestar.player.effect;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = System.Object;
 
 namespace src.kr.kro.minestar.player.skill
 {
+    public enum SkillSlot { Passive, Active1, Active2 }
+
     public abstract class Skill
     {
         /// ##### Field #####
@@ -20,36 +26,51 @@ namespace src.kr.kro.minestar.player.skill
         protected Skill(Player player)
         {
             Player = player;
-            (this as ISkillCoolTime)?.Init();
+            (this as ISkillTimer)?.Init();
         }
 
         /// ##### Functions #####
-        public virtual bool UseSkill() // virtual 키워드 추가 - 손준호
+        public void UseSkill()
         {
-            if (!CanUseSkill()) return false;
+            if (!CanUseSkills()) return;
+            new PlayerUseSkillEvent(Player, this);
             SkillFunction();
-            return true;
+            UsedSkills();
         }
 
-        protected abstract void SkillFunction(); // private -> protected - 손준호
+        protected abstract void SkillFunction();
 
-
-        protected virtual bool CanUseSkill() // protected virtual 키워드 추가 - 손준호
+        private bool CanUseSkills()
         {
-            if (!(this as ISkillCoolTime)?.CanUseSkill() ?? false) return false;
+            switch (true)
+            {
+                case true when !(this as ISkillCoolTime)?.CanUseSkill() ?? false:
+                case true when !(this as ISkillRangeDetect<Object>)?.CanUseSkill() ?? false:
+                case true when !(this as ISkillCharge)?.CanUseSkill() ?? false:
+                    return false;
+                default:
+                    return true;
+            }
+        }
 
-            return true;
+        private void UsedSkills()
+        {
+            (this as ISkillCoolTime)?.UsedSkill();
+            (this as ISkillCharge)?.UsedSkill();
         }
     }
 
     internal interface ISkillFunction
     {
-        public void Init()
+        public virtual void Init()
         {
-        
         }
 
         public virtual bool CanUseSkill() => true;
+
+        public virtual void UsedSkill()
+        {
+        }
 
         protected Skill GetSkill() => this as Skill ?? throw new InvalidCastException($"{GetType().Name} is not Skill.");
 
@@ -80,12 +101,13 @@ namespace src.kr.kro.minestar.player.skill
 
     internal interface ISkillCoolTime : ISkillFunction
     {
-        protected double StartCoolTime { get; } // protected -> public - 손준호
-        protected double DefaultCoolTime { get; } // protected -> public - 손준호
+        public double DefaultCoolTime { get; protected set; }
 
-        protected int CurrentCoolTime { get; set; } // protected -> public - 손준호
+        public int CurrentCoolTime { get; protected set; }
 
-        public Image SkillImage { get; set; }
+        public Image SkillImage1 { get; set; }
+
+        public Image SkillImage2 { get; set; }
         public Text CoolTimeText { get; set; }
 
         protected int GetCoolTime()
@@ -139,7 +161,7 @@ namespace src.kr.kro.minestar.player.skill
 
             return value;
         }
-        
+
         public void DoPassesTime()
         {
             if (CurrentCoolTime <= 0)
@@ -153,10 +175,11 @@ namespace src.kr.kro.minestar.player.skill
             CurrentCoolTime--;
             SetCoolTimePercent();
         }
-        
-        public void SetImageCoolTime(Image image, Text text)
+
+        public void SetImageCoolTime(Image image1, Image image2, Text text)
         {
-            SkillImage = image;
+            SkillImage1 = image1;
+            SkillImage2 = image2;
             CoolTimeText = text;
         }
 
@@ -164,8 +187,10 @@ namespace src.kr.kro.minestar.player.skill
         {
             try
             {
-                double value = DefaultCoolTime - (DefaultCoolTime - CurrentCoolTime);
-                SkillImage.fillAmount = Convert.ToSingle(value / DefaultCoolTime);
+                int defaultCoolTime = ConvertTime(DefaultCoolTime);
+                float value = defaultCoolTime - (defaultCoolTime - CurrentCoolTime);
+                SkillImage1.fillAmount = value / defaultCoolTime;
+                SkillImage2.fillAmount = value / defaultCoolTime;
             }
             catch (NullReferenceException)
             {
@@ -173,18 +198,53 @@ namespace src.kr.kro.minestar.player.skill
         }
 
         public new bool CanUseSkill() => CurrentCoolTime <= 0;
+
+        public new void UsedSkill() => CurrentCoolTime = GetCoolTime();
     }
     
+    internal interface ISkillTimer : ISkillFunction
+    { protected float PeriodTime { get; set; }
+        protected Coroutine Coroutine { get; set; }
+
+        public new void Init() => StartTimer();
+        
+
+        private void StartTimer()
+        {
+            if (PeriodTime <= 0) PeriodTime = 0.01F;
+            
+            Skill skill = GetSkill();
+            Coroutine = skill.Player.StartCoroutine(PassesTimer());
+
+            IEnumerator PassesTimer()
+            {
+                while (true)
+                {
+                    PeriodFunction();
+                    yield return new WaitForSeconds(PeriodTime);
+                }
+            }
+        }
+
+        public void StopTimer()
+        {
+            Skill skill = GetSkill();
+            skill.Player.StopCoroutine(Coroutine);
+        }
+
+        public void PeriodFunction();
+    }
+
     internal interface ISkillDetectEvent : ISkillFunction
     {
-        protected Type DetectEvent { get; set; }
+        public Type DetectEvent { get; protected set; }
 
-        protected void DetectedEvent();
+        public void DetectedEvent();
     }
-    
-    internal interface ISkillRangeDetect<T> : ISkillFunction
+
+    internal interface ISkillRangeDetect<out T> : ISkillFunction
     {
-        protected float DetectRadius { get; set; }
+        public float DetectRadius { get; protected set; }
 
         protected Collider2D[] GetDetectedObject()
         {
@@ -192,7 +252,73 @@ namespace src.kr.kro.minestar.player.skill
             return Physics2D.OverlapCircleAll(new Vector2(position.x, position.y), DetectRadius);
         }
 
-        public new bool CanUseSkill() =>  GetDetectedObject().Select(collider => collider.GetComponent<T>()).Any(component => component != null);
-        
+        // ReSharper disable Unity.PerformanceAnalysis
+        public new bool CanUseSkill() => GetDetectedObject().Select(collider => collider.GetComponent<T>()).Any(component => component != null);
+    }
+
+    internal interface ISkillCharge : ISkillFunction
+    {
+        public int CurrentCharge { get; protected set; }
+
+        public int ChargeMax { get; protected set; }
+
+        public int ChargeUsage { get; protected set; }
+
+        public bool DoCharge(int value)
+        {
+            if (CurrentCharge == ChargeMax) return false;
+
+            if (ChargeMax <= CurrentCharge + value)
+            {
+                CurrentCharge = ChargeMax;
+                return false;
+            }
+
+            if (CurrentCharge + value <= 0)
+            {
+                CurrentCharge = 0;
+                return true;
+            }
+
+            CurrentCharge += value;
+            return true;
+        }
+
+        public new void UsedSkill()
+        {
+            if (CurrentCharge - ChargeUsage <= 0) CurrentCharge = 0;
+            else CurrentCharge -= ChargeUsage;
+        }
+
+        public float GetChargePercent() => Convert.ToSingle(CurrentCharge) / ChargeMax;
+
+        public new bool CanUseSkill() => ChargeUsage <= CurrentCharge;
+    }
+
+    internal interface ISkillStack : ISkillFunction
+    {
+        public int CurrentStack { get; protected set; }
+
+        public int StackMax { get; protected set; }
+
+        public bool DoStack(int value)
+        {
+            if (CurrentStack == StackMax) return false;
+
+            if (StackMax <= CurrentStack + value)
+            {
+                CurrentStack = StackMax;
+                return false;
+            }
+
+            if (CurrentStack + value <= 0)
+            {
+                CurrentStack = 0;
+                return true;
+            }
+
+            CurrentStack += value;
+            return true;
+        }
     }
 }

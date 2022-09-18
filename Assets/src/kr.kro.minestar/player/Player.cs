@@ -12,8 +12,9 @@ namespace src.kr.kro.minestar.player
     {
         /// ##### Field #####
         public GameSystem GameSystem { get; private set; }
+
         public UIManager EffectsUI { get; private set; }
-        public GameObject GameManager;
+        public GameObject GameManager { get; private set; }
 
         [SerializeField] private PlayerCharacterEnum playerCharacterEnum;
         public PlayerCharacter PlayerCharacter { get; private set; }
@@ -81,27 +82,12 @@ namespace src.kr.kro.minestar.player
         ///###### Do Functions #####
         private void DoUseSkill()
         {
-            if (Input.GetKeyDown(KeyCode.Z))
-            {
-                DoUseActiveSkill1();
-            }
-
-            if (Input.GetKeyDown(KeyCode.X))
-            {
-                DoUseActiveSkill2();
-            }
+            if (Input.GetKeyDown(KeyCode.Z)) DoUseActiveSkill1();
+            if (Input.GetKeyDown(KeyCode.X)) DoUseActiveSkill2();
         }
 
-        private void DoUseActiveSkill1()
-        {
-            ActiveSkill skill = PlayerCharacter.ActiveSkill1;
-            if (skill.UseSkill()) new PlayerUseActiveSkill1Event(this, skill);
-        }
+        private void DoUseActiveSkill1() => PlayerCharacter.ActiveSkill1.UseSkill();
 
-        private void DoUseActiveSkill2()
-        {
-            ActiveSkill skill = PlayerCharacter.ActiveSkill2;
-            if (skill.UseSkill()) new PlayerUseActiveSkill2Event(this, skill);
-        }
+        private void DoUseActiveSkill2() => PlayerCharacter.ActiveSkill2.UseSkill();
     }
 }

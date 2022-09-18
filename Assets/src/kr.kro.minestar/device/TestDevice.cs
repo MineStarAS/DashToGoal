@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace src.kr.kro.minestar.device
 {
-    public class TestDevice : Device, IDeviceTimeLimit, IDeviceTimer, IDeviceRangeDetect
+    public class TestDevice : DeviceObject, IDeviceTimeLimit, IDeviceTimer, IDeviceRangeDetect
     {
         [SerializeField] private double limitTime;
         [SerializeField] private float periodTime;

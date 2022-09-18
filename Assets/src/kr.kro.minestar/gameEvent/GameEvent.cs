@@ -1,6 +1,5 @@
 using src.kr.kro.minestar.player;
 using src.kr.kro.minestar.player.skill;
-using UnityEngine;
 
 namespace src.kr.kro.minestar.gameEvent
 {
@@ -25,20 +24,21 @@ namespace src.kr.kro.minestar.gameEvent
             //Debug.Log(gameEvent.GetType().Name);
             foreach (Player player in _gameSystem.Players)
             {
-                PassiveSkill passiveSkill = player.PlayerCharacter.PassiveSkill;
-                ActiveSkill activeSkill1 = player.PlayerCharacter.ActiveSkill1;
-                ActiveSkill activeSkill2 = player.PlayerCharacter.ActiveSkill2;
+                Skill passiveSkill = player.PlayerCharacter.PassiveSkill;
+                Skill activeSkill1 = player.PlayerCharacter.ActiveSkill1;
+                Skill activeSkill2 = player.PlayerCharacter.ActiveSkill2;
 
-                if (passiveSkill is DetectPassiveSkill skill0)
-                    if (skill0.DetectEvent == gameEvent.GetType()) passiveSkill.UseSkill();
+                if (passiveSkill is ISkillDetectEvent skill0)
+                    if (skill0.DetectEvent == gameEvent.GetType())
+                        skill0.DetectedEvent();
 
-                if (activeSkill1 is ChargeActiveSkill skill1)
+                if (activeSkill1 is ISkillDetectEvent skill1)
                     if (skill1.DetectEvent == gameEvent.GetType())
-                        skill1.DoCharge(gameEvent);
+                        skill1.DetectedEvent();
 
-                if (activeSkill2 is not ChargeActiveSkill skill2) continue;
+                if (activeSkill2 is not ISkillDetectEvent skill2) continue;
                 if (skill2.DetectEvent == gameEvent.GetType())
-                    skill2.DoCharge(gameEvent);
+                    skill2.DetectedEvent();
             }
         }
     }
