@@ -239,7 +239,7 @@ namespace src.kr.kro.minestar.player.skill
     {
         public Type DetectEvent { get; protected set; }
 
-        public void DetectedEvent();
+        public void DetectedEvent(GameEvent gameEvent);
     }
 
     internal interface ISkillRangeDetect<out T> : ISkillFunction

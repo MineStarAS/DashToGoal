@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using src.kr.kro.minestar.gameEvent;
 using src.kr.kro.minestar.player.effect;
-using src.kr.kro.minestar.player.skill;
 using UnityEngine;
 
 // ReSharper disable ObjectCreationAsStatement
@@ -15,35 +13,31 @@ namespace src.kr.kro.minestar.player
 
         public UIManager EffectsUI { get; private set; }
         public GameObject GameManager { get; private set; }
-
-        [SerializeField] private PlayerCharacterEnum playerCharacterEnum;
-        public PlayerCharacter PlayerCharacter { get; private set; }
         public Dictionary<string, Effect> Effects { get; private set; }
 
-        [SerializeField] public float maxSpeed;
-        [SerializeField] public float moveForce;
-        [SerializeField] public float jumpForce;
+        [SerializeField] private PlayerCharacterEnum character;
+        public PlayerCharacter PlayerCharacter { get; private set; }
         public Movement Movement { get; private set; }
-        public bool m_IsGoal;
-        public bool IsGoal { get => m_IsGoal; set => m_IsGoal = value; }
+        public bool IsGoal { get; set; }
 
         /// ##### Unity Functions #####
         private void Start()
         {
-            m_IsGoal = false;
+            IsGoal = false;
             Effects = new Dictionary<string, Effect>();
             GameManager = GameObject.Find("GameManager");
             GameSystem = GameManager.GetComponent<GameSystem>();
             EffectsUI = GameManager.GetComponent<UIManager>();
-            Movement = new Movement(this);
-            PlayerCharacter = PlayerCharacter.FromEnum(this, playerCharacterEnum);
+
+            PlayerCharacter = PlayerCharacter.FromEnum(this, character);
+            Movement = GetComponent<Movement>();
 
             GameSystem.RegisterPlayer(this);
         }
 
         private void Update()
         {
-            if (m_IsGoal) return;
+            if (IsGoal) return;
             Movement.DoJump(); // 점프
             Movement.DoMove(); // 좌우 이동
             DoUseSkill();
@@ -72,7 +66,7 @@ namespace src.kr.kro.minestar.player
         {
             if (Effects.ContainsKey(effect.Name)) Effects[effect.Name].RemoveEffect();
             Effects.Add(effect.Name, effect);
-            //EffectsUI.func_DoEffect(effect);
+            EffectsUI.func_DoEffect(effect);
         }
 
         public void RemoveEffect(Effect effect) => Effects.Remove(effect.Name);

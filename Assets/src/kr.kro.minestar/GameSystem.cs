@@ -7,7 +7,7 @@ namespace src.kr.kro.minestar
 {
     public class GameSystem : MonoBehaviour
     {
-        [SerializeField] private GameObject Camera;
+        [SerializeField] private GameObject camera;
         
         public GameEventOperator GameEventOperator { get; private set; }
 

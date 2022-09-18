@@ -1,23 +1,24 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraController : MonoBehaviour
+namespace src.sjh.Scripts
 {
-    GameObject m_gPlayer;
-    private bool m_isChasing;
-
-    private void LateUpdate()
+    public class CameraController : MonoBehaviour
     {
-        if (!m_isChasing) return;
-        Vector3 pos = m_gPlayer.transform.position;
-        pos.z = -10;
-        Camera.main.transform.position = pos;
-    }
+        GameObject m_gPlayer;
+        private bool m_isChasing;
 
-    public void func_ChasePlayer()
-    {
-        m_isChasing = true;
-        m_gPlayer = GameObject.FindWithTag("Player");
+        private void LateUpdate()
+        {
+            if (!m_isChasing) return;
+            Vector3 pos = m_gPlayer.transform.position;
+            pos.z = -10;
+            Camera.main.transform.position = pos;
+        }
+
+        public void func_ChasePlayer()
+        {
+            m_isChasing = true;
+            m_gPlayer = GameObject.FindWithTag("Player");
+        }
     }
 }

@@ -7,49 +7,51 @@ using UnityEngine;
 
 namespace src.kr.kro.minestar.player
 {
-    public class Movement
+    public class Movement : MonoBehaviour
     {
         /// ##### Constant Field #####
         private const float Drag = 30;
 
         /// ##### Field #####
-        public Player Player { get; }
+        private Player _player;
 
-        public float MaxSpeed { get; } // 플레이어 이동속도
-        public float MoveForce { get; } // 플레이어 이동에 가해지는 힘
-        public float JumpForce { get; } // 플레이어 점프 힘
+        [SerializeField] private float maxSpeed;
+        [SerializeField] private float moveForce;
+        [SerializeField] private float jumpForce;
 
-        public bool IsGround { get; private set; }
+        private bool _isGround;
+        
+        private int _airJumpAmount; // 공중 점프 가능 횟수
 
-        private const int DefaultAirJumpAmount = 1; // 공중 점프 가능한 횟수.
-        private int AirJumpAmount = DefaultAirJumpAmount; // 공중 점프 가능 횟수
-
-        public Rigidbody2D Body; // 플레이어 물리
-        private SpriteRenderer SpriteRenderer; // 스프라이트 정보
+        private Rigidbody2D _body; // 플레이어 물리
+        private SpriteRenderer _spriteRenderer; // 스프라이트 정보
 
         /// ##### Unity Functions #####
-        public Movement(Player player)
+        private void Start()
         {
-            Player = player;
-            Body = player.GetComponent<Rigidbody2D>();
-            SpriteRenderer = player.GetComponent<SpriteRenderer>();
+            _player = GetComponent<Player>();
+            _body = GetComponent<Rigidbody2D>();
+            _spriteRenderer = GetComponent<SpriteRenderer>();
 
-            MaxSpeed = player.maxSpeed <= 0 ? 8.0f : player.maxSpeed;
-            MoveForce = player.moveForce <= 0 ? 0.1f : player.moveForce;
-            JumpForce = player.jumpForce <= 0 ? 13.0f : player.jumpForce;
+            _isGround = false;
+            _airJumpAmount = 1;
+
+            if (maxSpeed <= 0) maxSpeed = 8.0F;
+            if (moveForce <= 0) moveForce = 0.1F;
+            if (jumpForce <= 0) jumpForce = 13.0F;
         }
 
         public void FixedCheck()
         {
-            if (Body != null && Body.velocity.y < -10.0f) SetDrag(2F);
-            if (Player.transform.position.y < -15) Player.transform.position = new Vector3(0, 0, 0);
+            if (_body != null && _body.velocity.y < -10.0f) SetDrag(2F);
+            if (_player != null && _player.transform.position.y < -15) _player.transform.position = new Vector3(0, 0, 0);
         }
 
         /// ##### Calculate Functions #####
         private float GetMoveForce()
         {
-            float value = MaxSpeed;
-            Dictionary<string, Effect>.ValueCollection effects = Player.Effects.Values;
+            float value = maxSpeed;
+            Dictionary<string, Effect>.ValueCollection effects = _player.Effects.Values;
 
             if (effects.Count == 0) return value;
 
@@ -102,8 +104,8 @@ namespace src.kr.kro.minestar.player
 
         private float GetJumpForce()
         {
-            float value = JumpForce;
-            Dictionary<string, Effect>.ValueCollection effects = Player.Effects.Values;
+            float value = jumpForce;
+            Dictionary<string, Effect>.ValueCollection effects = _player.Effects.Values;
 
             if (effects.Count == 0) return value;
 
@@ -154,8 +156,8 @@ namespace src.kr.kro.minestar.player
 
         private int AirJumpAmountCharge()
         {
-            int value = DefaultAirJumpAmount;
-            Dictionary<string, Effect>.ValueCollection effects = Player.Effects.Values;
+            int value = 1;
+            Dictionary<string, Effect>.ValueCollection effects = _player.Effects.Values;
 
             // Add Calculate
             foreach (Effect effect in effects.Where(effect => effect.Calculator == Calculator.Add))
@@ -228,65 +230,65 @@ namespace src.kr.kro.minestar.player
             if (Input.GetKey(KeyCode.RightArrow) && Input.GetKey(KeyCode.LeftArrow) ||
                 !Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow))
             {
-                if (IsGround) SetDrag(Drag);
+                if (_isGround) SetDrag(Drag);
                 return;
             }
 
             float maxMoveForce = GetMoveForce();
 
             SetDrag(0);
-            SpriteRenderer.flipX = !Input.GetKey(KeyCode.RightArrow);
-            if (maxMoveForce < Math.Abs(Body.velocity.x) && (0 < Body.velocity.x) == !SpriteRenderer.flipX) return;
+            _spriteRenderer.flipX = !Input.GetKey(KeyCode.RightArrow);
+            if (maxMoveForce < Math.Abs(_body.velocity.x) && (0 < _body.velocity.x) == !_spriteRenderer.flipX) return;
 
 
-            if (IsGround)
+            if (_isGround)
             {
-                if ((0 < Body.velocity.x) == SpriteRenderer.flipX) SetMovementXFlip(maxMoveForce / 2);
-                else if (Math.Abs(Body.velocity.x) < maxMoveForce / 2) SetMovementXFlip(maxMoveForce / 2);
+                if ((0 < _body.velocity.x) == _spriteRenderer.flipX) SetMovementXFlip(maxMoveForce / 2);
+                else if (Math.Abs(_body.velocity.x) < maxMoveForce / 2) SetMovementXFlip(maxMoveForce / 2);
             }
 
-            AddMovementFlip(MoveForce, 0);
+            AddMovementFlip(moveForce, 0);
 
-            new PlayerMoveEvent(Player);
+            new PlayerMoveEvent(_player);
         }
 
         public void DoJump()
         {
-            if (!Input.GetKeyDown(KeyCode.C) || AirJumpAmount <= 0) return;
+            if (!Input.GetKeyDown(KeyCode.C) || _airJumpAmount <= 0) return;
             float jumpForce = GetJumpForce();
-            if (!IsGround) AirJumpAmount--;
-            IsGround = false;
+            if (!_isGround) _airJumpAmount--;
+            _isGround = false;
             SetDrag(0);
             SetMovementY(0);
             SetMovementY(jumpForce);
-            new PlayerJumpEvent(Player);
+            new PlayerJumpEvent(_player);
         }
 
 
-        public void SetMovement(float x, float y) => Body.velocity = new Vector2(x, y);
-        public void SetMovementFlip(float x, float y) => Body.velocity = !SpriteRenderer.flipX ? new Vector2(x, y) : new Vector2(-x, y);
+        public void SetMovement(float x, float y) => _body.velocity = new Vector2(x, y);
+        public void SetMovementFlip(float x, float y) => _body.velocity = !_spriteRenderer.flipX ? new Vector2(x, y) : new Vector2(-x, y);
 
-        public void SetMovementX(float x) => Body.velocity = new Vector2(x, Body.velocity.y);
-        public void SetMovementXFlip(float x) => Body.velocity = !SpriteRenderer.flipX ? new Vector2(x, Body.velocity.y) : new Vector2(-x, Body.velocity.y);
-        public void SetMovementY(float y) => Body.velocity = new Vector2(Body.velocity.x, y);
+        public void SetMovementX(float x) => _body.velocity = new Vector2(x, _body.velocity.y);
+        public void SetMovementXFlip(float x) => _body.velocity = !_spriteRenderer.flipX ? new Vector2(x, _body.velocity.y) : new Vector2(-x, _body.velocity.y);
+        public void SetMovementY(float y) => _body.velocity = new Vector2(_body.velocity.x, y);
 
-        public void AddMovement(float x, float y) => Body.AddForce(new Vector2(x, y), ForceMode2D.Impulse);
-        public void AddMovementFlip(float x, float y) => Body.AddForce(!SpriteRenderer.flipX ? new Vector2(x, y) : new Vector2(-x, y), ForceMode2D.Impulse);
+        public void AddMovement(float x, float y) => _body.AddForce(new Vector2(x, y), ForceMode2D.Impulse);
+        public void AddMovementFlip(float x, float y) => _body.AddForce(!_spriteRenderer.flipX ? new Vector2(x, y) : new Vector2(-x, y), ForceMode2D.Impulse);
 
-        public void SetDrag(float value) => Body.drag = value;
+        public void SetDrag(float value) => _body.drag = value;
 
 
         public void OnTriggerEnter2D(Collider2D other)
         {
             try
             {
-                if (other.tag == "Finish") Player.IsGoal = true;
+                if (other.tag == "Finish") _player.IsGoal = true;
                 if (other.GetComponent<PlatformEffector2D>() != null)
-                    if (Body.transform.position.y - other.transform.position.y <= -0.05)
+                    if (_body.transform.position.y - other.transform.position.y <= -0.05)
                         return;
-                IsGround = true;
+                _isGround = true;
                 SetDrag(Drag);
-                AirJumpAmount = AirJumpAmountCharge();
+                _airJumpAmount = AirJumpAmountCharge();
             }
             catch (NullReferenceException)
             {
@@ -296,14 +298,14 @@ namespace src.kr.kro.minestar.player
         public void OnTriggerStay2D(Collider2D other)
         {
             if (other.GetComponent<PlatformEffector2D>() != null)
-                if (Body.transform.position.y - other.transform.position.y <= -0.05)
+                if (_body.transform.position.y - other.transform.position.y <= -0.05)
                     return;
-            IsGround = true;
+            _isGround = true;
         }
 
         public void OnTriggerExit2D(Collider2D other) // 타일의 경계선을 나가도 실행이 됨.
         {
-            IsGround = false;
+            _isGround = false;
             SetDrag(0);
         }
     }

@@ -2,6 +2,7 @@ using src.kr.kro.minestar.gameEvent;
 using src.kr.kro.minestar.player.effect;
 using src.kr.kro.minestar.player.skill;
 using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 // ReSharper disable All
@@ -12,9 +13,9 @@ namespace src.kr.kro.minestar.player.character
     {
         public PcMineStar(Player player) : base(player)
         {
-            PassiveSkill = new PsSpeedy(player);
-            ActiveSkill1 = new AsDash(player);
-            ActiveSkill2 = new AsSuperJump(player);
+            PassiveSkill = new PsSpeedy(Player);
+            ActiveSkill1 = new AsDash(Player);
+            ActiveSkill2 = new AsSuperJump(Player);
             StartTimer();
         }
     }
@@ -32,12 +33,13 @@ namespace src.kr.kro.minestar.player.character
             DetectEvent = typeof(PlayerUseSkillEvent);
         }
 
-        public void DetectedEvent()
+        public void DetectedEvent(GameEvent gameEvent)
         {
-            
+            if ((gameEvent as PlayerUseSkillEvent).SkillSlot != SkillSlot.Passive) UseSkill();
         }
 
         protected override void SkillFunction() => new Speed(Player).AddEffect();
+        
     }
 
     public class AsDash : Skill, ISkillCoolTime
@@ -51,7 +53,7 @@ namespace src.kr.kro.minestar.player.character
             Name = "Dash";
             Description = "I will dash\n" +
                           "to the goal";
-            
+
             _defaultCoolTime = 5;
         }
 
@@ -97,7 +99,9 @@ namespace src.kr.kro.minestar.player.character
         }
 
         protected override void SkillFunction() => Player.Movement.AddMovement(0F, 20F);
-        
+
+        public void DetectedEvent(GameEvent gameEvent) => (this as ISkillCharge).DoCharge(1);
+
         double ISkillCoolTime.DefaultCoolTime { get => _defaultCoolTime; set => _defaultCoolTime = value; }
         int ISkillCoolTime.CurrentCoolTime { get => _currentCoolTime; set => _currentCoolTime = value; }
         public Image SkillImage1 { get; set; }
@@ -107,11 +111,5 @@ namespace src.kr.kro.minestar.player.character
         int ISkillCharge.ChargeMax { get => _chargeMax; set => _chargeMax = value; }
         int ISkillCharge.ChargeUsage { get => _chargeUsage; set => _chargeUsage = value; }
         Type ISkillDetectEvent.DetectEvent { get => _detectEvent; set => _detectEvent = value; }
-
-        public void DetectedEvent()
-        {
-            (this as ISkillCharge).DoCharge(1);   
-            // DoCharge(1);
-        }
     }
 }

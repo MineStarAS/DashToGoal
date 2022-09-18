@@ -27,9 +27,9 @@ namespace src.kr.kro.minestar.device
             foreach (Collider2D collider in colliders)
             {
                 Player player = collider.GetComponent<Player>();
-                
+
                 if (player == null) continue;
-                
+
                 Debug.Log("GOT PLAYER!!!");
             }
         }
@@ -37,7 +37,7 @@ namespace src.kr.kro.minestar.device
         private void OnTriggerEnter2D(Collider2D col)
         {
             Player player = col.GetComponent<Player>();
-            player.Movement.SetMovement(player.Movement.Body.velocity.x, 20);
+            player.Movement.SetMovementY(20);
         }
     }
 }

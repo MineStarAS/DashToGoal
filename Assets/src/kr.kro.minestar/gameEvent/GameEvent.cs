@@ -30,15 +30,15 @@ namespace src.kr.kro.minestar.gameEvent
 
                 if (passiveSkill is ISkillDetectEvent skill0)
                     if (skill0.DetectEvent == gameEvent.GetType())
-                        skill0.DetectedEvent();
+                        skill0.DetectedEvent(gameEvent);
 
                 if (activeSkill1 is ISkillDetectEvent skill1)
                     if (skill1.DetectEvent == gameEvent.GetType())
-                        skill1.DetectedEvent();
+                        skill1.DetectedEvent(gameEvent);
 
                 if (activeSkill2 is not ISkillDetectEvent skill2) continue;
                 if (skill2.DetectEvent == gameEvent.GetType())
-                    skill2.DetectedEvent();
+                    skill2.DetectedEvent(gameEvent);
             }
         }
     }

@@ -35,9 +35,9 @@ namespace src.sjh.Scripts
             Body = player.GetComponent<Rigidbody2D>();
             SpriteRenderer = player.GetComponent<SpriteRenderer>();
 
-            MaxSpeed = player.maxSpeed <= 0 ? 8.0f : player.maxSpeed;
-            MoveForce = player.moveForce <= 0 ? 0.05f : player.moveForce;
-            JumpForce = player.jumpForce <= 0 ? 13.0f : player.jumpForce;
+            // MaxSpeed = player.maxSpeed <= 0 ? 8.0f : player.maxSpeed;
+            // MoveForce = player.moveForce <= 0 ? 0.05f : player.moveForce;
+            // JumpForce = player.jumpForce <= 0 ? 13.0f : player.jumpForce;
         }
 
         public void FixedCheck()

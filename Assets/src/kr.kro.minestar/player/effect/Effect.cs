@@ -71,7 +71,7 @@ namespace src.kr.kro.minestar.player.effect
         /// ##### Setter #####
         protected void SetTime(double time)
         {
-            int value = Convert.ToInt32(Math.Round(time, 2) ); // 원본 : Math.Round(time, 2) * 100
+            int value = Convert.ToInt32(Math.Round(time, 2) * 100 ); // 원본 : Math.Round(time, 2) * 100
 
             _maxTime = value;
             _currentTime = value;
@@ -86,31 +86,6 @@ namespace src.kr.kro.minestar.player.effect
                 m_IsEffectEnd = true;
                 RemoveEffect();
             }
-        }
-        
-        public void AddTime(double time)
-        {
-            if (time <= 0) return;
-
-            int value = Convert.ToInt32(Math.Round(time, 2) * 100);
-
-            _currentTime += value;
-        }
-
-        public void RemoveTime(double time)
-        {
-            if (time <= 0) return;
-
-            int value = Convert.ToInt32(Math.Round(time, 2) * 100);
-
-            _currentTime -= value;
-        }
-
-        public void MultiplyTime(double multiple)
-        {
-            if (multiple <= 0) return;
-
-            _currentTime = Convert.ToInt32(_currentTime * multiple);
         }
     }
 }

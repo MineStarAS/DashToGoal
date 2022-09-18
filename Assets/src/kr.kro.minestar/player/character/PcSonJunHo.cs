@@ -9,11 +9,11 @@ namespace src.kr.kro.minestar.player.character
 {
     public class PcSonJunHo : PlayerCharacter
     {
-        public PcSonJunHo(Player player) : base(player)
+        public PcSonJunHo(Player player):base(player)
         {
-            PassiveSkill = new PsSpeedy(player);
-            ActiveSkill1 = new AsDash(player);
-            ActiveSkill2 = new AsSummonDevice(player);
+            PassiveSkill = new PsSpeedy(Player);
+            ActiveSkill1 = new AsDash(Player);
+            ActiveSkill2 = new AsSuperJump(Player);
             StartTimer();
         }
     }
