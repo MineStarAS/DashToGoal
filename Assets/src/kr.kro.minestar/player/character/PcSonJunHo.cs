@@ -1,6 +1,5 @@
 using src.kr.kro.minestar.device;
 using src.kr.kro.minestar.player.skill;
-using UnityEngine;
 using UnityEngine.UI;
 
 // ReSharper disable All
@@ -9,7 +8,7 @@ namespace src.kr.kro.minestar.player.character
 {
     public class PcSonJunHo : PlayerCharacter
     {
-        public PcSonJunHo(Player player):base(player)
+        public PcSonJunHo(Player player) : base(player)
         {
             PassiveSkill = new PsSpeedy(Player);
             ActiveSkill1 = new AsDash(Player);
@@ -21,7 +20,7 @@ namespace src.kr.kro.minestar.player.character
     public class AsSummonDevice : Skill, ISkillCoolTime
     {
         private double _defaultCoolTime;
-        private int _currentCoolTime;
+        private double _currentCoolTime;
 
         public AsSummonDevice(Player player) : base(player)
         {
@@ -34,7 +33,7 @@ namespace src.kr.kro.minestar.player.character
         }
 
         protected override void SkillFunction() => DeviceObject.SummonDevice<TestDevice>(Player.transform.position);
-        
+
 
         double ISkillCoolTime.DefaultCoolTime
         {
@@ -42,11 +41,7 @@ namespace src.kr.kro.minestar.player.character
             set => _defaultCoolTime = value;
         }
 
-        int ISkillCoolTime.CurrentCoolTime
-        {
-            get => _currentCoolTime;
-            set => _currentCoolTime = value;
-        }
+        double ISkillCoolTime.CurrentCoolTime { get => _currentCoolTime; set => _currentCoolTime = value; }
 
         public Image SkillImage1 { get; set; }
         public Image SkillImage2 { get; set; }

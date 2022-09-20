@@ -45,7 +45,7 @@ namespace src.kr.kro.minestar.player.character
     public class AsDash : Skill, ISkillCoolTime
     {
         private double _defaultCoolTime;
-        private int _currentCoolTime;
+        private double _currentCoolTime;
 
         public AsDash(Player player) : base(player)
         {
@@ -65,7 +65,7 @@ namespace src.kr.kro.minestar.player.character
         }
 
         double ISkillCoolTime.DefaultCoolTime { get => _defaultCoolTime; set => _defaultCoolTime = value; }
-        int ISkillCoolTime.CurrentCoolTime { get => _currentCoolTime; set => _currentCoolTime = value; }
+        double ISkillCoolTime.CurrentCoolTime { get => _currentCoolTime; set => _currentCoolTime = value; }
 
         public Image SkillImage1 { get; set; }
         public Image SkillImage2 { get; set; }
@@ -75,7 +75,7 @@ namespace src.kr.kro.minestar.player.character
     public class AsSuperJump : Skill, ISkillCoolTime, ISkillCharge, ISkillDetectEvent
     {
         private double _defaultCoolTime;
-        private int _currentCoolTime;
+        private double _currentCoolTime;
 
         private int _currentCharge;
         private int _chargeMax;
@@ -103,7 +103,7 @@ namespace src.kr.kro.minestar.player.character
         public void DetectedEvent(GameEvent gameEvent) => (this as ISkillCharge).DoCharge(1);
 
         double ISkillCoolTime.DefaultCoolTime { get => _defaultCoolTime; set => _defaultCoolTime = value; }
-        int ISkillCoolTime.CurrentCoolTime { get => _currentCoolTime; set => _currentCoolTime = value; }
+        double ISkillCoolTime.CurrentCoolTime { get => _currentCoolTime; set => _currentCoolTime = value; }
         public Image SkillImage1 { get; set; }
         public Image SkillImage2 { get; set; }
         public Text CoolTimeText { get; set; }

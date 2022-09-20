@@ -82,7 +82,7 @@ namespace src.kr.kro.minestar.player.skill
     {
         public double DefaultCoolTime { get; protected set; }
 
-        public int CurrentCoolTime { get; protected set; }
+        public double CurrentCoolTime { get; protected set; }
 
         public Image SkillImage1 { get; set; }
 
@@ -91,7 +91,7 @@ namespace src.kr.kro.minestar.player.skill
 
         protected int GetCoolTime()
         {
-            double value = DefaultCoolTime.ConvertToIntTime();
+            double value = DefaultCoolTime;
 
             value += value * GetSkill.Player.Effects.ValueCoolTime;
 
@@ -107,8 +107,8 @@ namespace src.kr.kro.minestar.player.skill
             }
 
             CoolTimeText.gameObject.SetActive(true);
-            CoolTimeText.text = CurrentCoolTime.ConvertToDoubleTime().ToString(CultureInfo.InvariantCulture);
-            CurrentCoolTime--;
+            CoolTimeText.text = Math.Round(CurrentCoolTime).ToString(CultureInfo.InvariantCulture);
+            CurrentCoolTime -= 0.01;
             SetCoolTimePercent();
         }
 
@@ -123,10 +123,9 @@ namespace src.kr.kro.minestar.player.skill
         {
             try
             {
-                int defaultCoolTime = DefaultCoolTime.ConvertToIntTime();
-                float value = defaultCoolTime - (defaultCoolTime - CurrentCoolTime);
-                SkillImage1.fillAmount = value / defaultCoolTime;
-                SkillImage2.fillAmount = value / defaultCoolTime;
+                float value = Convert.ToSingle((DefaultCoolTime - (DefaultCoolTime - CurrentCoolTime)) / DefaultCoolTime);
+                SkillImage1.fillAmount = value;
+                SkillImage2.fillAmount = value;
             }
             catch (NullReferenceException)
             {
@@ -137,18 +136,19 @@ namespace src.kr.kro.minestar.player.skill
 
         public new void UsedSkill() => CurrentCoolTime = GetCoolTime();
     }
-    
+
     internal interface ISkillTimer : ISkillFunction
-    { protected float PeriodTime { get; set; }
+    {
+        protected float PeriodTime { get; set; }
         protected Coroutine Coroutine { get; set; }
 
         public new void Init() => StartTimer();
-        
+
 
         private void StartTimer()
         {
             if (PeriodTime <= 0) PeriodTime = 0.01F;
-            
+
             Skill skill = GetSkill;
             Coroutine = skill.Player.StartCoroutine(Timer());
         }

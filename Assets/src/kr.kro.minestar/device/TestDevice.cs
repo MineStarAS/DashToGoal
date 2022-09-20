@@ -11,7 +11,7 @@ namespace src.kr.kro.minestar.device
 
         double IDeviceTimeLimit.LimitTime { get => limitTime; set => limitTime = value; }
 
-        int IDeviceTimeLimit.CurrentTime { get; set; }
+        double IDeviceTimeLimit.CurrentTime { get; set; }
 
         float IDeviceRangeDetect.DetectRadius { get => detectRadius; set => detectRadius = value; }
 

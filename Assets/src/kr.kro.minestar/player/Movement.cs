@@ -1,8 +1,6 @@
 using src.kr.kro.minestar.gameEvent;
-using src.kr.kro.minestar.player.effect;
+using src.kr.kro.minestar.utility;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace src.kr.kro.minestar.player
@@ -10,14 +8,14 @@ namespace src.kr.kro.minestar.player
     public class Movement : MonoBehaviour
     {
         /// ##### Constant Field #####
+        private const float MoveSpeed = 8.0F;
+        private const float MoveForce = 0.1F;
+        private const float JumpForce = 13.0F;
+        
         private const float Drag = 30;
 
         /// ##### Field #####
         private Player Player { get; set; }
-
-        [SerializeField] private float moveSpeed;
-        [SerializeField] private float moveForce;
-        [SerializeField] private float jumpForce;
 
         private bool IsGround { get; set; }
         
@@ -36,10 +34,6 @@ namespace src.kr.kro.minestar.player
 
             IsGround = false;
             AirJumpAmount = 1;
-
-            if (moveSpeed <= 0) moveSpeed = 8.0F;
-            if (moveForce <= 0) moveForce = 0.1F;
-            if (jumpForce <= 0) jumpForce = 13.0F;
         }
 
         private void Update()
@@ -57,7 +51,7 @@ namespace src.kr.kro.minestar.player
         /// ##### Calculate Functions #####
         private float GetMoveForce()
         {
-            float value = moveSpeed;
+            float value = MoveSpeed;
             
             value += value * Player.Effects.ValueMoveSpeed;
 
@@ -66,7 +60,7 @@ namespace src.kr.kro.minestar.player
 
         private float GetJumpForce()
         {
-            float value = jumpForce;
+            float value = JumpForce;
 
             value += value * Player.Effects.ValueJumpForce;
 
@@ -83,7 +77,7 @@ namespace src.kr.kro.minestar.player
         }
 
         /// ##### Movement Functions #####
-        public void DoMove()
+        private void DoMove()
         {
             if (Input.GetKey(KeyCode.RightArrow) && Input.GetKey(KeyCode.LeftArrow) ||
                 !Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow))
@@ -91,11 +85,13 @@ namespace src.kr.kro.minestar.player
                 if (IsGround) SetDrag(Drag);
                 return;
             }
-
+            
+            if (Player.Effects.ValueBondage) return;
             float maxMoveForce = GetMoveForce();
 
             SetDrag(0);
             SpriteRenderer.flipX = !Input.GetKey(KeyCode.RightArrow);
+            if (Player.Effects.ValueDisorder) return;
             if (maxMoveForce < Math.Abs(Body.velocity.x) && (0 < Body.velocity.x) == !SpriteRenderer.flipX) return;
 
 
@@ -105,20 +101,22 @@ namespace src.kr.kro.minestar.player
                 else if (Math.Abs(Body.velocity.x) < maxMoveForce / 2) SetMovementXFlip(maxMoveForce / 2);
             }
 
-            AddMovementFlip(moveForce, 0);
+            AddMovementFlip(MoveForce, 0);
 
+            // ReSharper disable once ObjectCreationAsStatement
             new PlayerMoveEvent(Player);
         }
 
-        public void DoJump()
+        private void DoJump()
         {
             if (!Input.GetKeyDown(KeyCode.C) || AirJumpAmount <= 0) return;
-            float jumpForce = GetJumpForce();
+            if (Player.Effects.ValueBondage) return;
             if (!IsGround) AirJumpAmount--;
             IsGround = false;
             SetDrag(0);
             SetMovementY(0);
-            SetMovementY(jumpForce);
+            SetMovementY(GetJumpForce());
+            // ReSharper disable once ObjectCreationAsStatement
             new PlayerJumpEvent(Player);
         }
 
@@ -140,7 +138,7 @@ namespace src.kr.kro.minestar.player
         {
             try
             {
-                if (other.tag == "Finish") Player.IsGoal = true;
+                if (other.CompareTag("Finish")) Player.IsGoal = true;
                 if (other.GetComponent<PlatformEffector2D>() != null)
                     if (Body.transform.position.y - other.transform.position.y <= -0.05)
                         return;

@@ -1,3 +1,4 @@
+using src.kr.kro.minestar.utility;
 using System;
 
 namespace src.kr.kro.minestar.player.effect
@@ -54,22 +55,20 @@ namespace src.kr.kro.minestar.player.effect
 
     internal interface IEffectLimitTimer : IEffectFunction
     {
-        public double MaxTime { get; protected set; }
+        public double LimitTime { get; protected set; }
         public double CurrentTime { get; protected set; }
 
         public new void Init()
         {
-            MaxTime = CurrentTime;
+            LimitTime = CurrentTime;
         }
 
-        public double GetTimePercent() => Convert.ToDouble(CurrentTime) / MaxTime;
+        public double GetTimePercent() => CurrentTime / LimitTime;
 
         public void DoPassesTime()
         {
-            if (CurrentTime-- <= 0)
-            {
-                GetEffect.RemoveEffect();
-            }
+            CurrentTime -= 0.01;
+            if (CurrentTime <= 0) GetEffect.RemoveEffect();
         }
     }
 }

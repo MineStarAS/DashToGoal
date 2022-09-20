@@ -44,19 +44,17 @@ namespace src.kr.kro.minestar.device
         }
 
         protected DeviceObject GetDevice() => this as DeviceObject ?? throw new InvalidCastException($"{GetType().Name} is not Device.");
-
-        public static int ConvertTime(double time) => time <= 0 ? 0 : Convert.ToInt32(Math.Round(time, 2) * 100);
     }
 
     internal interface IDeviceTimeLimit : IDeviceFunction
     {
         protected double LimitTime { get; set; }
 
-        protected int CurrentTime { get; set; }
+        protected double CurrentTime { get; set; }
 
         public new void Init()
         {
-            CurrentTime = ConvertTime(LimitTime);
+            CurrentTime = LimitTime;
             StartTimer();
         }
 
@@ -70,7 +68,7 @@ namespace src.kr.kro.minestar.device
             {
                 while (0 <= CurrentTime)
                 {
-                    CurrentTime--;
+                    CurrentTime -= 0.01;
                     yield return new WaitForSeconds(0.01F);
                 }
 

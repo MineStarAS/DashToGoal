@@ -12,11 +12,10 @@ namespace src.kr.kro.minestar.player.effect
             Description = "FAST SPEED!!!";
 
             Value = 0.2F;
-            _currentTime = 30;
+            _currentTime = 5;
         }
 
-        double IEffectLimitTimer.MaxTime { get; set; }
-
+        double IEffectLimitTimer.LimitTime { get; set; }
         double IEffectLimitTimer.CurrentTime { get => _currentTime; set => _currentTime = value; }
     }
 }

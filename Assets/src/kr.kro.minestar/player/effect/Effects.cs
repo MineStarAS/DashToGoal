@@ -1,3 +1,4 @@
+using src.kr.kro.minestar.utility;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -59,22 +60,22 @@ namespace src.kr.kro.minestar.player.effect
                         {
                             case EffectType.MoveSpeed:
                                 valueMoveSpeed += effect.Value;
-                                break;
+                                continue;
                             case EffectType.JumpForce:
                                 valueJumpForce += effect.Value;
-                                break;
+                                continue;
                             case EffectType.BonusAirJump:
                                 valueBonusAirJump += Convert.ToInt32(effect.Value);
-                                break;
+                                continue;
                             case EffectType.CoolTime:
                                 valueCoolTime += effect.Value;
-                                break;
+                                continue;
                             case EffectType.Bondage:
                                 valueBondage = true;
-                                break;
+                                continue;
                             case EffectType.Disorder:
                                 valueDisorder = true;
-                                break;
+                                continue;
                             default:
                                 continue;
                         }
@@ -89,8 +90,10 @@ namespace src.kr.kro.minestar.player.effect
 
                     yield return new WaitForSeconds(0.01F);
                 }
+                // ReSharper disable once IteratorNeverReturns
             }
         }
+
 
         public void StopTimer() => StopAllCoroutines();
 
@@ -104,7 +107,9 @@ namespace src.kr.kro.minestar.player.effect
 
         public void RemoveEffect(Effect effect) => RemoveEffect(effect.GetType());
 
-        public void RemoveEffect(Type type) => EffectMap.Remove(type);
-        
+        public void RemoveEffect(Type type)
+        {
+            EffectMap.Remove(type);
+        }
     }
 }

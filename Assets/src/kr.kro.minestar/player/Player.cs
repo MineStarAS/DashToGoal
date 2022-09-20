@@ -31,7 +31,7 @@ namespace src.kr.kro.minestar.player
             EffectsUI = GameManager.GetComponent<UIManager>();
 
             PlayerCharacter = PlayerCharacter.FromEnum(this, character);
-            Movement = GetComponent<Movement>();
+            Movement = gameObject.AddComponent<Movement>();
 
             GameSystem.RegisterPlayer(this);
         }
