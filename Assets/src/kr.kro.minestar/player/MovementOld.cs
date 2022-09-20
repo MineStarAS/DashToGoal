@@ -1,10 +1,7 @@
 using System;
-using System.Linq;
 using UnityEngine;
 using src.kr.kro.minestar.player;
 using src.kr.kro.minestar.gameEvent;
-using src.kr.kro.minestar.player.effect;
-using System.Collections.Generic;
 
 namespace src.sjh.Scripts
 {
@@ -57,53 +54,6 @@ namespace src.sjh.Scripts
         private float GetMoveForce()
         {
             float value = MaxSpeed;
-            Dictionary<string, Effect>.ValueCollection effects = Player.Effects.Values;
-
-            if (effects.Count == 0) return value;
-
-            // Add Calculate
-            foreach (Effect effect in effects.Where(effect => effect.Calculator == Calculator.Add))
-            {
-                switch (effect.EffectType)
-                {
-                    case EffectType.FastMovement:
-                    case EffectType.SlowMovement:
-                        value = Calculate(value, effect);
-                        continue;
-                    case EffectType.Bondage:
-                        return 0F;
-                    case EffectType.BonusJump:
-                    case EffectType.SuperJump:
-                    case EffectType.JumpFatigue:
-                    case EffectType.Disorder:
-                    case EffectType.CoolTimeReduction:
-                    case EffectType.CoolTimeIncrease:
-                    default:
-                        continue;
-                }
-            }
-
-            // Multi Calculate
-            foreach (Effect effect in effects.Where(effect => effect.Calculator == Calculator.Multi))
-            {
-                switch (effect.EffectType)
-                {
-                    case EffectType.FastMovement:
-                    case EffectType.SlowMovement:
-                        value = Calculate(value, effect);
-                        continue;
-                    case EffectType.Bondage:
-                        return 0F;
-                    case EffectType.BonusJump:
-                    case EffectType.SuperJump:
-                    case EffectType.JumpFatigue:
-                    case EffectType.Disorder:
-                    case EffectType.CoolTimeReduction:
-                    case EffectType.CoolTimeIncrease:
-                    default:
-                        continue;
-                }
-            }
 
             return value;
         }
@@ -111,51 +61,6 @@ namespace src.sjh.Scripts
         private float GetJumpForce()
         {
             float value = JumpForce;
-            Dictionary<string, Effect>.ValueCollection effects = Player.Effects.Values;
-
-            if (effects.Count == 0) return value;
-
-            foreach (Effect effect in effects.Where(effect => effect.Calculator == Calculator.Add))
-            {
-                switch (effect.EffectType)
-                {
-                    case EffectType.SuperJump:
-                    case EffectType.JumpFatigue:
-                        value = Calculate(value, effect);
-                        continue;
-                    case EffectType.Bondage:
-                        return 0F;
-                    case EffectType.FastMovement:
-                    case EffectType.SlowMovement:
-                    case EffectType.BonusJump:
-                    case EffectType.Disorder:
-                    case EffectType.CoolTimeReduction:
-                    case EffectType.CoolTimeIncrease:
-                    default:
-                        continue;
-                }
-            }
-
-            foreach (Effect effect in effects.Where(effect => effect.Calculator == Calculator.Multi))
-            {
-                switch (effect.EffectType)
-                {
-                    case EffectType.SuperJump:
-                    case EffectType.JumpFatigue:
-                        value = Calculate(value, effect);
-                        continue;
-                    case EffectType.Bondage:
-                        return 0F;
-                    case EffectType.FastMovement:
-                    case EffectType.SlowMovement:
-                    case EffectType.BonusJump:
-                    case EffectType.Disorder:
-                    case EffectType.CoolTimeReduction:
-                    case EffectType.CoolTimeIncrease:
-                    default:
-                        continue;
-                }
-            }
 
             return value;
         }
@@ -163,71 +68,8 @@ namespace src.sjh.Scripts
         public int LandingAirJumpAmountCharge()
         {
             int value = DefaultAirJumpAmount;
-            Dictionary<string, Effect>.ValueCollection effects = Player.Effects.Values;
-
-            // Add Calculate
-            foreach (Effect effect in effects.Where(effect => effect.Calculator == Calculator.Add))
-            {
-                switch (effect.EffectType)
-                {
-                    case EffectType.BonusJump:
-                        value = Calculate(value, effect);
-                        continue;
-                    case EffectType.FastMovement:
-                    case EffectType.SlowMovement:
-                    case EffectType.Bondage:
-                    case EffectType.SuperJump:
-                    case EffectType.JumpFatigue:
-                    case EffectType.Disorder:
-                    case EffectType.CoolTimeReduction:
-                    case EffectType.CoolTimeIncrease:
-                    default:
-                        continue;
-                }
-            }
-
-            // Multi Calculate
-            foreach (Effect effect in effects.Where(effect => effect.Calculator == Calculator.Multi))
-            {
-                switch (effect.EffectType)
-                {
-                    case EffectType.BonusJump:
-                        value = Calculate(value, effect);
-                        continue;
-                    case EffectType.FastMovement:
-                    case EffectType.SlowMovement:
-                    case EffectType.Bondage:
-                    case EffectType.SuperJump:
-                    case EffectType.JumpFatigue:
-                    case EffectType.Disorder:
-                    case EffectType.CoolTimeReduction:
-                    case EffectType.CoolTimeIncrease:
-                    default:
-                        continue;
-                }
-            }
 
             return value;
-        }
-
-        private static float Calculate(float value, Effect effect)
-        {
-            return effect.Calculator switch
-            {
-                Calculator.Add => value + effect.CalculatorValue,
-                Calculator.Multi => value * effect.CalculatorValue,
-                _ => value
-            };
-        }
-
-        private static int Calculate(int value, Effect effect)
-        {
-            return effect.Calculator switch
-            {
-                Calculator.Add => value + Convert.ToByte(effect.CalculatorValue),
-                Calculator.Multi => value * Convert.ToByte(effect.CalculatorValue),
-                _ => value
-            };
         }
 
         /// ##### Movement Functions #####

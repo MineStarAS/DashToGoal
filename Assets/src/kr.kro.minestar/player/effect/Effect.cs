@@ -1,33 +1,15 @@
 using System;
-using System.Collections;
-using Unity.VisualScripting;
-using UnityEngine;
-using UnityEngine.UI;
-using Timer = System.Threading.Timer;
 
 namespace src.kr.kro.minestar.player.effect
 {
     public enum EffectType
     {
-        ///Beneficial Effect
-        FastMovement, // 증속
-        BonusJump, // 추가 공중 점프
-        SuperJump, // 점프력 증가
-        CoolTimeReduction, // 쿨타임 감소
-
-        ///Harmful Effect
-        SlowMovement, // 감속
-        JumpFatigue, // 점프감소
-        Bondage, // 속박
-        Disorder, // 혼란, 좌우 반전
-        CoolTimeIncrease, // 쿨타임 증가
-    }
-
-    public enum Calculator
-    {
-        Add, // 덧셈
-        Multi, // 곱셈
-        NotOp, // 연산자가 아님
+        MoveSpeed,
+        JumpForce,
+        BonusAirJump,
+        CoolTime,
+        Bondage,
+        Disorder,
     }
 
     public abstract class Effect
@@ -39,52 +21,54 @@ namespace src.kr.kro.minestar.player.effect
 
         public string Name { get; protected set; }
         public string Description { get; protected set; }
+        public float Value { get; protected set; }
 
-        public Calculator Calculator { get; protected set; }
-        public float CalculatorValue { get; protected set; }
+        protected Effect(Player player)
+        {
+            Player = player;
+            (this as IEffectLimitTimer)?.Init();
+        }
 
         /// ##### Functions #####
-        public void AddEffect() => Player.AddEffect(this);
+        public void AddEffect() => Player.Effects.AddEffect(this);
 
-        public void RemoveEffect() => Player.RemoveEffect(this);
+        public void RemoveEffect() => Player.Effects.RemoveEffect(this);
+
+        /// - 손준호 작업
+        // Image m_EffectFillImage;
+        // private bool m_IsEffectEnd;
+        // public bool IsEffectEnd { get => m_IsEffectEnd; set => m_IsEffectEnd = value; }
+        // public void SetImage(Image argImage) => m_EffectFillImage = argImage;
     }
 
-    public abstract class TimerEffect : Effect
+    internal interface IEffectFunction
     {
-        /// ##### Field #####
-        private int _maxTime;
-
-        private int _currentTime;
-
-        /// ##### Getter #####
-        public double GetMaxTime() => Math.Round(Convert.ToDouble(_maxTime) / 100, 2);
-
-        public double GetCurrentTime() => Math.Round(Convert.ToDouble(_currentTime) / 100);
-
-        public double GetTimePercent() => Convert.ToDouble(_currentTime) / _maxTime;
-
-        // /- 손준호 작업
-        Image m_EffectFillImage;
-        private bool m_IsEffectEnd;
-        public bool IsEffectEnd { get => m_IsEffectEnd; set => m_IsEffectEnd = value; }
-        public void SetImage(Image argImage) => m_EffectFillImage = argImage;
-        /// ##### Setter #####
-        protected void SetTime(double time)
+        public virtual void Init()
         {
-            int value = Convert.ToInt32(Math.Round(time, 2) * 100 ); // 원본 : Math.Round(time, 2) * 100
-
-            _maxTime = value;
-            _currentTime = value;
         }
+
+        public virtual bool IsActivate() => true;
+
+        protected Effect GetEffect => this as Effect ?? throw new InvalidCastException($"{GetType().Name} is not Effect.");
+    }
+
+    internal interface IEffectLimitTimer : IEffectFunction
+    {
+        public double MaxTime { get; protected set; }
+        public double CurrentTime { get; protected set; }
+
+        public new void Init()
+        {
+            MaxTime = CurrentTime;
+        }
+
+        public double GetTimePercent() => Convert.ToDouble(CurrentTime) / MaxTime;
 
         public void DoPassesTime()
         {
-            m_IsEffectEnd = false; // 추가 
-            m_EffectFillImage.fillAmount = (float)GetTimePercent(); // 추가
-            if (_currentTime-- <= 0)
+            if (CurrentTime-- <= 0)
             {
-                m_IsEffectEnd = true;
-                RemoveEffect();
+                GetEffect.RemoveEffect();
             }
         }
     }

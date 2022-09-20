@@ -56,21 +56,7 @@ namespace src.kr.kro.minestar.player
             {
                 while (true)
                 {
-                    foreach (Effect effect in Player.Effects.Values.ToArray().Where(effect => effect is TimerEffect))
-                    {
-                        try
-                        {
-                            Image fillImage = Player.EffectsUI.func_GetImage(effect);
-                            Player.EffectsUI.func_DoEffect(effect);
-                            ((TimerEffect)effect).SetImage(fillImage);
-                            ((TimerEffect)effect).DoPassesTime();
-                            if(((TimerEffect)effect).IsEffectEnd) Player.EffectsUI.func_EffectEnd(effect);
-                        }
-                        catch (Exception)
-                        {
-                        }
-                    }
-
+                    (PassiveSkill as ISkillCoolTime)?.DoPassesTime();
                     (ActiveSkill1 as ISkillCoolTime)?.DoPassesTime();
                     (ActiveSkill2 as ISkillCoolTime)?.DoPassesTime();
                     

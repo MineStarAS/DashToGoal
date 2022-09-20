@@ -1,9 +1,11 @@
 using src.kr.kro.minestar.device;
 using src.kr.kro.minestar.gameEvent;
 using src.kr.kro.minestar.player.effect;
+using src.kr.kro.minestar.utility;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -33,6 +35,7 @@ namespace src.kr.kro.minestar.player.skill
         public void UseSkill()
         {
             if (!CanUseSkills()) return;
+            // ReSharper disable once ObjectCreationAsStatement
             new PlayerUseSkillEvent(Player, this);
             SkillFunction();
             UsedSkills();
@@ -72,31 +75,7 @@ namespace src.kr.kro.minestar.player.skill
         {
         }
 
-        protected Skill GetSkill() => this as Skill ?? throw new InvalidCastException($"{GetType().Name} is not Skill.");
-
-        public static int ConvertTime(double time) => time <= 0 ? 0 : Convert.ToInt32(Math.Round(time, 2) * 100);
-
-        protected static double ConvertSecond(int time) => Math.Round(time / 100.0, 1);
-
-        protected static float Calculate(float value, Effect effect)
-        {
-            return effect.Calculator switch
-            {
-                Calculator.Add => value + effect.CalculatorValue,
-                Calculator.Multi => value * effect.CalculatorValue,
-                _ => value
-            };
-        }
-
-        protected static int Calculate(int value, Effect effect)
-        {
-            return effect.Calculator switch
-            {
-                Calculator.Add => value + Convert.ToByte(effect.CalculatorValue),
-                Calculator.Multi => value * Convert.ToByte(effect.CalculatorValue),
-                _ => value
-            };
-        }
+        protected Skill GetSkill => this as Skill ?? throw new InvalidCastException($"{GetType().Name} is not Skill.");
     }
 
     internal interface ISkillCoolTime : ISkillFunction
@@ -112,54 +91,11 @@ namespace src.kr.kro.minestar.player.skill
 
         protected int GetCoolTime()
         {
-            int value = ConvertTime(DefaultCoolTime);
-            Dictionary<string, Effect>.ValueCollection effects = GetSkill().Player.Effects.Values;
+            double value = DefaultCoolTime.ConvertToIntTime();
 
-            if (effects.Count == 0) return value;
+            value += value * GetSkill.Player.Effects.ValueCoolTime;
 
-            // Add Calculate
-            foreach (Effect effect in effects.Where(effect => effect.Calculator == Calculator.Add))
-            {
-                switch (effect.EffectType)
-                {
-                    case EffectType.CoolTimeReduction:
-                    case EffectType.CoolTimeIncrease:
-                        value = Calculate(value, effect);
-                        continue;
-                    case EffectType.FastMovement:
-                    case EffectType.SlowMovement:
-                    case EffectType.Bondage:
-                    case EffectType.BonusJump:
-                    case EffectType.SuperJump:
-                    case EffectType.JumpFatigue:
-                    case EffectType.Disorder:
-                    default:
-                        continue;
-                }
-            }
-
-            // Multi Calculate
-            foreach (Effect effect in effects.Where(effect => effect.Calculator == Calculator.Multi))
-            {
-                switch (effect.EffectType)
-                {
-                    case EffectType.CoolTimeReduction:
-                    case EffectType.CoolTimeIncrease:
-                        value = Calculate(value, effect);
-                        continue;
-                    case EffectType.FastMovement:
-                    case EffectType.SlowMovement:
-                    case EffectType.Bondage:
-                    case EffectType.BonusJump:
-                    case EffectType.SuperJump:
-                    case EffectType.JumpFatigue:
-                    case EffectType.Disorder:
-                    default:
-                        continue;
-                }
-            }
-
-            return value;
+            return Convert.ToInt32(value);
         }
 
         public void DoPassesTime()
@@ -171,7 +107,7 @@ namespace src.kr.kro.minestar.player.skill
             }
 
             CoolTimeText.gameObject.SetActive(true);
-            CoolTimeText.text = ConvertSecond(CurrentCoolTime).ToString();
+            CoolTimeText.text = CurrentCoolTime.ConvertToDoubleTime().ToString(CultureInfo.InvariantCulture);
             CurrentCoolTime--;
             SetCoolTimePercent();
         }
@@ -187,7 +123,7 @@ namespace src.kr.kro.minestar.player.skill
         {
             try
             {
-                int defaultCoolTime = ConvertTime(DefaultCoolTime);
+                int defaultCoolTime = DefaultCoolTime.ConvertToIntTime();
                 float value = defaultCoolTime - (defaultCoolTime - CurrentCoolTime);
                 SkillImage1.fillAmount = value / defaultCoolTime;
                 SkillImage2.fillAmount = value / defaultCoolTime;
@@ -213,22 +149,23 @@ namespace src.kr.kro.minestar.player.skill
         {
             if (PeriodTime <= 0) PeriodTime = 0.01F;
             
-            Skill skill = GetSkill();
-            Coroutine = skill.Player.StartCoroutine(PassesTimer());
+            Skill skill = GetSkill;
+            Coroutine = skill.Player.StartCoroutine(Timer());
+        }
 
-            IEnumerator PassesTimer()
+        private IEnumerator Timer()
+        {
+            while (true)
             {
-                while (true)
-                {
-                    PeriodFunction();
-                    yield return new WaitForSeconds(PeriodTime);
-                }
+                PeriodFunction();
+                yield return new WaitForSeconds(PeriodTime);
             }
+            // ReSharper disable once IteratorNeverReturns
         }
 
         public void StopTimer()
         {
-            Skill skill = GetSkill();
+            Skill skill = GetSkill;
             skill.Player.StopCoroutine(Coroutine);
         }
 
@@ -248,7 +185,8 @@ namespace src.kr.kro.minestar.player.skill
 
         protected Collider2D[] GetDetectedObject()
         {
-            Vector3 position = GetSkill().Player.transform.position;
+            Vector3 position = GetSkill.Player.transform.position;
+            // ReSharper disable once Unity.PreferNonAllocApi
             return Physics2D.OverlapCircleAll(new Vector2(position.x, position.y), DetectRadius);
         }
 
