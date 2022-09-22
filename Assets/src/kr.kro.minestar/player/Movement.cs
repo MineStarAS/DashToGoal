@@ -91,7 +91,7 @@ namespace src.kr.kro.minestar.player
 
             SetDrag(0);
             SpriteRenderer.flipX = !Input.GetKey(KeyCode.RightArrow);
-            if (Player.Effects.ValueDisorder) return;
+            if (Player.Effects.ValueDisorder) SpriteRenderer.flipX = !SpriteRenderer.flipX;
             if (maxMoveForce < Math.Abs(Body.velocity.x) && (0 < Body.velocity.x) == !SpriteRenderer.flipX) return;
 
 
