@@ -23,7 +23,7 @@ namespace src.sjh.Scripts
             CharacterManager characterManager = GameObject.Find("CharacterSystem").gameObject.GetComponent<CharacterManager>();
             Instantiate(characterManager.PrefabPlayer).transform.position = Vector3.zero;
             IsPlaying = true;
-            m_gCamera.GetComponent<CameraController>().func_ChasePlayer();
+            // m_gCamera.GetComponent<CameraController>().func_ChasePlayer();
         }
     }
 }

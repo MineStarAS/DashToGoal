@@ -1,4 +1,5 @@
 using src.kr.kro.minestar.player;
+using src.kr.kro.minestar.utility;
 using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -6,46 +7,50 @@ using UnityEngine;
 
 namespace src.kr.kro.minestar.ui
 {
-    public class IconUIManager : MonoBehaviour
+    public sealed class IconUIManager : MonoBehaviour
     {
-        SkillIconUI PassiveSkillUI;
-        SkillIconUI ActiveUSkillI1;
-        SkillIconUI ActiveUSkillI2;
+        public SkillIconUI PassiveSkillUI { get; private set; }
+        public SkillIconUI ActiveSkill1UI { get; private set; }
+        public SkillIconUI ActiveSkill2UI { get; private set; }
 
-        List<EffectIconUI> EffectUIList;
-        [HideInInspector] public GameObject _canvas { get; set; }
-        private Player _player;
-        int m_skillCount;
+        public List<EffectIconUI> EffectUIList { get; private set; }
+        public Canvas Canvas { get; private set; }
+        public Player Player { get; private set; }
+
         private void Start()
         {
-            m_skillCount = 2;
-            _canvas = GameObject.FindGameObjectWithTag("Canvas");
-            _player = GetComponent<Player>();
-            PassiveSkillUI = new SkillIconUI(_player.PlayerCharacter.PassiveSkill, this, 0);
+            Canvas = FindObjectOfType<Canvas>();
+            Player = FindObjectOfType<Player>();
 
-            for (int i = 1; i < m_skillCount+1; i++)
-            {
-                if(i==1)ActiveUSkillI1 = new SkillIconUI(_player.PlayerCharacter.ActiveSkill1, this, 1);
-                if(i==2)ActiveUSkillI2 = new SkillIconUI(_player.PlayerCharacter.ActiveSkill2, this, 2);
-            }
+            GameObject passiveGameObject = new GameObject("PassiveSkillUI");
+            GameObject active1GameObject = new GameObject("ActiveSkill1UI");
+            GameObject active2GameObject = new GameObject("ActiveSkill2UI");
+
+            passiveGameObject.transform.SetParent(gameObject.transform);
+            active1GameObject.transform.SetParent(gameObject.transform);
+            active2GameObject.transform.SetParent(gameObject.transform);
+
+            PassiveSkillUI = passiveGameObject.AddComponent<SkillIconUI>();
+            ActiveSkill1UI = active1GameObject.AddComponent<SkillIconUI>();
+            ActiveSkill2UI = active2GameObject.AddComponent<SkillIconUI>();
+
+            PassiveSkillUI.Init(Player.PlayerCharacter.PassiveSkill, 0);
+            ActiveSkill1UI.Init(Player.PlayerCharacter.ActiveSkill1, 1);
+            ActiveSkill2UI.Init(Player.PlayerCharacter.ActiveSkill2, 2);
 
             EffectUIList = new List<EffectIconUI>();
         }
-        
-        //private 
 
         private void Update()
         {
-            //PassiveSkillUI.UpdateUI();
-            //ActiveUSkillI1.UpdateUI();
-            //ActiveUSkillI2.UpdateUI();
-            //
-            //foreach (EffectIconUI effectUI in EffectUIList)
-            //{
-            //    effectUI.UpdateUI();
-            //}
+            PassiveSkillUI.UpdateUI();
+            ActiveSkill1UI.UpdateUI();
+            ActiveSkill2UI.UpdateUI();
+
+            foreach (EffectIconUI effectUI in EffectUIList)
+            {
+                effectUI.UpdateUI();
+            }
         }
-        
-        
     }
 }
