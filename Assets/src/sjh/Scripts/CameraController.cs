@@ -1,24 +1,32 @@
+using src.kr.kro.minestar.player;
+using src.kr.kro.minestar.utility;
 using UnityEngine;
 
 namespace src.sjh.Scripts
 {
     public class CameraController : MonoBehaviour
     {
-        GameObject m_gPlayer;
-        private bool m_isChasing;
+        private GameObject PlayerGameObject { get; set; }
+
+        private void Start()
+        {
+        }
 
         private void LateUpdate()
         {
-            if (!m_isChasing) return;
-            Vector3 pos = m_gPlayer.transform.position;
+            try
+            {
+                if (PlayerGameObject == null) PlayerGameObject = FindObjectOfType<Player>().gameObject;    
+            }
+            catch
+            {
+                // ignored
+            }
+
+
+            Vector3 pos = PlayerGameObject.transform.position;
             pos.z = -10;
             Camera.main.transform.position = pos;
-        }
-
-        public void func_ChasePlayer()
-        {
-            m_isChasing = true;
-            m_gPlayer = GameObject.FindWithTag("Player");
         }
     }
 }

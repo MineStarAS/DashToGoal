@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using src.kr.kro.minestar.ui;
+using UnityEngine;
 
 namespace src.kr.kro.minestar.sceneSystem
 {
@@ -9,9 +10,12 @@ namespace src.kr.kro.minestar.sceneSystem
             GameObject player = Resources.Load<GameObject>($"Player/{CharacterSelectSceneSystem.ClickedButton.PlayerCharacterEnum}");
             Instantiate(player).transform.position = Vector3.zero;
 
-            GameObject newGameObject = new GameObject("GameSystem");
-            GameSystem gameSystem = newGameObject.AddComponent<GameSystem>();
-            
+            GameObject gameSystemGameObject = new GameObject("GameSystem");
+            GameSystem gameSystem = gameSystemGameObject.AddComponent<GameSystem>();
+
+            GameObject iconUIManagerGameObject = new GameObject("IconUIManager");
+            iconUIManagerGameObject.transform.SetParent(GameObject.Find("UI_Canvas").transform);
+            iconUIManagerGameObject.AddComponent<IconUIManager>();
         }
     }
 }

@@ -134,7 +134,7 @@ namespace src.kr.kro.minestar.player
         public void SetDrag(float value) => Body.drag = value;
 
 
-        public void OnTriggerEnter2D(Collider2D other)
+        private void OnTriggerEnter2D(Collider2D other)
         {
             try
             {
@@ -150,7 +150,7 @@ namespace src.kr.kro.minestar.player
             }
         }
 
-        public void OnTriggerStay2D(Collider2D other)
+        private void OnTriggerStay2D(Collider2D other)
         {
             if (other.GetComponent<PlatformEffector2D>() != null)
                 if (Body.transform.position.y - other.transform.position.y <= -0.05)
@@ -158,7 +158,7 @@ namespace src.kr.kro.minestar.player
             IsGround = true;
         }
 
-        public void OnTriggerExit2D(Collider2D other) // 타일의 경계선을 나가도 실행이 됨.
+        private void OnTriggerExit2D(Collider2D other) // 타일의 경계선을 나가도 실행이 됨.
         {
             IsGround = false;
             SetDrag(0);

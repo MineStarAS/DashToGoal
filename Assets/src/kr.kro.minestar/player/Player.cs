@@ -1,6 +1,7 @@
 using src.kr.kro.minestar.player.character;
 using System.Collections.Generic;
 using src.kr.kro.minestar.player.effect;
+using src.kr.kro.minestar.utility;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
@@ -21,25 +22,19 @@ namespace src.kr.kro.minestar.player
         /// ##### Unity Functions #####
         private void Start()
         {
-            GameSystem = gameObject.GetComponent<GameSystem>();
+            GameSystem = FindObjectOfType<GameSystem>();
             Effects = gameObject.AddComponent<Effects>();
 
             PlayerCharacter = PlayerCharacter.FromEnum(this, character);
             Movement = gameObject.AddComponent<Movement>();
 
-            GameSystem.RegisterPlayer(this);
+            // GameSystem.RegisterPlayer(this);
         }
 
         private void Update()
         {
             DoUseSkill();
         }
-
-        private void OnTriggerEnter2D(Collider2D other) => Movement.OnTriggerEnter2D(other);
-
-        private void OnTriggerStay2D(Collider2D other) => Movement.OnTriggerStay2D(other);
-
-        private void OnTriggerExit2D(Collider2D other) => Movement.OnTriggerExit2D(other);
         
         // ReSharper disable Unity.PerformanceAnalysis
         ///###### Do Functions #####

@@ -15,7 +15,6 @@ GameObject:
   - component: {fileID: 6323556499862312342}
   - component: {fileID: 3247080807963324705}
   - component: {fileID: 4057946360399556525}
-  - component: {fileID: 5373083201684886565}
   m_Layer: 0
   m_Name: MineStar
   m_TagString: Player
@@ -176,17 +175,5 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 33ccf99ba31d4cb8a902cfd2c80d8dce, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &5373083201684886565
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7243836870788264014}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e435ffb2393b05f4eada1f673f17e8ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
