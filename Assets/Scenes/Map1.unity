@@ -1091,6 +1091,8 @@ MonoBehaviour:
   m_gameUI:
   - {fileID: 0}
   - {fileID: 1200048164}
+  m_imgEffects: []
+  m_imgFillEffects: []
   m_imgActive1: {fileID: 0}
   m_imgActive1_2: {fileID: 0}
   m_imgActive2: {fileID: 0}
@@ -4222,6 +4224,8 @@ MonoBehaviour:
   - {fileID: 1200048164}
   - {fileID: 1007971961}
   - {fileID: 1164231132}
+  m_imgEffects: []
+  m_imgFillEffects: []
   m_imgActive1: {fileID: 0}
   m_imgActive1_2: {fileID: 0}
   m_imgActive2: {fileID: 0}
@@ -4689,6 +4693,8 @@ MonoBehaviour:
   - {fileID: 1200048164}
   - {fileID: 1007971961}
   - {fileID: 1164231132}
+  m_imgEffects: []
+  m_imgFillEffects: []
   m_imgActive1: {fileID: 0}
   m_imgActive1_2: {fileID: 0}
   m_imgActive2: {fileID: 0}
@@ -7452,6 +7458,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_gameUI:
   - {fileID: 1588908105}
+  m_imgEffects: []
+  m_imgFillEffects: []
   m_imgActive1: {fileID: 0}
   m_imgActive1_2: {fileID: 0}
   m_imgActive2: {fileID: 0}
@@ -7490,7 +7498,7 @@ Transform:
   - {fileID: 1430090098}
   - {fileID: 1278350994}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1976330180
 GameObject:

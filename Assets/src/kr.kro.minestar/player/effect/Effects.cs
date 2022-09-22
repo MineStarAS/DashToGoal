@@ -103,6 +103,8 @@ namespace src.kr.kro.minestar.player.effect
         {
             if (EffectMap.ContainsKey(effect.GetType())) RemoveEffect(effect.GetType());
             EffectMap.Add(effect.GetType(), effect);
+            
+            
         }
 
         public void RemoveEffect(Effect effect) => RemoveEffect(effect.GetType());

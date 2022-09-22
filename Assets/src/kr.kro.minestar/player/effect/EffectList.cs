@@ -6,7 +6,7 @@ namespace src.kr.kro.minestar.player.effect
 
         public Speed(Player player) : base(player)
         {
-            EffectType = EffectType.MoveSpeed;
+            EffectType = EffectType.Disorder;
 
             Name = "Speed";
             Description = "FAST SPEED!!!";
