@@ -8,6 +8,7 @@ TagManager:
   - Stone
   - Enemy
   - Device
+  - Canvas
   layers:
   - Default
   - TransparentFX

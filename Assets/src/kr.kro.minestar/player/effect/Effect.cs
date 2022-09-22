@@ -63,7 +63,7 @@ namespace src.kr.kro.minestar.player.effect
             LimitTime = CurrentTime;
         }
 
-        public double GetTimePercent() => CurrentTime / LimitTime;
+        public float GetTimePercent() => Convert.ToSingle(CurrentTime / LimitTime);
 
         public void DoPassesTime()
         {

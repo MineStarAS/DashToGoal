@@ -80,11 +80,6 @@ namespace src.kr.kro.minestar.player.skill
 
         public double CurrentCoolTime { get; protected set; }
 
-        public Image SkillImage1 { get; set; }
-
-        public Image SkillImage2 { get; set; }
-        public Text CoolTimeText { get; set; }
-
         protected int GetCoolTime()
         {
             double value = DefaultCoolTime;
@@ -96,37 +91,12 @@ namespace src.kr.kro.minestar.player.skill
 
         public void DoPassesTime()
         {
-            if (CurrentCoolTime <= 0)
-            {
-                CoolTimeText.gameObject.SetActive(false);
-                return;
-            }
-
-            CoolTimeText.gameObject.SetActive(true);
-            CoolTimeText.text = Math.Round(CurrentCoolTime).ToString(CultureInfo.InvariantCulture);
+            if (CurrentCoolTime <= 0) return;
+            
             CurrentCoolTime -= 0.01;
-            SetCoolTimePercent();
         }
 
-        public void SetImageCoolTime(Image image1, Image image2, Text text)
-        {
-            SkillImage1 = image1;
-            SkillImage2 = image2;
-            CoolTimeText = text;
-        }
-
-        private void SetCoolTimePercent()
-        {
-            try
-            {
-                float value = Convert.ToSingle((DefaultCoolTime - (DefaultCoolTime - CurrentCoolTime)) / DefaultCoolTime);
-                SkillImage1.fillAmount = value;
-                SkillImage2.fillAmount = value;
-            }
-            catch (NullReferenceException)
-            {
-            }
-        }
+        public float GetCoolTimePercent() => Convert.ToSingle((DefaultCoolTime - (DefaultCoolTime - CurrentCoolTime)) / DefaultCoolTime);
 
         public new bool CanUseSkill() => CurrentCoolTime <= 0;
 
