@@ -1,13 +1,8 @@
-using System.Collections;
-using System.Linq;
-using src.kr.kro.minestar.player.character;
-using src.kr.kro.minestar.player.effect;
 using src.kr.kro.minestar.player.skill;
-using System;
+using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 
-namespace src.kr.kro.minestar.player
+namespace src.kr.kro.minestar.player.character
 {
     public enum PlayerCharacterEnum
     {
@@ -45,10 +40,8 @@ namespace src.kr.kro.minestar.player
         /// ##### Functions #####
         protected void StartTimer()
         {
-            UIManager uiManager = GameObject.Find("GameManager").GetComponent<UIManager>();
-            
-            (ActiveSkill1 as ISkillCoolTime)?.SetImageCoolTime(uiManager.imgActive1, uiManager.imgActive1_2, uiManager.tActive1);
-            (ActiveSkill2 as ISkillCoolTime)?.SetImageCoolTime(uiManager.imgActive2, uiManager.imgActive2_2, uiManager.tActive2);
+            // (ActiveSkill1 as ISkillCoolTime)?.SetImageCoolTime(uiManager.imgActive1, uiManager.imgActive1_2, uiManager.tActive1);
+            // (ActiveSkill2 as ISkillCoolTime)?.SetImageCoolTime(uiManager.imgActive2, uiManager.imgActive2_2, uiManager.tActive2);
             
             Player.StartCoroutine(Timer());
 
