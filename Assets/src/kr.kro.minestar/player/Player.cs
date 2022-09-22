@@ -1,3 +1,4 @@
+using src.kr.kro.minestar.player.character;
 using System.Collections.Generic;
 using src.kr.kro.minestar.player.effect;
 using UnityEditor.SceneManagement;
@@ -11,24 +12,17 @@ namespace src.kr.kro.minestar.player
     {
         /// ##### Field #####
         public GameSystem GameSystem { get; private set; }
-
-        public UIManager EffectsUI { get; private set; }
-        public GameObject GameManager { get; private set; }
         public Effects Effects { get; private set; }
 
         [SerializeField] private PlayerCharacterEnum character;
         public PlayerCharacter PlayerCharacter { get; private set; }
         public Movement Movement { get; private set; }
-        public bool IsGoal { get; set; }
 
         /// ##### Unity Functions #####
         private void Start()
         {
-            IsGoal = false;
+            GameSystem = gameObject.GetComponent<GameSystem>();
             Effects = gameObject.AddComponent<Effects>();
-            GameManager = GameObject.Find("GameManager");
-            GameSystem = GameManager.GetComponent<GameSystem>();
-            EffectsUI = GameManager.GetComponent<UIManager>();
 
             PlayerCharacter = PlayerCharacter.FromEnum(this, character);
             Movement = gameObject.AddComponent<Movement>();
@@ -38,7 +32,6 @@ namespace src.kr.kro.minestar.player
 
         private void Update()
         {
-            if (IsGoal) return;
             DoUseSkill();
         }
 

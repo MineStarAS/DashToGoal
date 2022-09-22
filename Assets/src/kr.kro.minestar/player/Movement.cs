@@ -138,7 +138,6 @@ namespace src.kr.kro.minestar.player
         {
             try
             {
-                if (other.CompareTag("Finish")) Player.IsGoal = true;
                 if (other.GetComponent<PlatformEffector2D>() != null)
                     if (Body.transform.position.y - other.transform.position.y <= -0.05)
                         return;
