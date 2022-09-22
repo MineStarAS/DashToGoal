@@ -10,7 +10,7 @@ namespace src.kr.kro.minestar.player.effect
     public sealed class Effects : MonoBehaviour
     {
         /// ##### Field #####
-        private Player Player { get; set; }
+        private Player Player { get; set; }       
 
         private Dictionary<Type, Effect> EffectMap { get; set; }
 
