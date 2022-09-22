@@ -1,41 +1,29 @@
-using src.kr.kro.minestar.player;
-using UnityEngine.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class CreatePlayer : MonoBehaviour
+namespace src.sjh.Scripts
 {
-    [SerializeField] GameObject[] m_gPlayer;
-    [SerializeField] GameObject m_gCamera;
-    [SerializeField] Sprite[] m_gGame;
-    bool m_IsPlaying = false;
-
-
-    public bool IsPlaying { get => m_IsPlaying; set => m_IsPlaying = value; }
-
-
-    private void Start()
+    public class CreatePlayer : MonoBehaviour
     {
-        GameObject gObj = null;
-        if (GameObject.Find("CharacterSystem") == null)
-        {
-            SceneManager.LoadScene("CharacterSelect");
-            return;
-        }
+        [SerializeField] GameObject m_gCamera;
+        [SerializeField] Sprite[] m_gGame;
 
-        CharacterManager CM = GameObject.Find("CharacterSystem").gameObject.GetComponent<CharacterManager>();
-        switch (CM.ePlayer)
+
+        public bool IsPlaying { get; set; }
+
+
+        private void Start()
         {
-            case PlayerCharacterEnum.MineStar:
-                gObj = Instantiate(m_gPlayer[(int)PlayerCharacterEnum.MineStar]);
-                m_IsPlaying = true;
-                break;
-            case PlayerCharacterEnum.SonJunHo:
-                gObj = Instantiate(m_gPlayer[(int)PlayerCharacterEnum.SonJunHo]);
-                m_IsPlaying = true;
-                break;
+            if (GameObject.Find("CharacterSystem") == null)
+            {
+                SceneManager.LoadScene("CharacterSelect");
+                return;
+            }
+
+            CharacterManager characterManager = GameObject.Find("CharacterSystem").gameObject.GetComponent<CharacterManager>();
+            Instantiate(characterManager.PrefabPlayer).transform.position = Vector3.zero;
+            IsPlaying = true;
+            m_gCamera.GetComponent<CameraController>().func_ChasePlayer();
         }
-        gObj.transform.position = new Vector3(0, 0, 0);
-        m_gCamera.GetComponent<CameraController>().func_ChasePlayer();
     }
-
 }

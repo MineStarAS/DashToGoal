@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace src.kr.kro.minestar.device
 {
-    public class TestDevice : Device, IDeviceTimeLimit, IDeviceTimer, IDeviceRangeDetect
+    public class TestDevice : DeviceObject, IDeviceTimeLimit, IDeviceTimer, IDeviceRangeDetect
     {
         [SerializeField] private double limitTime;
         [SerializeField] private float periodTime;
@@ -11,7 +11,7 @@ namespace src.kr.kro.minestar.device
 
         double IDeviceTimeLimit.LimitTime { get => limitTime; set => limitTime = value; }
 
-        int IDeviceTimeLimit.CurrentTime { get; set; }
+        double IDeviceTimeLimit.CurrentTime { get; set; }
 
         float IDeviceRangeDetect.DetectRadius { get => detectRadius; set => detectRadius = value; }
 
@@ -27,9 +27,9 @@ namespace src.kr.kro.minestar.device
             foreach (Collider2D collider in colliders)
             {
                 Player player = collider.GetComponent<Player>();
-                
+
                 if (player == null) continue;
-                
+
                 Debug.Log("GOT PLAYER!!!");
             }
         }
@@ -37,7 +37,7 @@ namespace src.kr.kro.minestar.device
         private void OnTriggerEnter2D(Collider2D col)
         {
             Player player = col.GetComponent<Player>();
-            player.Movement.SetMovement(player.Movement.Body.velocity.x, 20);
+            player.Movement.SetMovementY(20);
         }
     }
 }

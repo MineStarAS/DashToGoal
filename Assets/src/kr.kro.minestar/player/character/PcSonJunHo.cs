@@ -1,7 +1,6 @@
 using src.kr.kro.minestar.device;
 using src.kr.kro.minestar.player.skill;
-using Unity.VisualScripting;
-using UnityEngine;
+using UnityEngine.UI;
 
 // ReSharper disable All
 
@@ -11,35 +10,41 @@ namespace src.kr.kro.minestar.player.character
     {
         public PcSonJunHo(Player player) : base(player)
         {
-            PassiveSkill = new PsSpeedy(player);
-            ActiveSkill1 = new AsDash(player);
-            ActiveSkill2 = new AsSummonDevice(player);
+            PassiveSkill = new PsSpeedy(Player);
+            ActiveSkill1 = new AsDash(Player);
+            ActiveSkill2 = new AsSuperJump(Player);
             StartTimer();
         }
     }
 
-    public class AsSummonDevice : ActiveSkill
+    public class AsSummonDevice : Skill, ISkillCoolTime
     {
-        private GameObject device;
+        private double _defaultCoolTime;
+        private double _currentCoolTime;
+
         public AsSummonDevice(Player player) : base(player)
         {
             Player = player;
             Name = "Summon Device";
             Description = "Summon!!!\n" +
                           "De----vice---!!!!";
-
-            device = Resources.Load<GameObject>("Device/TestDevice");
-
-            Init(3F, 3F);
+            _defaultCoolTime = 3;
+            _currentCoolTime = 3;
         }
 
+        protected override void SkillFunction() => DeviceObject.SummonDevice<TestDevice>(Player.transform.position);
 
-        public override bool UseSkill()
+
+        double ISkillCoolTime.DefaultCoolTime
         {
-            if (!CanUseSkill()) return false;
-            Device.SummonDevice<TestDevice>(Player.transform.position);
-            UsedSkill();
-            return true;
+            get => _defaultCoolTime;
+            set => _defaultCoolTime = value;
         }
+
+        double ISkillCoolTime.CurrentCoolTime { get => _currentCoolTime; set => _currentCoolTime = value; }
+
+        public Image SkillImage1 { get; set; }
+        public Image SkillImage2 { get; set; }
+        public Text CoolTimeText { get; set; }
     }
 }

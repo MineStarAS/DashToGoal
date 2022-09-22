@@ -5,35 +5,27 @@ using UnityEngine;
 
 public class CharacterManager : MonoBehaviour
 {
-    private static CharacterManager instance;
-    PlayerCharacterEnum m_ePlayer;
-
-    public PlayerCharacterEnum ePlayer { get => m_ePlayer; set => m_ePlayer = value; }
+    private static CharacterManager _instance;
+    public GameObject PrefabPlayer { get; private set; } 
 
     private void Awake()
     {
-        if(null == instance)
+        if(null == _instance)
         {
-            instance = this;
-            DontDestroyOnLoad(this.gameObject);
+            _instance = this;
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
-            Destroy(this.gameObject);
+            Destroy(gameObject);
         }
     }
 
-    public CharacterManager Instance
-    {
-        get
-        {
-            if(null == instance) return null;
-            return instance;
-        }
-    }
+    public CharacterManager Instance => null == _instance ? null : _instance;
 
-    public void func_SetPlayerEnum(PlayerCharacterEnum argEnum)
+    public void SetPlayer(GameObject prefab)
     {
-        m_ePlayer = argEnum;
+        if (prefab.GetComponent<Player>() == null) return;
+        PrefabPlayer = prefab;
     }
 }

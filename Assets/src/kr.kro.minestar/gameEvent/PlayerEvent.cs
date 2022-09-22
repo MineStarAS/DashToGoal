@@ -5,14 +5,7 @@ namespace src.kr.kro.minestar.gameEvent
 {
     public abstract class PlayerEvent : GameEvent
     {
-        /// ##### Field #####
-        private Player _player;
-
-        /// ##### Getter #####
-        public Player GetPlayer() => _player;
-
-        /// ##### Setter #####
-        protected Player SetPlayer(Player player) => _player = player;
+        public Player Player { get; protected set; }
     }
 
     public class PlayerMoveEvent : PlayerEvent
@@ -20,7 +13,7 @@ namespace src.kr.kro.minestar.gameEvent
         /// ##### Constructor #####
         public PlayerMoveEvent(Player player)
         {
-            SetPlayer(player);
+            Player = player;
             
             player.GameSystem.GameEventOperator.DoEvent(this);
         }
@@ -31,61 +24,27 @@ namespace src.kr.kro.minestar.gameEvent
         /// ##### Constructor #####
         public PlayerJumpEvent(Player player)
         {
-            SetPlayer(player);
+            Player = player;
             
             player.GameSystem.GameEventOperator.DoEvent(this);
         }
     }
 
-    public class PlayerUsePassiveSkillEvent : PlayerEvent
+    public class PlayerUseSkillEvent : PlayerEvent
     {
         /// ##### Field #####
-        private readonly PassiveSkill _skill;
-
-        /// ##### Getter #####
-        public PassiveSkill GetPassiveSkill() => _skill;
+        public Skill Skill { get; }
+        public SkillSlot SkillSlot { get; }
 
         /// ##### Constructor #####
-        public PlayerUsePassiveSkillEvent(Player player, PassiveSkill skill)
+        public PlayerUseSkillEvent(Player player, Skill skill)
         {
-            SetPlayer(player);
-            _skill = skill;
-            
-            player.GameSystem.GameEventOperator.DoEvent(this);
-        }
-    }
+            Player = player;
+            Skill = skill;
 
-    public class PlayerUseActiveSkill1Event : PlayerEvent
-    {
-        /// ##### Field #####
-        private readonly ActiveSkill _skill;
-
-        /// ##### Getter #####
-        public ActiveSkill GetActiveSkill() => _skill;
-
-        /// ##### Constructor #####
-        public PlayerUseActiveSkill1Event(Player player, ActiveSkill skill)
-        {
-            SetPlayer(player);
-            _skill = skill;
-            
-            player.GameSystem.GameEventOperator.DoEvent(this);
-        }
-    }
-
-    public class PlayerUseActiveSkill2Event : PlayerEvent
-    {
-        /// ##### Field #####
-        private readonly ActiveSkill _skill;
-
-        /// ##### Getter #####
-        public ActiveSkill GetActiveSkill() => _skill;
-
-        /// ##### Constructor #####
-        public PlayerUseActiveSkill2Event(Player player, ActiveSkill skill)
-        {
-            SetPlayer(player);
-            _skill = skill;
+            if (Player.PlayerCharacter.PassiveSkill == skill) SkillSlot = SkillSlot.Passive;
+            else if (Player.PlayerCharacter.ActiveSkill1 == skill) SkillSlot = SkillSlot.Active1;
+            else SkillSlot = SkillSlot.Active2;
             
             player.GameSystem.GameEventOperator.DoEvent(this);
         }
