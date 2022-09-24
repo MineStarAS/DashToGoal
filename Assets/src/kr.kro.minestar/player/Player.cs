@@ -1,8 +1,6 @@
 using src.kr.kro.minestar.player.character;
-using System.Collections.Generic;
 using src.kr.kro.minestar.player.effect;
-using src.kr.kro.minestar.utility;
-using UnityEditor.SceneManagement;
+using src.kr.kro.minestar.ui;
 using UnityEngine;
 
 // ReSharper disable ObjectCreationAsStatement
@@ -14,6 +12,8 @@ namespace src.kr.kro.minestar.player
         /// ##### Field #####
         public GameSystem GameSystem { get; private set; }
         public Effects Effects { get; private set; }
+        public GameObject giconUIManager;
+        public IconUIManager iconUIManager { get; private set; }
 
         [SerializeField] private PlayerCharacterEnum character;
         public PlayerCharacter PlayerCharacter { get; private set; }
@@ -23,12 +23,16 @@ namespace src.kr.kro.minestar.player
         private void Start()
         {
             GameSystem = FindObjectOfType<GameSystem>();
+            giconUIManager = GameObject.Find("IconUIManager");
+            iconUIManager = giconUIManager.GetComponent<IconUIManager>();
+            //iconUIManager.Checking();
+            
             Effects = gameObject.AddComponent<Effects>();
 
             PlayerCharacter = PlayerCharacter.FromEnum(this, character);
             Movement = gameObject.AddComponent<Movement>();
 
-            // GameSystem.RegisterPlayer(this);
+            GameSystem.RegisterPlayer(this);
         }
 
         private void Update()

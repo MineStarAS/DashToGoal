@@ -12,7 +12,7 @@ namespace src.kr.kro.minestar.player.effect
         /// ##### Field #####
         private Player Player { get; set; }       
 
-        private Dictionary<Type, Effect> EffectMap { get; set; }
+        public Dictionary<Type, Effect> EffectMap { get; set; }
 
 
         /// ##### Value Field #####
@@ -103,7 +103,7 @@ namespace src.kr.kro.minestar.player.effect
         {
             if (EffectMap.ContainsKey(effect.GetType())) RemoveEffect(effect.GetType());
             EffectMap.Add(effect.GetType(), effect);
-            
+            Player.iconUIManager.SetEffect(effect);
             
         }
 
@@ -112,6 +112,7 @@ namespace src.kr.kro.minestar.player.effect
         public void RemoveEffect(Type type)
         {
             EffectMap.Remove(type);
+            Player.iconUIManager.RemoveEffectUI(type);
         }
     }
 }

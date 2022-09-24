@@ -39,7 +39,6 @@ namespace src.kr.kro.minestar.player.character
         }
 
         protected override void SkillFunction() => new Speed(Player).AddEffect();
-        
     }
 
     public class AsDash : Skill, ISkillCoolTime
@@ -111,5 +110,6 @@ namespace src.kr.kro.minestar.player.character
         int ISkillCharge.ChargeMax { get => _chargeMax; set => _chargeMax = value; }
         int ISkillCharge.ChargeUsage { get => _chargeUsage; set => _chargeUsage = value; }
         Type ISkillDetectEvent.DetectEvent { get => _detectEvent; set => _detectEvent = value; }
+
     }
 }

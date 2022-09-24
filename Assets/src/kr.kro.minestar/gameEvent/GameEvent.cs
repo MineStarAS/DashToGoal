@@ -1,5 +1,6 @@
 using src.kr.kro.minestar.player;
 using src.kr.kro.minestar.player.skill;
+using UnityEngine;
 
 namespace src.kr.kro.minestar.gameEvent
 {
@@ -21,7 +22,6 @@ namespace src.kr.kro.minestar.gameEvent
 
         public void DoEvent(GameEvent gameEvent)
         {
-            //Debug.Log(gameEvent.GetType().Name);
             foreach (Player player in _gameSystem.Players)
             {
                 Skill passiveSkill = player.PlayerCharacter.PassiveSkill;

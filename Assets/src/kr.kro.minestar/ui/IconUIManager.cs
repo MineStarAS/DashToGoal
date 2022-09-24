@@ -1,9 +1,11 @@
 using src.kr.kro.minestar.player;
 using src.kr.kro.minestar.utility;
+using src.kr.kro.minestar.player.effect;
 using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using System.Linq;
 
 namespace src.kr.kro.minestar.ui
 {
@@ -12,8 +14,9 @@ namespace src.kr.kro.minestar.ui
         public SkillIconUI PassiveSkillUI { get; private set; }
         public SkillIconUI ActiveSkill1UI { get; private set; }
         public SkillIconUI ActiveSkill2UI { get; private set; }
-
-        public List<EffectIconUI> EffectUIList { get; private set; }
+        public Dictionary<string, EffectIconUI> EffectUIMap { get; private set; }
+        public Effect CurrnetEffect;
+        public EffectIconUI CurrentEffectIconUI;
         public Canvas Canvas { get; private set; }
         public Player Player { get; private set; }
 
@@ -38,7 +41,31 @@ namespace src.kr.kro.minestar.ui
             ActiveSkill1UI.Init(Player.PlayerCharacter.ActiveSkill1, 1);
             ActiveSkill2UI.Init(Player.PlayerCharacter.ActiveSkill2, 2);
 
-            EffectUIList = new List<EffectIconUI>();
+            EffectUIMap = new Dictionary<string, EffectIconUI>();
+        }
+
+        public void SetEffect(Effect effect)
+        {
+            //이펙트 지정
+            CurrnetEffect = effect;
+            Debug.Log(effect.Name);
+            if (EffectUIMap.ContainsKey(effect.Name)) return;
+
+            //이펙트UI 생성
+            GameObject effectObj = new GameObject(CurrnetEffect.Name + "Effect");
+            effectObj.transform.SetParent(gameObject.transform);
+            CurrentEffectIconUI = effectObj.AddComponent<EffectIconUI>();
+            CurrentEffectIconUI.Init(effect, Player, EffectUIMap.Count);
+
+            //이펙트 딕셔너리에 추가
+            EffectUIMap.Add(CurrnetEffect.Name, CurrentEffectIconUI);
+        }
+
+        public void RemoveEffectUI(Type type)
+        {
+            EffectUIMap.Remove(type.Name);
+            GameObject RemoveEffectUI = GameObject.Find(type.Name + "Effect");
+            Destroy(RemoveEffectUI);
         }
 
         private void Update()
@@ -47,9 +74,12 @@ namespace src.kr.kro.minestar.ui
             ActiveSkill1UI.UpdateUI();
             ActiveSkill2UI.UpdateUI();
 
-            foreach (EffectIconUI effectUI in EffectUIList)
+            int i = 0;
+
+            foreach(EffectIconUI kvp in EffectUIMap.Values)
             {
-                effectUI.UpdateUI();
+                kvp.UpdateUI(i);
+                i++;
             }
         }
     }

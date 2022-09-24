@@ -14,7 +14,7 @@ namespace src.kr.kro.minestar
         public HashSet<Player> Players { get; private set; }
 
         /// ##### Constructor #####
-        private void Start()
+        private void Awake()
         {
             GameEventOperator = new GameEventOperator(this);
             Players = new HashSet<Player>();
